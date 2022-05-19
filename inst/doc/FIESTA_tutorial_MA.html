@@ -1,0 +1,2074 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>FIESTA - Model-Assisted Estimators</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">FIESTA - Model-Assisted Estimators</h1>
+
+
+
+<div id="model-assisted-ma-module-overview" class="section level2">
+<h2>Model-Assisted (MA) module overview</h2>
+<p><code>FIESTA</code>’s Model-Assisted (MA) module calculates
+population estimates and their sampling errors by taking advantage of
+available model-assisted survey estimators from the <code>mase</code> R
+package (McConville, et al. 2018). These estimators can use a variety of
+auxiliary data to build models and predict over a response variable of
+interest, while using a bias-correction term so that the bias of the
+model does not depend on model mis-specification.</p>
+<p>Functions in <code>FIESTA</code> used for fitting model-assisted
+estimators include the <code>modMAarea</code> function for area
+estimates and <code>modMAtree</code> for tree estimates. The
+<code>modMApop</code> function is used to get population data needed for
+model-assisted estimation. Below is a description and table of contents
+for the sections related to these functions:</p>
+<table>
+<colgroup>
+<col width="18%" />
+<col width="81%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>FUNCTION</th>
+<th>DESCRIPTION</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#modMApop">modMApop</a></td>
+<td>Creates population data for model-assisted estimation.</td>
+</tr>
+<tr class="even">
+<td><a href="#modMAarea">modMAarea</a></td>
+<td>Produces area level estimates through model-assisted
+estimation.</td>
+</tr>
+<tr class="odd">
+<td><a href="#modMAtree">modMAtree</a></td>
+<td>Produces tree level estimates through model-assisted
+estimation.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="objective-of-tutorial" class="section level2">
+<h2>Objective of tutorial</h2>
+<p>The main objective of this tutorial is to demonstrate how to use
+<code>FIESTA</code> for generating estimates using estimators from
+<code>mase</code>. The model-assisted estimators can be used with FIA’s
+standard state-level population data (i.e, Evaluation) from the FIA
+database (FIADB) and also population data from a custom boundary.</p>
+<p>The following examples are for generating estimates and estimated
+variances using standard FIA Evaluation data from FIA’s National
+database, with custom Estimation unit and Stratification information.
+The examples use data from three inventory years of field measurements
+in the state of Wyoming, from FIADB_1.7.2.00, last updated June 20,
+2018, downloaded on June 25, 2018 and stored as internal data objects in
+<code>FIESTA</code>.</p>
+<!-- The Green-Book estimators can be used with FIA's standard state-level population data (i.e, Evaluation) from the FIA database (FIADB) and also population data from a custom boundary. The population data includes a set of FIA plot data and summarized auxiliary information for post-stratification, including a table of area by estimation unit within the population, and a table of strata proportions by estimation unit. This tutorial steps through several examples using FIESTA's Green Book module, for three different populations: (POP1) an FIA standard Evaluation, Wyoming 561301; (POP2) a custom boundary with one population, Bighorn National Forest; and (POP3) a custom boundary with sub-populations, Bighorn National Forest Districts. All examples can be used with any population, standard or custom. -->
+</div>
+<div id="example-data---wyoming-wy-inventory-years-2011-2012" class="section level2">
+<h2>Example data - Wyoming (WY), Inventory Years 2011-2012</h2>
+<details>
+<summary>
+View MA Example Data
+</summary>
+<table>
+<colgroup>
+<col width="12%" />
+<col width="87%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Data Frame</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>WYplt</td>
+<td>WY plot-level data</td>
+</tr>
+<tr class="even">
+<td>WYcond</td>
+<td>WY condition-level data</td>
+</tr>
+<tr class="odd">
+<td>WYtree</td>
+<td>WY tree-level data</td>
+</tr>
+</tbody>
+</table>
+<table>
+<colgroup>
+<col width="27%" />
+<col width="72%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>External data</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>WYbighorn_adminbnd.shp</td>
+<td>Polygon shapefile of WY Bighorn National Forest Administrative
+boundary*</td>
+</tr>
+<tr class="even">
+<td>WYbighorn_districtbnd.shp</td>
+<td>Polygon shapefile of WY Bighorn National Forest District
+boundaries**</td>
+</tr>
+<tr class="odd">
+<td>WYbighorn_forest_nonforest_250m.tif</td>
+<td>GeoTIFF raster of predicted forest/nonforest (1/0) for
+stratification***</td>
+</tr>
+<tr class="even">
+<td>WYbighorn_dem_250m.img</td>
+<td>Erdas Imagine raster of elevation change, in meters****</td>
+</tr>
+</tbody>
+</table>
+<p>*USDA Forest Service, Automated Lands Program (ALP). 2018.
+S_USA.AdministrativeForest (<a href="http://data.fs.usda.gov/geodata/edw" class="uri">http://data.fs.usda.gov/geodata/edw</a>). Description: An
+area encompassing all the National Forest System lands administered by
+an administrative unit. The area encompasses private lands, other
+governmental agency lands, and may contain National Forest System lands
+within the proclaimed boundaries of another administrative unit. All
+National Forest System lands fall within one and only one Administrative
+Forest Area.</p>
+<p>**USDA Forest Service, Automated Lands Program (ALP). 2018.
+S_USA.RangerDistrict (<a href="http://data.fs.usda.gov/geodata/edw" class="uri">http://data.fs.usda.gov/geodata/edw</a>). Description: A
+depiction of the boundary that encompasses a Ranger District.</p>
+<p>***Based on MODIS-based classified map resampled from 250m to 500m
+resolution and reclassified from 3 to 2 classes: 1:forest; 2:nonforest.
+Projected in Albers Conical Equal Area, Datum NAD27 (Ruefenacht et
+al. 2008). Clipped to extent of WYbighorn_adminbnd.shp.</p>
+<p>****USGS National Elevation Dataset (NED), resampled from 30m
+resolution to 250m. Projected in Albers Conical Equal Area, Datum NAD27
+(U.S. Geological Survey 2017). Clipped to boundary of
+WYbighorn_adminbnd.shp.</p>
+</details>
+<div id="set-up" class="section level3">
+<h3>Set up</h3>
+<p>First, you’ll need to load the <code>FIESTA</code> library:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(FIESTA)</span></code></pre></div>
+<p>Next, you’ll need to set up an “outfolder”. This is just a file path
+to a folder where you’d like <code>FIESTA</code> to send your data
+output. For our purposes in this vignette, we have saved our outfolder
+file path as the <code>outfolder</code> object in a temporary directory.
+We also set a few default options preferred for this vignette.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>outfolder <span class="ot">&lt;-</span> <span class="fu">tempdir</span>()</span></code></pre></div>
+</div>
+<div id="get-data-for-examples" class="section level3">
+<h3>Get data for examples</h3>
+<details>
+<summary>
+View Getting Data
+</summary>
+<p>Now that we’ve loaded <code>FIESTA</code> and setup our outfolder, we
+can retrieve the data needed to run the examples. First, we point to
+some external data and predictor layers stored in <code>FIESTA</code>
+and derive new predictor layers using the <code>raster</code>
+package.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># File names for external spatial data</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>WYbhfn <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;sp_data/WYbighorn_adminbnd.shp&quot;</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">package =</span> <span class="st">&quot;FIESTA&quot;</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>WYbhdistfn <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;sp_data/WYbighorn_districtbnd.shp&quot;</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                          <span class="at">package =</span> <span class="st">&quot;FIESTA&quot;</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="do">## predictor variables</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>fornffn <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;sp_data/WYbighorn_forest_nonforest_250m.tif&quot;</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>                       <span class="at">package =</span> <span class="st">&quot;FIESTA&quot;</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>demfn <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;sp_data/WYbighorn_dem_250m.img&quot;</span>,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>                     <span class="at">package =</span> <span class="st">&quot;FIESTA&quot;</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Derive new predictor layers from dem</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(raster)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>dem <span class="ot">&lt;-</span> <span class="fu">raster</span>(demfn)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>slp <span class="ot">&lt;-</span> <span class="fu">terrain</span>(dem,</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>               <span class="at">opt =</span> <span class="st">&quot;slope&quot;</span>,</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>               <span class="at">unit =</span> <span class="st">&quot;degrees&quot;</span>,</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>               <span class="at">filename =</span> <span class="fu">paste0</span>(outfolder, <span class="st">&quot;/WYbh_slp.img&quot;</span>), </span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>               <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>asp <span class="ot">&lt;-</span> <span class="fu">terrain</span>(dem,</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>               <span class="at">opt =</span> <span class="st">&quot;aspect&quot;</span>,</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>               <span class="at">unit =</span> <span class="st">&quot;degrees&quot;</span>, </span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>               <span class="at">filename =</span> <span class="fu">paste0</span>(outfolder, <span class="st">&quot;/WYbh_asp.img&quot;</span>),</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>               <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p>Next, we can get our FIA plot data and set up our auxiliary data. We
+can get our FIA plot data with the <code>spMakeSpatialPoints</code>
+function from <code>FIESTA</code>. For more information on how to use
+this function, please see the <code>sp</code> vignette included with
+<code>FIESTA</code> (link).</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>WYspplt <span class="ot">&lt;-</span> <span class="fu">spMakeSpatialPoints</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">xyplt =</span> WYplt,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">xy.uniqueid =</span> <span class="st">&quot;CN&quot;</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">prj =</span> <span class="st">&quot;longlat&quot;</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">datum =</span> <span class="st">&quot;NAD83&quot;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>rastlst.cont <span class="ot">&lt;-</span> <span class="fu">c</span>(demfn, slp, asp)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>rastlst.cont.name <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;dem&quot;</span>, <span class="st">&quot;slp&quot;</span>, <span class="st">&quot;asp&quot;</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>rastlst.cat <span class="ot">&lt;-</span> fornffn</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>rastlst.cat.name<span class="ot">=</span><span class="st">&quot;fornf&quot;</span></span></code></pre></div>
+<p>Next, we must generate dataset for model-assisted estimation. We can
+do this with the <code>spGetAuxiliary</code> function from
+<code>FIESTA</code>. Again, see the <code>sp</code> vignette for further
+information on this function.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>modeldat <span class="ot">&lt;-</span> <span class="fu">spGetAuxiliary</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">xyplt =</span> WYspplt,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">uniqueid =</span> <span class="st">&quot;CN&quot;</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">unit_layer =</span> WYbhfn,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">unitvar =</span> <span class="cn">NULL</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">rastlst.cont =</span> rastlst.cont,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">rastlst.cont.name =</span> rastlst.cont.name,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">rastlst.cat =</span> rastlst.cat,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">rastlst.cat.name =</span> rastlst.cat.name,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">rastlst.cont.stat =</span> <span class="st">&quot;mean&quot;</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">asptransform =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">rast.asp =</span> asp,</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">keepNA =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">showext =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">savedata =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(modeldat, <span class="at">max.level =</span> <span class="dv">1</span>)</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## List of 12
+##  $ pltassgn      :&#39;data.frame&#39;:  56 obs. of  25 variables:
+##  $ unitvar       : chr &quot;ONEUNIT&quot;
+##  $ pltassgnid    : chr &quot;CN&quot;
+##  $ unitarea      :&#39;data.frame&#39;:  1 obs. of  2 variables:
+##  $ areavar       : chr &quot;ACRES_GIS&quot;
+##  $ unitzonal     :&#39;data.frame&#39;:  1 obs. of  8 variables:
+##  $ inputdf       :Classes &#39;data.table&#39; and &#39;data.frame&#39;: 4 obs. of  7 variables:
+##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
+##  $ prednames     : chr [1:5] &quot;dem&quot; &quot;slp&quot; &quot;asp_cos&quot; &quot;asp_sin&quot; ...
+##  $ zonalnames    : chr [1:6] &quot;dem&quot; &quot;slp&quot; &quot;asp_cos&quot; &quot;asp_sin&quot; ...
+##  $ predfac       : chr &quot;fornf&quot;
+##  $ npixelvar     : chr &quot;npixels&quot;
+##  $ predfac.levels:List of 1</code></pre>
+</details>
+</details>
+</div>
+</div>
+<div id="examples" class="section level2">
+<h2>Examples</h2>
+<div id="modmapop" class="section level3">
+<h3><code>modMApop</code></h3>
+<div id="example-1-creating-our-population-dataset-with-modmapop" class="section level4">
+<h4>Example 1: Creating our population dataset with
+<code>modMApop</code></h4>
+<details>
+<summary>
+View Example
+</summary>
+<p>We can create our population data for model-assisted estimation. To
+do so, we use the <code>modMApop</code> function in <code>FIESTA</code>.
+We must assign our population tables with the <code>popTabs</code>
+argument (and unique identifiers for these tables with the
+<code>popTabIDs</code> argument if they are not the default), the plot
+assignment with the <code>pltassgn</code> argument, and in auxiliary
+dataset we just created with the <code>auxdat</code> argument. The
+<code>spGetAuxiliary</code> function has done much of the hard work for
+us so far, so we can just run a simple call to
+<code>modMApop</code>:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>MApopdat <span class="ot">&lt;-</span> <span class="fu">modMApop</span>(<span class="at">popTabs =</span> <span class="fu">list</span>(<span class="at">tree =</span> WYtree, <span class="at">cond =</span> WYcond),</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">pltassgn =</span> WYpltassgn,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">auxdat =</span> modeldat)</span></code></pre></div>
+<p>Note that the <code>modMApop</code> function returns a list with lots
+of information and data for us to use. For a quick look at what this
+list includes we can use the <code>str</code> function:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(MApopdat, <span class="at">max.level =</span> <span class="dv">1</span>)</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## List of 26
+##  $ popType    : chr &quot;VOL&quot;
+##  $ condx      :Classes &#39;data.table&#39; and &#39;data.frame&#39;:    66 obs. of  16 variables:
+##   ..- attr(*, &quot;sorted&quot;)= chr [1:2] &quot;PLT_CN&quot; &quot;CONDID&quot;
+##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
+##  $ pltcondx   :Classes &#39;data.table&#39; and &#39;data.frame&#39;:    66 obs. of  40 variables:
+##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
+##   ..- attr(*, &quot;sorted&quot;)= chr [1:2] &quot;PLT_CN&quot; &quot;CONDID&quot;
+##  $ cuniqueid  : chr &quot;PLT_CN&quot;
+##  $ condid     : chr &quot;CONDID&quot;
+##  $ ACI.filter : chr &quot;COND_STATUS_CD == 1&quot;
+##  $ unitarea   :Classes &#39;data.table&#39; and &#39;data.frame&#39;:    1 obs. of  2 variables:
+##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
+##   ..- attr(*, &quot;sorted&quot;)= chr &quot;ONEUNIT&quot;
+##  $ areavar    : chr &quot;ACRES_GIS&quot;
+##  $ areaunits  : chr &quot;acres&quot;
+##  $ unitvar    : chr &quot;ONEUNIT&quot;
+##  $ unitvars   : chr &quot;ONEUNIT&quot;
+##  $ unitlut    :Classes &#39;data.table&#39; and &#39;data.frame&#39;:    1 obs. of  7 variables:
+##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
+##   ..- attr(*, &quot;sorted&quot;)= chr &quot;ONEUNIT&quot;
+##  $ npixels    :Classes &#39;data.table&#39; and &#39;data.frame&#39;:    1 obs. of  2 variables:
+##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
+##  $ npixelvar  : chr &quot;npixels&quot;
+##  $ prednames  : chr [1:5] &quot;dem&quot; &quot;slp&quot; &quot;asp_cos&quot; &quot;asp_sin&quot; ...
+##  $ expcondtab : NULL
+##  $ plotsampcnt:Classes &#39;data.table&#39; and &#39;data.frame&#39;:    2 obs. of  3 variables:
+##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
+##   ..- attr(*, &quot;sorted&quot;)= chr &quot;PLOT_STATUS_CD&quot;
+##  $ condsampcnt:Classes &#39;data.table&#39; and &#39;data.frame&#39;:    4 obs. of  3 variables:
+##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
+##   ..- attr(*, &quot;sorted&quot;)= chr &quot;COND_STATUS_CD&quot;
+##  $ states     : chr &quot;Wyoming&quot;
+##  $ invyrs     :List of 1
+##   ..- attr(*, &quot;dim&quot;)= int 1
+##   ..- attr(*, &quot;dimnames&quot;)=List of 1
+##   ..- attr(*, &quot;call&quot;)= language by.default(data = invyrtab$INVYR, INDICES = invyrtab$STATECD, FUN = I)
+##   ..- attr(*, &quot;class&quot;)= chr &quot;by&quot;
+##  $ estvar.area: chr &quot;CONDPROP_ADJ&quot;
+##  $ adj        : chr &quot;plot&quot;
+##  $ treex      :Classes &#39;data.table&#39; and &#39;data.frame&#39;:    1691 obs. of  21 variables:
+##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
+##   ..- attr(*, &quot;sorted&quot;)= chr &quot;PLT_CN&quot;
+##  $ tuniqueid  : chr &quot;PLT_CN&quot;
+##  $ adjtree    : logi TRUE
+##  $ predfac    : chr &quot;fornf&quot;</code></pre>
+</details>
+<p>Now that we’ve created our population dataset, we can move on to
+estimation.</p>
+</details>
+</div>
+</div>
+<div id="modmaarea" class="section level3">
+<h3><code>modMAarea</code></h3>
+<div id="example-2-area-of-forest-land-wyoming-2011-2013" class="section level4">
+<h4>Example 2: Area of forest land, Wyoming, 2011-2013</h4>
+<details>
+<summary>
+View Example
+</summary>
+<p>In this example, we look at estimating the area of forest land in
+Wyoming from 2011 to 2013 summed to the population unit
+(<code>sumunit = TRUE</code>) with the generalized regression estimator
+(<code>MAmethod = &quot;greg&quot;</code>). <code>FIESTA</code> returns raw data
+for area of forest land, Wyoming, 2011-2013 (sum estimation units).</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>area1 <span class="ot">&lt;-</span> <span class="fu">modMAarea</span>(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">MApopdat =</span> MApopdat, <span class="co"># pop - population calculations for WY, post-stratification</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">MAmethod =</span> <span class="st">&quot;greg&quot;</span>, <span class="co"># est - model-assisted method</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">landarea =</span> <span class="st">&quot;FOREST&quot;</span>, <span class="co"># est - forest land filter</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<p>We can look at the structure of this output with <code>str</code> and
+the estimates below. Note that again <code>FIESTA</code> outputs a
+list.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(area1, <span class="at">max.level =</span> <span class="dv">2</span>)</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## List of 4
+##  $ est    :Classes &#39;data.table&#39; and &#39;data.frame&#39;:    1 obs. of  3 variables:
+##   ..$ ONEUNIT               : num 1
+##   ..$ Estimate              : num 652879
+##   ..$ Percent Sampling Error: num 9.5
+##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
+##   ..- attr(*, &quot;sorted&quot;)= chr &quot;ONEUNIT&quot;
+##  $ raw    :List of 9
+##   ..$ unit_totest  :&#39;data.frame&#39;:    1 obs. of  18 variables:
+##   ..$ domdat       :&#39;data.frame&#39;:    66 obs. of  18 variables:
+##   ..$ module       : chr &quot;MA&quot;
+##   ..$ esttype      : chr &quot;AREA&quot;
+##   ..$ MAmethod     : chr &quot;greg&quot;
+##   ..$ predselectlst:List of 1
+##   ..$ rowvar       : chr &quot;TOTAL&quot;
+##   ..$ colvar       : chr &quot;NONE&quot;
+##   ..$ areaunits    : chr &quot;acres&quot;
+##  $ statecd: int 56
+##  $ invyr  : int [1:3] 2011 2012 2013</code></pre>
+</details>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>area1<span class="sc">$</span>est</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##    ONEUNIT Estimate Percent Sampling Error
+## 1:       1 652879.1                    9.5</code></pre>
+</details>
+</details>
+</div>
+<div id="example-3-area-of-forest-land-wyoming-2011-2013-using-the-elastic-net-for-variable-selection" class="section level4">
+<h4>Example 3: Area of forest land, Wyoming, 2011-2013, using the
+Elastic Net for variable selection</h4>
+<details>
+<summary>
+View Example
+</summary>
+<p>Here, we fit the same model as the above example, but rather than
+using <code>&quot;greg&quot;</code> are our model-assisted method, we can use
+<code>&quot;gregEN&quot;</code> where the EN stands for “elastic net”. The elastic
+net performs variable selection for us, grabbing predictors it finds to
+be most useful in the model.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>area2 <span class="ot">&lt;-</span> <span class="fu">modMAarea</span>(</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">MApopdat =</span> MApopdat, <span class="co"># pop - population calculations for WY, post-stratification</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">MAmethod =</span> <span class="st">&quot;gregEN&quot;</span>, <span class="co"># est - model-assisted method</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">landarea =</span> <span class="st">&quot;FOREST&quot;</span>, <span class="co"># est - forest land filter</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<p>We can again see that the structure of the list is very similar to
+that in the above example:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(area2, <span class="at">max.level =</span> <span class="dv">2</span>)</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## List of 4
+##  $ est    :Classes &#39;data.table&#39; and &#39;data.frame&#39;:    1 obs. of  3 variables:
+##   ..$ ONEUNIT               : num 1
+##   ..$ Estimate              : num 666948
+##   ..$ Percent Sampling Error: num 10.2
+##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
+##   ..- attr(*, &quot;sorted&quot;)= chr &quot;ONEUNIT&quot;
+##  $ raw    :List of 9
+##   ..$ unit_totest  :&#39;data.frame&#39;:    1 obs. of  18 variables:
+##   ..$ domdat       :&#39;data.frame&#39;:    66 obs. of  18 variables:
+##   ..$ module       : chr &quot;MA&quot;
+##   ..$ esttype      : chr &quot;AREA&quot;
+##   ..$ MAmethod     : chr &quot;gregEN&quot;
+##   ..$ predselectlst:List of 1
+##   ..$ rowvar       : chr &quot;TOTAL&quot;
+##   ..$ colvar       : chr &quot;NONE&quot;
+##   ..$ areaunits    : chr &quot;acres&quot;
+##  $ statecd: int 56
+##  $ invyr  : int [1:3] 2011 2012 2013</code></pre>
+</details>
+<p>However now the <code>raw</code> list has an item call
+<code>predselectlst</code>. We can look at this item now:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>area2<span class="sc">$</span>raw<span class="sc">$</span>predselectlst<span class="sc">$</span>totest</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##    ONEUNIT TOTAL           dem slp asp_cos asp_sin fornf2
+## 1:       1     1 -0.0002780168   0       0       0      0</code></pre>
+</details>
+<p>Notably, we can see that <code>dem</code>, <code>slp</code>,
+<code>asp_cos</code>, and <code>asp_sin</code> were removed from the
+model.</p>
+</details>
+</div>
+<div id="example-4-area-by-forest-type-on-forest-land-wyoming-2011-2013" class="section level4">
+<h4>Example 4: Area by forest type on forest land, Wyoming,
+2011-2013</h4>
+<details>
+<summary>
+View Example
+</summary>
+<p>In this example, we look at adding rows to the output and include
+returntitle=TRUE to return title information.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>area3 <span class="ot">&lt;-</span> <span class="fu">modMAarea</span>(</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">MApopdat =</span> MApopdat,         <span class="co"># pop - population calculations for WY, post-stratification</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">MAmethod =</span> <span class="st">&quot;greg&quot;</span>,           <span class="co"># est - model-assisted method</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">landarea =</span> <span class="st">&quot;FOREST&quot;</span>,         <span class="co"># est - forest land filter</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">rowvar =</span> <span class="st">&quot;FORTYPCD&quot;</span>,         <span class="co"># est - row domain</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">returntitle =</span> <span class="cn">TRUE</span>           <span class="co"># out - return title information</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div>
+<p>Again, we can look at the contents of the output list. The output now
+includes titlelst, a list of associated titles.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(area3, <span class="at">max.level =</span> <span class="dv">1</span>)</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## List of 5
+##  $ est     :&#39;data.frame&#39;:    8 obs. of  3 variables:
+##  $ titlelst:List of 9
+##  $ raw     :List of 10
+##  $ statecd : int 56
+##  $ invyr   : int [1:3] 2011 2012 2013</code></pre>
+</details>
+<p>And the estimates:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Estimate and percent sampling error of estimate</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>area3<span class="sc">$</span>est</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##   Forest type Estimate Percent Sampling Error
+## 1         201  40571.7                  63.78
+## 2         265  47531.9                  67.75
+## 3         266  69659.5                  43.89
+## 4         268  41493.7                  65.41
+## 5         281   405267                  16.16
+## 6         901    24630                  78.88
+## 7         999  23725.4                  71.82
+## 8       Total 652879.1                    9.5</code></pre>
+</details>
+<p>Along with raw data and titles:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Raw data (list object) for estimate</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>raw3 <span class="ot">&lt;-</span> area3<span class="sc">$</span>raw      <span class="co"># extract raw data list object from output</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(raw3)</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##  [1] &quot;unit_totest&quot;   &quot;unit_rowest&quot;   &quot;domdat&quot;        &quot;module&quot;       
+##  [5] &quot;esttype&quot;       &quot;MAmethod&quot;      &quot;predselectlst&quot; &quot;rowvar&quot;       
+##  [9] &quot;colvar&quot;        &quot;areaunits&quot;</code></pre>
+</details>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw3<span class="sc">$</span>unit_totest) <span class="co"># estimates by estimation unit (i.e., ESTN_UNIT)</span></span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##   ONEUNIT      nhat    nhat.var NBRPLT NBRPLT.gt0 ACRES_GIS AREAUSED      est
+## 1       1 0.5869038 0.003106112     56         37   1112412  1112412 652879.1
+##      est.var   est.se    est.cv     pse CI99left CI99right CI95left CI95right
+## 1 3843693079 61997.52 0.0949602 9.49602   493184  812574.1 531366.2    774392
+##   CI68left CI68right
+## 1 591225.1    714533</code></pre>
+</details>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>raw3<span class="sc">$</span>totest            <span class="co"># estimates for population (i.e., WY)</span></span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## NULL</code></pre>
+</details>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw3<span class="sc">$</span>unit_rowest) <span class="co"># estimates by row, by estimation unit (i.e., ESTN_UNIT)</span></span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##   ONEUNIT Forest type       nhat     nhat.var NBRPLT NBRPLT.gt0 ACRES_GIS
+## 1       1         201 0.03647179 0.0005411728     56          2   1112412
+## 2       1         265 0.04272865 0.0008381084     56          4   1112412
+## 3       1         266 0.06262026 0.0007554881     56          5   1112412
+## 4       1         268 0.03730062 0.0005953475     56          3   1112412
+## 5       1         281 0.36431363 0.0034662251     56         23   1112412
+## 6       1         901 0.02214103 0.0003050492     56          1   1112412
+##   AREAUSED       est    est.var   est.se    est.cv      pse CI99left CI99right
+## 1  1112412  40571.67  669680321 25878.18 0.6378387 63.78387      0.0 107229.45
+## 2  1112412  47531.88 1037126698 32204.45 0.6775337 67.75337      0.0 130485.05
+## 3  1112412  69659.55  934887295 30575.93 0.4389338 43.89338      0.0 148417.91
+## 4  1112412  41493.67  736719478 27142.58 0.6541378 65.41378      0.0 111408.31
+## 5  1112412 405266.98 4289319257 65492.89 0.1616043 16.16043 236568.5 573965.50
+## 6  1112412  24629.95  377486546 19429.01 0.7888367 78.88367      0.0  74675.78
+##     CI95left CI95right   CI68left CI68right
+## 1      0.000  91291.97  14836.907  66306.43
+## 2      0.000 110651.44  15505.908  79557.85
+## 3   9731.831 129587.26  39253.075 100066.02
+## 4      0.000  94692.14  14501.519  68485.82
+## 5 276903.270 533630.70 340137.060 470396.91
+## 6      0.000  62710.12   5308.619  43951.29</code></pre>
+</details>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw3<span class="sc">$</span>rowest)      <span class="co"># estimates by row for population (i.e., WY)</span></span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## NULL</code></pre>
+</details>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Titles (list object) for estimate</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>titlelst3 <span class="ot">&lt;-</span> area3<span class="sc">$</span>titlelst</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(titlelst3)</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## [1] &quot;title.estpse&quot;  &quot;title.unitvar&quot; &quot;title.ref&quot;     &quot;outfn.estpse&quot; 
+## [5] &quot;outfn.rawdat&quot;  &quot;outfn.param&quot;   &quot;title.rowvar&quot;  &quot;title.row&quot;    
+## [9] &quot;title.unitsn&quot;</code></pre>
+</details>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>titlelst3</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## $title.estpse
+## [1] &quot;Area, in acres, and percent sampling error on forest land by forest type&quot;
+## 
+## $title.unitvar
+## [1] &quot;ONEUNIT&quot;
+## 
+## $title.ref
+## [1] &quot;, 2011-2013&quot;
+## 
+## $outfn.estpse
+## [1] &quot;area_FORTYPCD_forestland&quot;
+## 
+## $outfn.rawdat
+## [1] &quot;area_FORTYPCD_forestland_rawdata&quot;
+## 
+## $outfn.param
+## [1] &quot;area_FORTYPCD_forestland_parameters&quot;
+## 
+## $title.rowvar
+## [1] &quot;Forest type&quot;
+## 
+## $title.row
+## [1] &quot;Area, in acres, on forest land by forest type; , 2011-2013&quot;
+## 
+## $title.unitsn
+## [1] &quot;acres&quot;</code></pre>
+</details>
+</details>
+</div>
+<div id="example-5-area-by-forest-type-and-stand-size-class-on-forest-land-wyoming-2011-2013" class="section level4">
+<h4>Example 5: Area by forest type and stand-size class on forest land,
+Wyoming, 2011-2013</h4>
+<details>
+<summary>
+View Example
+</summary>
+<p>In this example, we look at adding rows and columns to output,
+including FIA names. We also output estimates and percent standard error
+in the same cell with the <code>allin1</code> argument in
+<code>table_options</code> and save data to an outfolder with the
+<code>outfolder</code> argument in <code>savedata_options</code>.</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Area of forest land by forest type and stand-size class, Wyoming, 2011-2013</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>area4 <span class="ot">&lt;-</span> <span class="fu">modMAarea</span>(</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">MApopdat =</span> MApopdat,         <span class="co"># pop - population calculations for WY, post-stratification</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">MAmethod =</span> <span class="st">&quot;greg&quot;</span>,           <span class="co"># est - model-assisted method</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">landarea =</span> <span class="st">&quot;FOREST&quot;</span>,         <span class="co"># est - forest land filter</span></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">rowvar =</span> <span class="st">&quot;FORTYPCD&quot;</span>,         <span class="co"># est - row domain</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">colvar =</span> <span class="st">&quot;STDSZCD&quot;</span>,          <span class="co"># est - column domain</span></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">savedata =</span> <span class="cn">TRUE</span>,             <span class="co"># out - save data to outfolder</span></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">returntitle =</span> <span class="cn">TRUE</span>,          <span class="co"># out - return title information</span></span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">table_opts =</span> <span class="fu">list</span>(</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">row.FIAname =</span> <span class="cn">TRUE</span>,          <span class="co"># table - row domain names</span></span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">col.FIAname =</span> <span class="cn">TRUE</span>,          <span class="co"># table - column domain names</span></span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">allin1 =</span> <span class="cn">TRUE</span>                <span class="co"># table - return output with est(pse)</span></span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">savedata_opts =</span> <span class="fu">list</span>(</span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>      <span class="at">outfolder =</span> outfolder,       <span class="co"># save - outfolder for saving data</span></span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">outfn.pre =</span> <span class="st">&quot;WY&quot;</span>             <span class="co"># save - prefix for output files</span></span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a>area4<span class="sc">$</span>est</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##                         Forest type     Large diameter    Medium diameter
+## 1:                      Douglas-fir  20,818.8 ( 88.90)        -- (    --)
+## 2:                 Engelmann spruce  36,018.2 ( 75.72)  11,513.7 (166.87)
+## 3: Engelmann spruce / subalpine fir  40,505.6 ( 68.21)  13,493.7 ( 71.15)
+## 4:                    Subalpine fir  26,591.2 ( 74.25)        -- (    --)
+## 5:                   Lodgepole pine 141,979.7 ( 32.74) 226,859.2 ( 20.99)
+## 6:                            Aspen        -- (    --)        -- (    --)
+## 7:                       Nonstocked        -- (    --)        -- (    --)
+## 8:                            Total 265,913.6 ( 20.96) 251,866.5 ( 19.91)
+##        Small diameter        Nonstocked              Total
+## 1:  19,752.9 ( 97.00)       -- (    --)  40,571.7 ( 63.78)
+## 2:        -- (    --)       -- (    --)  47,531.9 ( 67.75)
+## 3:  15,660.3 ( 74.24)       -- (    --)  69,659.5 ( 43.89)
+## 4:  14,902.5 (126.22)       -- (    --)  41,493.7 ( 65.41)
+## 5:  36,428.1 ( 74.65)       -- (    --) 405,267.0 ( 16.16)
+## 6:  24,630.0 ( 78.88)       -- (    --)  24,630.0 ( 78.88)
+## 7:        -- (    --) 23,725.4 ( 71.82)  23,725.4 ( 71.82)
+## 8: 111,373.6 ( 37.11) 23,725.4 ( 71.82) 652,879.1 (  9.50)</code></pre>
+</details>
+<p>We can again look at the output list, estimates, raw data, and
+titles:</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Look at output list</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(area4)</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## [1] &quot;est&quot;      &quot;pse&quot;      &quot;titlelst&quot; &quot;raw&quot;      &quot;statecd&quot;  &quot;invyr&quot;</code></pre>
+</details>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Estimate and percent sampling error of estimate</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(area4<span class="sc">$</span>est)</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##                         Forest type     Large diameter    Medium diameter
+## 1:                      Douglas-fir  20,818.8 ( 88.90)        -- (    --)
+## 2:                 Engelmann spruce  36,018.2 ( 75.72)  11,513.7 (166.87)
+## 3: Engelmann spruce / subalpine fir  40,505.6 ( 68.21)  13,493.7 ( 71.15)
+## 4:                    Subalpine fir  26,591.2 ( 74.25)        -- (    --)
+## 5:                   Lodgepole pine 141,979.7 ( 32.74) 226,859.2 ( 20.99)
+## 6:                            Aspen        -- (    --)        -- (    --)
+##       Small diameter  Nonstocked              Total
+## 1: 19,752.9 ( 97.00) -- (    --)  40,571.7 ( 63.78)
+## 2:       -- (    --) -- (    --)  47,531.9 ( 67.75)
+## 3: 15,660.3 ( 74.24) -- (    --)  69,659.5 ( 43.89)
+## 4: 14,902.5 (126.22) -- (    --)  41,493.7 ( 65.41)
+## 5: 36,428.1 ( 74.65) -- (    --) 405,267.0 ( 16.16)
+## 6: 24,630.0 ( 78.88) -- (    --)  24,630.0 ( 78.88)</code></pre>
+</details>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Raw data (list object) for estimate</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>raw4 <span class="ot">&lt;-</span> area4<span class="sc">$</span>raw      <span class="co"># extract raw data list object from output</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(raw4)</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##  [1] &quot;unit_totest&quot;   &quot;unit_rowest&quot;   &quot;unit_colest&quot;   &quot;unit_grpest&quot;  
+##  [5] &quot;domdat&quot;        &quot;module&quot;        &quot;esttype&quot;       &quot;MAmethod&quot;     
+##  [9] &quot;predselectlst&quot; &quot;rowvar&quot;        &quot;colvar&quot;        &quot;areaunits&quot;</code></pre>
+</details>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>unit_totest) <span class="co"># estimates by estimation unit (i.e., ESTN_UNIT)</span></span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##   ONEUNIT      nhat    nhat.var NBRPLT NBRPLT.gt0 ACRES_GIS AREAUSED      est
+## 1       1 0.5869038 0.003106112     56         37   1112412  1112412 652879.1
+##      est.var   est.se    est.cv     pse CI99left CI99right CI95left CI95right
+## 1 3843693079 61997.52 0.0949602 9.49602   493184  812574.1 531366.2    774392
+##   CI68left CI68right
+## 1 591225.1    714533</code></pre>
+</details>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>totest)      <span class="co"># estimates for population (i.e., WY)</span></span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## NULL</code></pre>
+</details>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>unit_rowest) <span class="co"># estimates by row, by estimation unit (i.e., ESTN_UNIT)</span></span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##   ONEUNIT                      Forest type       nhat     nhat.var NBRPLT
+## 1       1                      Douglas-fir 0.03647179 0.0005411728     56
+## 2       1                 Engelmann spruce 0.04272865 0.0008381084     56
+## 3       1 Engelmann spruce / subalpine fir 0.06262026 0.0007554881     56
+## 4       1                    Subalpine fir 0.03730062 0.0005953475     56
+## 5       1                   Lodgepole pine 0.36431363 0.0034662251     56
+## 6       1                            Aspen 0.02214103 0.0003050492     56
+##   NBRPLT.gt0 FORTYPCD ACRES_GIS AREAUSED       est    est.var   est.se
+## 1          2      201   1112412  1112412  40571.67  669680321 25878.18
+## 2          4      265   1112412  1112412  47531.88 1037126698 32204.45
+## 3          5      266   1112412  1112412  69659.55  934887295 30575.93
+## 4          3      268   1112412  1112412  41493.67  736719478 27142.58
+## 5         23      281   1112412  1112412 405266.98 4289319257 65492.89
+## 6          1      901   1112412  1112412  24629.95  377486546 19429.01
+##      est.cv      pse CI99left CI99right   CI95left CI95right   CI68left
+## 1 0.6378387 63.78387      0.0 107229.45      0.000  91291.97  14836.907
+## 2 0.6775337 67.75337      0.0 130485.05      0.000 110651.44  15505.908
+## 3 0.4389338 43.89338      0.0 148417.91   9731.831 129587.26  39253.075
+## 4 0.6541378 65.41378      0.0 111408.31      0.000  94692.14  14501.519
+## 5 0.1616043 16.16043 236568.5 573965.50 276903.270 533630.70 340137.060
+## 6 0.7888367 78.88367      0.0  74675.78      0.000  62710.12   5308.619
+##   CI68right
+## 1  66306.43
+## 2  79557.85
+## 3 100066.02
+## 4  68485.82
+## 5 470396.91
+## 6  43951.29</code></pre>
+</details>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>rowest)      <span class="co"># estimates by row for population (i.e., WY)</span></span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## NULL</code></pre>
+</details>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>unit_colest) <span class="co"># estimates by column, by estimation unit (i.e., ESTN_UNIT)</span></span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##   ONEUNIT Stand-size class       nhat     nhat.var NBRPLT NBRPLT.gt0 STDSZCD
+## 1       1   Large diameter 0.23904227 0.0025112040     56         18       1
+## 2       1  Medium diameter 0.22641470 0.0020314706     56         14       2
+## 3       1   Small diameter 0.10011901 0.0013802129     56          6       3
+## 4       1       Nonstocked 0.02132785 0.0002346171     56          1       5
+##   ACRES_GIS AREAUSED       est    est.var   est.se    est.cv      pse
+## 1   1112412  1112412 265913.57 3107517566 55745.11 0.2096362 20.96362
+## 2   1112412  1112412 251866.51 2513866163 50138.47 0.1990676 19.90676
+## 3   1112412  1112412 111373.62 1707959965 41327.47 0.3710706 37.10706
+## 4   1112412  1112412  23725.36  290329511 17039.06 0.7181790 71.81790
+##     CI99left CI99right  CI95left CI95right   CI68left CI68right
+## 1 122323.677 409503.47 156655.16 375171.98 210477.405 321349.74
+## 2 122718.373 381014.65 153596.92 350136.11 202005.916 301727.11
+## 3   4921.104 217826.13  30373.26 192373.98  70275.187 152472.05
+## 4      0.000  67615.07      0.00  57121.31   6780.738  40669.99</code></pre>
+</details>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>colest)      <span class="co"># estimates by column for population (i.e., WY)</span></span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## NULL</code></pre>
+</details>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>unit_grpest) <span class="co"># estimates by row and column, by estimation unit (i.e., ESTN_UNIT)</span></span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##   ONEUNIT                                           grpvar       nhat
+## 1       1                       Douglas-fir#Large diameter 0.01871500
+## 2       1                       Douglas-fir#Small diameter 0.01775679
+## 3       1                  Engelmann spruce#Large diameter 0.03237848
+## 4       1                 Engelmann spruce#Medium diameter 0.01035017
+## 5       1  Engelmann spruce / subalpine fir#Large diameter 0.03641240
+## 6       1 Engelmann spruce / subalpine fir#Medium diameter 0.01213010
+##       nhat.var NBRPLT NBRPLT.gt0                      Forest type
+## 1 2.768328e-04     56          1                      Douglas-fir
+## 2 2.966984e-04     56          1                      Douglas-fir
+## 3 6.011434e-04     56          3                 Engelmann spruce
+## 4 2.983075e-04     56          1                 Engelmann spruce
+## 5 6.168775e-04     56          3 Engelmann spruce / subalpine fir
+## 6 7.448711e-05     56          1 Engelmann spruce / subalpine fir
+##   Stand-size class STDSZCD FORTYPCD ACRES_GIS AREAUSED      est   est.var
+## 1   Large diameter       1      201   1112412  1112412 20818.79 342569845
+## 2   Small diameter       3      201   1112412  1112412 19752.88 367152725
+## 3   Large diameter       1      265   1112412  1112412 36018.22 743891721
+## 4  Medium diameter       2      265   1112412  1112412 11513.66 369143933
+## 5   Large diameter       1      266   1112412  1112412 40505.61 763361972
+## 6  Medium diameter       2      266   1112412  1112412 13493.67  92174912
+##      est.se    est.cv       pse CI99left CI99right CI95left CI95right
+## 1 18508.642 0.8890353  88.90353        0  68493.90        0  57095.07
+## 2 19161.230 0.9700476  97.00476        0  69108.93        0  57308.20
+## 3 27274.378 0.7572384  75.72384        0 106272.36        0  89475.02
+## 4 19213.119 1.6687242 166.87242        0  61003.37        0  49170.68
+## 5 27629.006 0.6821032  68.21032        0 111673.21        0  94657.47
+## 6  9600.777 0.7115023  71.15023        0  38223.63        0  32310.85
+##     CI68left CI68right
+## 1  2412.7290  39224.86
+## 2   697.8393  38807.91
+## 3  8895.0001  63141.44
+## 4     0.0000  30620.29
+## 5 13029.7260  67981.49
+## 6  3946.1018  23041.24</code></pre>
+</details>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>grpest)      <span class="co"># estimates by row and column for population (i.e., WY)</span></span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## NULL</code></pre>
+</details>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Titles (list object) for estimate</span></span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>titlelst4 <span class="ot">&lt;-</span> area4<span class="sc">$</span>titlelst</span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(titlelst4)</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##  [1] &quot;title.estpse&quot;  &quot;title.unitvar&quot; &quot;title.ref&quot;     &quot;outfn.estpse&quot; 
+##  [5] &quot;outfn.rawdat&quot;  &quot;outfn.param&quot;   &quot;title.rowvar&quot;  &quot;title.row&quot;    
+##  [9] &quot;title.colvar&quot;  &quot;title.col&quot;     &quot;title.unitsn&quot;</code></pre>
+</details>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>titlelst4</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## $title.estpse
+## [1] &quot;Area, in acres (percent sampling error), by forest type and stand-size class on forest land&quot;
+## 
+## $title.unitvar
+## [1] &quot;ONEUNIT&quot;
+## 
+## $title.ref
+## [1] &quot;, 2011-2013&quot;
+## 
+## $outfn.estpse
+## [1] &quot;WY_area_FORTYPNM_STDSZNM_forestland&quot;
+## 
+## $outfn.rawdat
+## [1] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata&quot;
+## 
+## $outfn.param
+## [1] &quot;WY_area_FORTYPNM_STDSZNM_forestland_parameters&quot;
+## 
+## $title.rowvar
+## [1] &quot;Forest type&quot;
+## 
+## $title.row
+## [1] &quot;Area, in acres (percent sampling error), by forest type on forest land; , 2011-2013&quot;
+## 
+## $title.colvar
+## [1] &quot;Stand-size class&quot;
+## 
+## $title.col
+## [1] &quot;Area, in acres (percent sampling error), by stand-size class on forest land; , 2011-2013&quot;
+## 
+## $title.unitsn
+## [1] &quot;acres&quot;</code></pre>
+</details>
+<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="do">## List output files in outfolder</span></span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(outfolder, <span class="at">pattern =</span> <span class="st">&quot;WY_area&quot;</span>)</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## [1] &quot;WY_area_FORTYPNM_STDSZNM_forestland.csv&quot;                
+## [2] &quot;WY_area_FORTYPNM_STDSZNM_forestland_modMA_mase_greg.csv&quot;</code></pre>
+</details>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(<span class="fu">paste0</span>(outfolder, <span class="st">&quot;/rawdata&quot;</span>), <span class="at">pattern =</span> <span class="st">&quot;WY_area&quot;</span>)</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##  [1] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_colest.csv&quot;                     
+##  [2] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_domdat.csv&quot;                     
+##  [3] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_grpest.csv&quot;                     
+##  [4] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_modMA_mase_greg_domdat.csv&quot;     
+##  [5] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_modMA_mase_greg_unit_colest.csv&quot;
+##  [6] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_modMA_mase_greg_unit_grpest.csv&quot;
+##  [7] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_modMA_mase_greg_unit_rowest.csv&quot;
+##  [8] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_modMA_mase_greg_unit_totest.csv&quot;
+##  [9] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_rowest.csv&quot;                     
+## [10] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_totest.csv&quot;                     
+## [11] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_unit_colest.csv&quot;                
+## [12] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_unit_grpest.csv&quot;                
+## [13] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_unit_rowest.csv&quot;                
+## [14] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_unit_totest.csv&quot;</code></pre>
+</details>
+</details>
+</div>
+</div>
+<div id="modmatree" class="section level3">
+<h3><code>modMAtree</code></h3>
+<p>We will set our estimate variable and filter now. We set
+<code>estvar</code> to <code>&quot;VOLCFNET&quot;</code> for net cubic foot
+volume, and filter with <code>estvar.filter</code> set to
+<code>&quot;STATUSCD == 1&quot;</code> so we only consider live trees in our
+estimation.</p>
+<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>estvar <span class="ot">&lt;-</span> <span class="st">&quot;VOLCFNET&quot;</span></span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>live_trees <span class="ot">&lt;-</span> <span class="st">&quot;STATUSCD == 1&quot;</span></span></code></pre></div>
+<div id="example-6-net-cubic-foot-volume-of-live-trees-wyoming-2011-2013" class="section level4">
+<h4>Example 6: Net cubic-foot volume of live trees, Wyoming,
+2011-2013</h4>
+<details>
+<summary>
+View Example
+</summary>
+<p>We now will generate estimates by estimation unit (i.e., ESTN_UNIT)
+and sum to population (i.e., WY) with <code>modMAtree</code>.</p>
+<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Return raw data and titles</span></span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Total net cubic-foot volume of live trees (at least 5 inches diameter), Wyoming, 2011-2013 </span></span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a>tree1 <span class="ot">&lt;-</span> <span class="fu">modMAtree</span>(</span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">MApopdat =</span> MApopdat,         <span class="co"># pop - population calculations</span></span>
+<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">MAmethod =</span> <span class="st">&quot;greg&quot;</span>,           <span class="co"># est - model-assisted method</span></span>
+<span id="cb73-6"><a href="#cb73-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">landarea =</span> <span class="st">&quot;FOREST&quot;</span>,         <span class="co"># est - forest land filter</span></span>
+<span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">estvar =</span> estvar,             <span class="co"># est - net cubic-foot volume</span></span>
+<span id="cb73-8"><a href="#cb73-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">estvar.filter =</span> live_trees,  <span class="co"># est - live trees only</span></span>
+<span id="cb73-9"><a href="#cb73-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">returntitle =</span> <span class="cn">TRUE</span>           <span class="co"># out - return title information</span></span>
+<span id="cb73-10"><a href="#cb73-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb73-11"><a href="#cb73-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-12"><a href="#cb73-12" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(tree1)</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## [1] &quot;est&quot;      &quot;titlelst&quot; &quot;raw&quot;      &quot;statecd&quot;  &quot;invyr&quot;</code></pre>
+</details>
+<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>tree1<span class="sc">$</span>raw<span class="sc">$</span>unit_totest</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##   ONEUNIT     nhat nhat.var NBRPLT NBRPLT.gt0 ACRES_GIS AREAUSED        est
+## 1       1 1170.147 29677.11     56         34   1112412  1112412 1301686384
+##        est.var    est.se    est.cv      pse  CI99left  CI99right  CI95left
+## 1 3.672428e+16 191635798 0.1472212 14.72212 808065281 1795307487 926087122
+##    CI95right   CI68left  CI68right
+## 1 1677285646 1111112654 1492260114</code></pre>
+</details>
+</details>
+</div>
+<div id="example-7-net-cubic-foot-volume-of-live-trees-wyoming-2011-2013-using-the-elastic-net-for-variable-selection" class="section level4">
+<h4>Example 7: Net cubic-foot volume of live trees, Wyoming, 2011-2013,
+using the Elastic Net for variable selection</h4>
+<details>
+<summary>
+View Example
+</summary>
+<p>Here, we fit the same model as the above example, but rather than
+using <code>&quot;greg&quot;</code> are our model-assisted method, we can use
+<code>&quot;gregEN&quot;</code> where the EN stands for “elastic net”. The elastic
+net performs variable selection for us, grabbing predictors it finds to
+be most useful in the model.</p>
+<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Return raw data and titles</span></span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Total net cubic-foot volume of live trees (at least 5 inches diameter), Wyoming, 2011-2013 </span></span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>tree2 <span class="ot">&lt;-</span> <span class="fu">modMAtree</span>(</span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">MApopdat =</span> MApopdat,         <span class="co"># pop - population calculations</span></span>
+<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">MAmethod =</span> <span class="st">&quot;gregEN&quot;</span>,         <span class="co"># est - model-assisted method</span></span>
+<span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">landarea =</span> <span class="st">&quot;FOREST&quot;</span>,         <span class="co"># est - forest land filter</span></span>
+<span id="cb77-7"><a href="#cb77-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">estvar =</span> estvar,             <span class="co"># est - net cubic-foot volume</span></span>
+<span id="cb77-8"><a href="#cb77-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">estvar.filter =</span> live_trees,  <span class="co"># est - live trees only</span></span>
+<span id="cb77-9"><a href="#cb77-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">returntitle =</span> <span class="cn">TRUE</span>           <span class="co"># out - return title information</span></span>
+<span id="cb77-10"><a href="#cb77-10" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div>
+<p>We can again see that the structure of the list is very similar to
+that in the above example:</p>
+<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(tree2, <span class="at">max.level =</span> <span class="dv">2</span>)</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## List of 5
+##  $ est     :Classes &#39;data.table&#39; and &#39;data.frame&#39;:   1 obs. of  3 variables:
+##   ..$ ONEUNIT               : num 1
+##   ..$ Estimate              : num 1.32e+09
+##   ..$ Percent Sampling Error: num 14.6
+##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
+##   ..- attr(*, &quot;sorted&quot;)= chr &quot;ONEUNIT&quot;
+##  $ titlelst:List of 10
+##   ..$ title.estpse : chr &quot;Net volume of live trees (at least 5 in dia), in cubic feet, and percent sampling error on forest land live&quot;
+##   ..$ title.yvar   : chr &quot;Net volume, in cubic feet&quot;
+##   ..$ title.estvar : chr &quot;Net volume of live trees (at least 5 in dia)&quot;
+##   ..$ title.unitvar: chr &quot;ONEUNIT&quot;
+##   ..$ title.ref    : chr &quot;Wyoming, 2011-2013&quot;
+##   ..$ outfn.estpse : chr &quot;tree_VOLCFNET_live_forestland&quot;
+##   ..$ outfn.rawdat : chr &quot;tree_VOLCFNET_live_forestland_rawdata&quot;
+##   ..$ outfn.param  : chr &quot;tree_VOLCFNET_live_forestland_parameters&quot;
+##   ..$ title.tot    : chr &quot;Net volume of live trees (at least 5 in dia), in cubic feet, on forest land live; Wyoming, 2011-2013&quot;
+##   ..$ title.unitsn : chr &quot;cubic feet&quot;
+##  $ raw     :List of 13
+##   ..$ unit_totest  :&#39;data.frame&#39;:    1 obs. of  18 variables:
+##   ..$ domdat       :&#39;data.frame&#39;:    66 obs. of  18 variables:
+##   ..$ plotweights  :List of 1
+##   ..$ estvar       : chr &quot;VOLCFNET&quot;
+##   ..$ estvar.filter: chr &quot;STATUSCD == 1&quot;
+##   ..$ module       : chr &quot;MA&quot;
+##   ..$ esttype      : chr &quot;TREE&quot;
+##   ..$ MAmethod     : chr &quot;gregEN&quot;
+##   ..$ predselectlst:List of 1
+##   ..$ rowvar       : chr &quot;TOTAL&quot;
+##   ..$ colvar       : chr &quot;NONE&quot;
+##   ..$ areaunits    : chr &quot;acres&quot;
+##   ..$ estunits     : num 1
+##  $ statecd : int 56
+##  $ invyr   : int [1:3] 2011 2012 2013</code></pre>
+</details>
+<p>However now the <code>raw</code> list has an item call
+<code>predselectlst</code>. We can look at this item now:</p>
+<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>tree2<span class="sc">$</span>raw<span class="sc">$</span>predselectlst</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## $totest
+##    ONEUNIT TOTAL     dem       slp asp_cos   asp_sin   fornf2
+## 1:       1     1 0.71174 -73.37278       0 -644.4341 -1445.03</code></pre>
+</details>
+<p>Notably, we can see that [INSERT CORRECT PREDS] <code>dem</code>,
+<code>slp</code>, <code>asp_cos</code>, and <code>asp_sin</code> were
+removed from the model.</p>
+</details>
+</div>
+<div id="example-8-net-cubic-foot-volume-of-live-trees-by-forest-type-wyoming-2011-2013" class="section level4">
+<h4>Example 8: Net cubic-foot volume of live trees by forest type,
+Wyoming, 2011-2013</h4>
+<details>
+<summary>
+View Example
+</summary>
+<p>This example adds rows to the output for net cubic-foot volume of
+live trees (at least 5 inches diameter) by forest type, Wyoming,
+2011-2013. We also choose to return titles with
+<code>returntitle = TRUE</code>.</p>
+<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a>tree3 <span class="ot">&lt;-</span> <span class="fu">modMAtree</span>(</span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">MApopdat =</span> MApopdat,         <span class="co"># pop - population calculations</span></span>
+<span id="cb82-3"><a href="#cb82-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">MAmethod =</span> <span class="st">&quot;greg&quot;</span>,           <span class="co"># est - model-assisted method</span></span>
+<span id="cb82-4"><a href="#cb82-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">landarea =</span> <span class="st">&quot;FOREST&quot;</span>,         <span class="co"># est - forest land filter</span></span>
+<span id="cb82-5"><a href="#cb82-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">estvar =</span> <span class="st">&quot;VOLCFNET&quot;</span>,               <span class="co"># est - net cubic-foot volume</span></span>
+<span id="cb82-6"><a href="#cb82-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">estvar.filter =</span> <span class="st">&quot;STATUSCD == 1&quot;</span>,   <span class="co"># est - live trees only</span></span>
+<span id="cb82-7"><a href="#cb82-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">rowvar =</span> <span class="st">&quot;FORTYPCD&quot;</span>,         <span class="co"># est - row domain </span></span>
+<span id="cb82-8"><a href="#cb82-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">returntitle =</span> <span class="cn">TRUE</span>           <span class="co"># out - return title information</span></span>
+<span id="cb82-9"><a href="#cb82-9" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div>
+<p>Again, we investigate the output of the returned list:</p>
+<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Look at output list</span></span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(tree3)</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## [1] &quot;est&quot;      &quot;titlelst&quot; &quot;raw&quot;      &quot;statecd&quot;  &quot;invyr&quot;</code></pre>
+</details>
+<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Estimate and percent sampling error of estimate</span></span>
+<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a>tree3<span class="sc">$</span>est</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##   Forest type    Estimate Percent Sampling Error
+## 1         201  14128503.6                  69.62
+## 2         265 189616779.4                  70.65
+## 3         266 135785846.3                  65.68
+## 4         268  50176218.6                  71.94
+## 5         281 911979036.1                  19.59
+## 6         901          --                     --
+## 7         999          --                     --
+## 8       Total  1301686384                  14.72</code></pre>
+</details>
+<div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Raw data (list object) for estimate</span></span>
+<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a>raw3 <span class="ot">&lt;-</span> tree3<span class="sc">$</span>raw      <span class="co"># extract raw data list object from output</span></span>
+<span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(raw3)</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##  [1] &quot;unit_totest&quot;   &quot;unit_rowest&quot;   &quot;domdat&quot;        &quot;plotweights&quot;  
+##  [5] &quot;estvar&quot;        &quot;estvar.filter&quot; &quot;module&quot;        &quot;esttype&quot;      
+##  [9] &quot;MAmethod&quot;      &quot;predselectlst&quot; &quot;rowvar&quot;        &quot;colvar&quot;       
+## [13] &quot;areaunits&quot;     &quot;estunits&quot;</code></pre>
+</details>
+<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw3<span class="sc">$</span>unit_totest)   <span class="co"># estimates by estimation unit (i.e., ESTN_UNIT)</span></span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##   ONEUNIT     nhat nhat.var NBRPLT NBRPLT.gt0 ACRES_GIS AREAUSED        est
+## 1       1 1170.147 29677.11     56         34   1112412  1112412 1301686384
+##        est.var    est.se    est.cv      pse  CI99left  CI99right  CI95left
+## 1 3.672428e+16 191635798 0.1472212 14.72212 808065281 1795307487 926087122
+##    CI95right   CI68left  CI68right
+## 1 1677285646 1111112654 1492260114</code></pre>
+</details>
+<div class="sourceCode" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw3<span class="sc">$</span>totest)        <span class="co"># estimates for population (i.e., WY)</span></span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## NULL</code></pre>
+</details>
+<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw3<span class="sc">$</span>unit_rowest)   <span class="co"># estimates by row, by estimation unit (i.e., ESTN_UNIT)</span></span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##   ONEUNIT Forest type      nhat    nhat.var NBRPLT NBRPLT.gt0 ACRES_GIS
+## 1       1         201  12.70078    78.19439     56          2   1112412
+## 2       1         265 170.45548 14503.95279     56          4   1112412
+## 3       1         266 122.06431  6427.30074     56          5   1112412
+## 4       1         268  45.10577  1052.94973     56          2   1112412
+## 5       1         281 819.82103 25803.85564     56         23   1112412
+## 6       1         901   0.00000     0.00000     56          0   1112412
+##   AREAUSED       est      est.var    est.se    est.cv      pse  CI99left
+## 1  1112412  14128504 9.676252e+13   9836794 0.6962375 69.62375         0
+## 2  1112412 189616779 1.794808e+16 133970442 0.7065326 70.65326         0
+## 3  1112412 135785846 7.953536e+15  89182597 0.6567886 65.67886         0
+## 4  1112412  50176219 1.302984e+15  36096876 0.7194021 71.94021         0
+## 5  1112412 911979036 3.193127e+16 178693232 0.1959401 19.59401 451695772
+## 6  1112412         0 0.000000e+00         0       NaN      NaN         0
+##    CI99right  CI95left  CI95right  CI68left  CI68right
+## 1   39466407         0   33408266   4346226   23910781
+## 2  534701771         0  452194022  56388817  322844742
+## 3  365504992         0  310580524  47097510  224474183
+## 4  143155610         0  120924796  14279395   86073042
+## 5 1372262300 561746736 1262211336 734276143 1089681930
+## 6          0         0          0         0          0</code></pre>
+</details>
+<div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw3<span class="sc">$</span>rowest)        <span class="co"># estimates by row for population (i.e., WY)</span></span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## NULL</code></pre>
+</details>
+<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Titles (list object) for estimate</span></span>
+<span id="cb97-2"><a href="#cb97-2" aria-hidden="true" tabindex="-1"></a>titlelst3 <span class="ot">&lt;-</span> tree3<span class="sc">$</span>titlelst</span>
+<span id="cb97-3"><a href="#cb97-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(titlelst3)</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##  [1] &quot;title.estpse&quot;  &quot;title.yvar&quot;    &quot;title.estvar&quot;  &quot;title.unitvar&quot;
+##  [5] &quot;title.ref&quot;     &quot;outfn.estpse&quot;  &quot;outfn.rawdat&quot;  &quot;outfn.param&quot;  
+##  [9] &quot;title.rowvar&quot;  &quot;title.row&quot;     &quot;title.unitsn&quot;</code></pre>
+</details>
+<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a>titlelst3</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## $title.estpse
+## [1] &quot;Net volume of live trees (at least 5 in dia), in cubic feet, and percent sampling error on forest land by forest type live&quot;
+## 
+## $title.yvar
+## [1] &quot;Net volume, in cubic feet&quot;
+## 
+## $title.estvar
+## [1] &quot;Net volume of live trees (at least 5 in dia)&quot;
+## 
+## $title.unitvar
+## [1] &quot;ONEUNIT&quot;
+## 
+## $title.ref
+## [1] &quot;Wyoming, 2011-2013&quot;
+## 
+## $outfn.estpse
+## [1] &quot;tree_VOLCFNET_live_FORTYPCD_forestland&quot;
+## 
+## $outfn.rawdat
+## [1] &quot;tree_VOLCFNET_live_FORTYPCD_forestland_rawdata&quot;
+## 
+## $outfn.param
+## [1] &quot;tree_VOLCFNET_live_FORTYPCD_forestland_parameters&quot;
+## 
+## $title.rowvar
+## [1] &quot;Forest type&quot;
+## 
+## $title.row
+## [1] &quot;Net volume of live trees (at least 5 in dia), in cubic feet, on forest land by forest type live; Wyoming, 2011-2013&quot;
+## 
+## $title.unitsn
+## [1] &quot;cubic feet&quot;</code></pre>
+</details>
+<p>We can also create a simple barplot from the output:</p>
+<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Create barplot</span></span>
+<span id="cb101-2"><a href="#cb101-2" aria-hidden="true" tabindex="-1"></a><span class="fu">datBarplot</span>(</span>
+<span id="cb101-3"><a href="#cb101-3" aria-hidden="true" tabindex="-1"></a>      raw3<span class="sc">$</span>unit_rowest, </span>
+<span id="cb101-4"><a href="#cb101-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">xvar =</span> titlelst3<span class="sc">$</span>title.rowvar, </span>
+<span id="cb101-5"><a href="#cb101-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">yvar =</span> <span class="st">&quot;est&quot;</span></span>
+<span id="cb101-6"><a href="#cb101-6" aria-hidden="true" tabindex="-1"></a>      )</span></code></pre></div>
+<details>
+<summary>
+plot
+</summary>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</details>
+<p>And a fancier barplot:</p>
+<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Create fancier barplot</span></span>
+<span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a><span class="fu">datBarplot</span>(</span>
+<span id="cb102-3"><a href="#cb102-3" aria-hidden="true" tabindex="-1"></a>      raw3<span class="sc">$</span>unit_rowest, </span>
+<span id="cb102-4"><a href="#cb102-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">xvar =</span> titlelst3<span class="sc">$</span>title.rowvar, </span>
+<span id="cb102-5"><a href="#cb102-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">yvar =</span> <span class="st">&quot;est&quot;</span>,</span>
+<span id="cb102-6"><a href="#cb102-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">errbars =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb102-7"><a href="#cb102-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">sevar =</span> <span class="st">&quot;est.se&quot;</span>, </span>
+<span id="cb102-8"><a href="#cb102-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">main =</span> FIESTAutils<span class="sc">::</span><span class="fu">wraptitle</span>(titlelst3<span class="sc">$</span>title.row, <span class="dv">75</span>),</span>
+<span id="cb102-9"><a href="#cb102-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">ylabel =</span> titlelst3<span class="sc">$</span>title.yvar, </span>
+<span id="cb102-10"><a href="#cb102-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">divideby =</span> <span class="st">&quot;million&quot;</span></span>
+<span id="cb102-11"><a href="#cb102-11" aria-hidden="true" tabindex="-1"></a>      )</span></code></pre></div>
+<details>
+<summary>
+plot
+</summary>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</details>
+</details>
+</div>
+<div id="example-9-net-cubic-foot-volume-of-live-trees-by-forest-type-and-stand-size-class-wyoming-2011-2013" class="section level4">
+<h4>Example 9: Net cubic-foot volume of live trees by forest type and
+stand-size class, Wyoming, 2011-2013</h4>
+<details>
+<summary>
+View Example
+</summary>
+<p>This examples adds rows and columns to the output, including FIA
+names, for net cubic-foot volume of live trees (at least 5 inches
+diameter) by forest type and stand-size class, Wyoming, 2011-2013. We
+also use the <code>*_options</code> functions to return output with
+estimates (est) and percent standard error (pse) in same cell - est(pse)
+with <code>allin1 = TRUE</code> and save data to an outfolder with
+<code>savedata = TRUE</code> and <code>outfolder = outfolder</code>.</p>
+<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a>tree4 <span class="ot">&lt;-</span> <span class="fu">modMAtree</span>(</span>
+<span id="cb103-2"><a href="#cb103-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">MApopdat =</span> MApopdat,         <span class="co"># pop - population calculations</span></span>
+<span id="cb103-3"><a href="#cb103-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">MAmethod =</span> <span class="st">&quot;greg&quot;</span>,           <span class="co"># est - model-assisted method</span></span>
+<span id="cb103-4"><a href="#cb103-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">landarea =</span> <span class="st">&quot;FOREST&quot;</span>,         <span class="co"># est - forest land filter</span></span>
+<span id="cb103-5"><a href="#cb103-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">estvar =</span> <span class="st">&quot;VOLCFNET&quot;</span>,               <span class="co"># est - net cubic-foot volume</span></span>
+<span id="cb103-6"><a href="#cb103-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">estvar.filter =</span> <span class="st">&quot;STATUSCD  == 1&quot;</span>,   <span class="co"># est - live trees only</span></span>
+<span id="cb103-7"><a href="#cb103-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">rowvar =</span> <span class="st">&quot;FORTYPCD&quot;</span>,         <span class="co"># est - row domain</span></span>
+<span id="cb103-8"><a href="#cb103-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">colvar =</span> <span class="st">&quot;STDSZCD&quot;</span>,          <span class="co"># est - column domain</span></span>
+<span id="cb103-9"><a href="#cb103-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">returntitle =</span> <span class="cn">TRUE</span>,          <span class="co"># out - return title information</span></span>
+<span id="cb103-10"><a href="#cb103-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">savedata =</span> <span class="cn">TRUE</span>,             <span class="co"># out - save data to outfolder</span></span>
+<span id="cb103-11"><a href="#cb103-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">table_opts =</span> <span class="fu">table_options</span>(</span>
+<span id="cb103-12"><a href="#cb103-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">row.FIAname =</span> <span class="cn">TRUE</span>,          <span class="co"># est - row domain names</span></span>
+<span id="cb103-13"><a href="#cb103-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">col.FIAname =</span> <span class="cn">TRUE</span>,          <span class="co"># est - column domain names</span></span>
+<span id="cb103-14"><a href="#cb103-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">allin1 =</span> <span class="cn">TRUE</span>                <span class="co"># out - return output with est(pse)</span></span>
+<span id="cb103-15"><a href="#cb103-15" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb103-16"><a href="#cb103-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">savedata_opts =</span> <span class="fu">savedata_options</span>(</span>
+<span id="cb103-17"><a href="#cb103-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">outfolder =</span> outfolder,       <span class="co"># out - outfolder for saving data</span></span>
+<span id="cb103-18"><a href="#cb103-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">outfn.pre =</span> <span class="st">&quot;WY&quot;</span>             <span class="co"># out - prefix for output files</span></span>
+<span id="cb103-19"><a href="#cb103-19" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb103-20"><a href="#cb103-20" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div>
+<p>Again, we investigate the output of the returned list:</p>
+<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Look at output list from modGBarea()</span></span>
+<span id="cb104-2"><a href="#cb104-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(tree4)</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## [1] &quot;est&quot;      &quot;pse&quot;      &quot;titlelst&quot; &quot;raw&quot;      &quot;statecd&quot;  &quot;invyr&quot;</code></pre>
+</details>
+<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Estimate and percent sampling error of estimate</span></span>
+<span id="cb106-2"><a href="#cb106-2" aria-hidden="true" tabindex="-1"></a>tree4<span class="sc">$</span>est</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##                         Forest type         Large diameter
+## 1:                      Douglas-fir  10,588,987.9 ( 88.90)
+## 2:                 Engelmann spruce 145,816,510.2 ( 80.87)
+## 3: Engelmann spruce / subalpine fir 115,503,288.5 ( 76.91)
+## 4:                    Subalpine fir  50,176,218.6 ( 71.94)
+## 5:                   Lodgepole pine 472,090,874.0 ( 33.78)
+## 6:                            Aspen            -- (    --)
+## 7:                       Nonstocked            -- (    --)
+## 8:                            Total 794,175,879.4 ( 23.26)
+##           Medium diameter        Small diameter  Nonstocked
+## 1:            -- (    --)  3,539,515.7 ( 97.00) -- (    --)
+## 2:  43,800,269.2 (166.87)           -- (    --) -- (    --)
+## 3:  15,317,971.9 ( 71.15)  4,964,585.9 ( 74.24) -- (    --)
+## 4:            -- (    --)           -- (    --) -- (    --)
+## 5: 434,307,202.1 ( 22.81)  5,580,959.9 ( 77.79) -- (    --)
+## 6:            -- (    --)           -- (    --) -- (    --)
+## 7:            -- (    --)           -- (    --) -- (    --)
+## 8: 493,425,443.2 ( 24.11) 14,085,061.4 ( 43.49) -- (    --)
+##                       Total
+## 1:    14,128,503.6 ( 69.62)
+## 2:   189,616,779.4 ( 70.65)
+## 3:   135,785,846.3 ( 65.68)
+## 4:    50,176,218.6 ( 71.94)
+## 5:   911,979,036.1 ( 19.59)
+## 6:              -- (    --)
+## 7:              -- (    --)
+## 8: 1,301,686,384.0 ( 14.72)</code></pre>
+</details>
+<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Raw data (list object) for estimate</span></span>
+<span id="cb108-2"><a href="#cb108-2" aria-hidden="true" tabindex="-1"></a>raw4 <span class="ot">&lt;-</span> tree4<span class="sc">$</span>raw      <span class="co"># extract raw data list object from output</span></span>
+<span id="cb108-3"><a href="#cb108-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(raw4)</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##  [1] &quot;unit_totest&quot;   &quot;unit_rowest&quot;   &quot;unit_colest&quot;   &quot;unit_grpest&quot;  
+##  [5] &quot;domdat&quot;        &quot;plotweights&quot;   &quot;estvar&quot;        &quot;estvar.filter&quot;
+##  [9] &quot;module&quot;        &quot;esttype&quot;       &quot;MAmethod&quot;      &quot;predselectlst&quot;
+## [13] &quot;rowvar&quot;        &quot;colvar&quot;        &quot;areaunits&quot;     &quot;estunits&quot;</code></pre>
+</details>
+<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>unit_totest)   <span class="co"># estimates by estimation unit (i.e., ESTN_UNIT)</span></span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##   ONEUNIT     nhat nhat.var NBRPLT NBRPLT.gt0 ACRES_GIS AREAUSED        est
+## 1       1 1170.147 29677.11     56         34   1112412  1112412 1301686384
+##        est.var    est.se    est.cv      pse  CI99left  CI99right  CI95left
+## 1 3.672428e+16 191635798 0.1472212 14.72212 808065281 1795307487 926087122
+##    CI95right   CI68left  CI68right
+## 1 1677285646 1111112654 1492260114</code></pre>
+</details>
+<div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>totest)        <span class="co"># estimates for population (i.e., WY)</span></span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## NULL</code></pre>
+</details>
+<div class="sourceCode" id="cb114"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>unit_rowest)   <span class="co"># estimates by row, by estimation unit (i.e., ESTN_UNIT)</span></span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##   ONEUNIT                      Forest type      nhat    nhat.var NBRPLT
+## 1       1                      Douglas-fir  12.70078    78.19439     56
+## 2       1                 Engelmann spruce 170.45548 14503.95279     56
+## 3       1 Engelmann spruce / subalpine fir 122.06431  6427.30074     56
+## 4       1                    Subalpine fir  45.10577  1052.94973     56
+## 5       1                   Lodgepole pine 819.82103 25803.85564     56
+## 6       1                            Aspen   0.00000     0.00000     56
+##   NBRPLT.gt0 FORTYPCD ACRES_GIS AREAUSED       est      est.var    est.se
+## 1          2      201   1112412  1112412  14128504 9.676252e+13   9836794
+## 2          4      265   1112412  1112412 189616779 1.794808e+16 133970442
+## 3          5      266   1112412  1112412 135785846 7.953536e+15  89182597
+## 4          2      268   1112412  1112412  50176219 1.302984e+15  36096876
+## 5         23      281   1112412  1112412 911979036 3.193127e+16 178693232
+## 6          0      901   1112412  1112412         0 0.000000e+00         0
+##      est.cv      pse  CI99left  CI99right  CI95left  CI95right  CI68left
+## 1 0.6962375 69.62375         0   39466407         0   33408266   4346226
+## 2 0.7065326 70.65326         0  534701771         0  452194022  56388817
+## 3 0.6567886 65.67886         0  365504992         0  310580524  47097510
+## 4 0.7194021 71.94021         0  143155610         0  120924796  14279395
+## 5 0.1959401 19.59401 451695772 1372262300 561746736 1262211336 734276143
+## 6       NaN      NaN         0          0         0          0         0
+##    CI68right
+## 1   23910781
+## 2  322844742
+## 3  224474183
+## 4   86073042
+## 5 1089681930
+## 6          0</code></pre>
+</details>
+<div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="#cb116-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>rowest)        <span class="co"># estimates by row for population (i.e., WY)</span></span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## NULL</code></pre>
+</details>
+<div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="#cb118-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>unit_colest)   <span class="co"># estimates by column, by estimation unit (i.e., ESTN_UNIT)</span></span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##   ONEUNIT Stand-size class      nhat    nhat.var NBRPLT NBRPLT.gt0 STDSZCD
+## 1       1   Large diameter 713.92220 27578.97718     56         18       1
+## 2       1  Medium diameter 443.56343 11435.49631     56         14       2
+## 3       1   Small diameter  12.66173    30.31923     56          4       3
+## 4       1       Nonstocked   0.00000     0.00000     56          0       5
+##   ACRES_GIS AREAUSED       est      est.var    est.se    est.cv      pse
+## 1   1112412  1112412 794175879 3.412792e+16 184737423 0.2326153 23.26153
+## 2   1112412  1112412 493425443 1.415098e+16 118957906 0.2410859 24.10859
+## 3   1112412  1112412  14085061 3.751888e+13   6125265 0.4348767 43.48767
+## 4   1112412  1112412         0 0.000000e+00         0       NaN      NaN
+##    CI99left  CI99right  CI95left  CI95right  CI68left CI68right
+## 1 318323812 1270027946 432097184 1156254575 610462293 977889466
+## 2 187010182  799840704 260272231  726578655 375126815 611724071
+## 3         0   29862700   2079762   26090361   7993743  20176380
+## 4         0          0         0          0         0         0</code></pre>
+</details>
+<div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb120-1"><a href="#cb120-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>colest)        <span class="co"># estimates by column for population (i.e., WY)</span></span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## NULL</code></pre>
+</details>
+<div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb122-1"><a href="#cb122-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>unit_grpest)   <span class="co"># estimates by row and column, by estimation unit (i.e., ESTN_UNIT)</span></span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##   ONEUNIT                                           grpvar       nhat
+## 1       1                       Douglas-fir#Large diameter   9.518941
+## 2       1                       Douglas-fir#Small diameter   3.181838
+## 3       1                  Engelmann spruce#Large diameter 131.081348
+## 4       1                 Engelmann spruce#Medium diameter  39.374131
+## 5       1  Engelmann spruce / subalpine fir#Large diameter 103.831361
+## 6       1 Engelmann spruce / subalpine fir#Medium diameter  13.770048
+##       nhat.var NBRPLT NBRPLT.gt0                      Forest type
+## 1    71.616861     56          1                      Douglas-fir
+## 2     9.526693     56          1                      Douglas-fir
+## 3 11237.915551     56          3                 Engelmann spruce
+## 4  4317.089797     56          1                 Engelmann spruce
+## 5  6377.416002     56          3 Engelmann spruce / subalpine fir
+## 6    95.989450     56          1 Engelmann spruce / subalpine fir
+##   Stand-size class STDSZCD FORTYPCD ACRES_GIS AREAUSED       est      est.var
+## 1   Large diameter       1      201   1112412  1112412  10588988 8.862309e+13
+## 2   Small diameter       3      201   1112412  1112412   3539516 1.178891e+13
+## 3   Large diameter       1      265   1112412  1112412 145816510 1.390648e+16
+## 4  Medium diameter       2      265   1112412  1112412  43800269 5.342231e+15
+## 5   Large diameter       1      266   1112412  1112412 115503289 7.891805e+15
+## 6  Medium diameter       2      266   1112412  1112412  15317972 1.187832e+14
+##      est.se    est.cv       pse CI99left CI99right CI95left CI95right
+## 1   9413984 0.8890353  88.90353        0  34837803        0  29040057
+## 2   3433499 0.9700476  97.00476        0  12383622        0  10269050
+## 3 117925760 0.8087271  80.87271        0 449573139        0 376946753
+## 4  73090569 1.6687242 166.87242        0 232069099        0 187055152
+## 5  88835832 0.7691195  76.91195        0 344329229        0 289618321
+## 6  10898772 0.7115023  71.15023        0  43391347        0  36679172
+##     CI68left CI68right
+## 1  1227177.6  19950798
+## 2   125045.8   6953986
+## 3 28544308.3 263088712
+## 4        0.0 116485762
+## 5 27159794.6 203846782
+## 6  4479602.4  26156341</code></pre>
+</details>
+<div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb124-1"><a href="#cb124-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>grpest)        <span class="co"># estimates by row and column for population (i.e., WY)</span></span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## NULL</code></pre>
+</details>
+<div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="#cb126-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Titles (list object) for estimate</span></span>
+<span id="cb126-2"><a href="#cb126-2" aria-hidden="true" tabindex="-1"></a>titlelst4 <span class="ot">&lt;-</span> tree4<span class="sc">$</span>titlelst</span>
+<span id="cb126-3"><a href="#cb126-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(titlelst4)</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##  [1] &quot;title.estpse&quot;  &quot;title.yvar&quot;    &quot;title.estvar&quot;  &quot;title.unitvar&quot;
+##  [5] &quot;title.ref&quot;     &quot;outfn.estpse&quot;  &quot;outfn.rawdat&quot;  &quot;outfn.param&quot;  
+##  [9] &quot;title.rowvar&quot;  &quot;title.row&quot;     &quot;title.colvar&quot;  &quot;title.col&quot;    
+## [13] &quot;title.unitsn&quot;</code></pre>
+</details>
+<div class="sourceCode" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb128-1"><a href="#cb128-1" aria-hidden="true" tabindex="-1"></a>titlelst4</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## $title.estpse
+## [1] &quot;Net volume of live trees (at least 5 in dia), in cubic feet (percent sampling error), by forest type and stand-size class on forest land live&quot;
+## 
+## $title.yvar
+## [1] &quot;Net volume, in cubic feet&quot;
+## 
+## $title.estvar
+## [1] &quot;Net volume of live trees (at least 5 in dia)&quot;
+## 
+## $title.unitvar
+## [1] &quot;ONEUNIT&quot;
+## 
+## $title.ref
+## [1] &quot;Wyoming, 2011-2013&quot;
+## 
+## $outfn.estpse
+## [1] &quot;WY_tree_VOLCFNET_live_FORTYPNM_STDSZNM_forestland&quot;
+## 
+## $outfn.rawdat
+## [1] &quot;WY_tree_VOLCFNET_live_FORTYPNM_STDSZNM_forestland_rawdata&quot;
+## 
+## $outfn.param
+## [1] &quot;WY_tree_VOLCFNET_live_FORTYPNM_STDSZNM_forestland_parameters&quot;
+## 
+## $title.rowvar
+## [1] &quot;Forest type&quot;
+## 
+## $title.row
+## [1] &quot;Net volume of live trees (at least 5 in dia), in cubic feet (percent sampling error), by forest type on forest land live; Wyoming, 2011-2013&quot;
+## 
+## $title.colvar
+## [1] &quot;Stand-size class&quot;
+## 
+## $title.col
+## [1] &quot;Net volume of live trees (at least 5 in dia), in cubic feet (percent sampling error), by stand-size class on forest land live; Wyoming, 2011-2013&quot;
+## 
+## $title.unitsn
+## [1] &quot;cubic feet&quot;</code></pre>
+</details>
+<div class="sourceCode" id="cb130"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb130-1"><a href="#cb130-1" aria-hidden="true" tabindex="-1"></a><span class="do">## List output files in outfolder</span></span>
+<span id="cb130-2"><a href="#cb130-2" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(outfolder, <span class="at">pattern =</span> <span class="st">&quot;WY_tree&quot;</span>)</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## [1] &quot;WY_tree_VOLCFNET_live_FORTYPNM_STDSZNM_forestland.csv&quot;                
+## [2] &quot;WY_tree_VOLCFNET_live_FORTYPNM_STDSZNM_forestland_modMA_mase_greg.csv&quot;</code></pre>
+</details>
+<div class="sourceCode" id="cb132"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb132-1"><a href="#cb132-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(<span class="fu">paste0</span>(outfolder, <span class="st">&quot;/rawdata&quot;</span>), <span class="at">pattern =</span> <span class="st">&quot;WY_tree&quot;</span>)</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##  [1] &quot;WY_tree_VOLCFNET_live_FORTYPNM_STDSZNM_forestland_rawdata_colest.csv&quot;                     
+##  [2] &quot;WY_tree_VOLCFNET_live_FORTYPNM_STDSZNM_forestland_rawdata_domdat.csv&quot;                     
+##  [3] &quot;WY_tree_VOLCFNET_live_FORTYPNM_STDSZNM_forestland_rawdata_grpest.csv&quot;                     
+##  [4] &quot;WY_tree_VOLCFNET_live_FORTYPNM_STDSZNM_forestland_rawdata_modMA_mase_greg_domdat.csv&quot;     
+##  [5] &quot;WY_tree_VOLCFNET_live_FORTYPNM_STDSZNM_forestland_rawdata_modMA_mase_greg_unit_colest.csv&quot;
+##  [6] &quot;WY_tree_VOLCFNET_live_FORTYPNM_STDSZNM_forestland_rawdata_modMA_mase_greg_unit_grpest.csv&quot;
+##  [7] &quot;WY_tree_VOLCFNET_live_FORTYPNM_STDSZNM_forestland_rawdata_modMA_mase_greg_unit_rowest.csv&quot;
+##  [8] &quot;WY_tree_VOLCFNET_live_FORTYPNM_STDSZNM_forestland_rawdata_modMA_mase_greg_unit_totest.csv&quot;
+##  [9] &quot;WY_tree_VOLCFNET_live_FORTYPNM_STDSZNM_forestland_rawdata_rowest.csv&quot;                     
+## [10] &quot;WY_tree_VOLCFNET_live_FORTYPNM_STDSZNM_forestland_rawdata_totest.csv&quot;                     
+## [11] &quot;WY_tree_VOLCFNET_live_FORTYPNM_STDSZNM_forestland_rawdata_unit_colest.csv&quot;                
+## [12] &quot;WY_tree_VOLCFNET_live_FORTYPNM_STDSZNM_forestland_rawdata_unit_grpest.csv&quot;                
+## [13] &quot;WY_tree_VOLCFNET_live_FORTYPNM_STDSZNM_forestland_rawdata_unit_rowest.csv&quot;                
+## [14] &quot;WY_tree_VOLCFNET_live_FORTYPNM_STDSZNM_forestland_rawdata_unit_totest.csv&quot;</code></pre>
+</details>
+</details>
+</div>
+<div id="example-10-number-of-live-trees-by-species-wyoming-2011-2013" class="section level4">
+<h4>Example 10: Number of live trees by species, Wyoming, 2011-2013</h4>
+<details>
+<summary>
+View Example
+</summary>
+<p>We can use tree domain in estimation output rows:</p>
+<div class="sourceCode" id="cb134"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb134-1"><a href="#cb134-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of live trees (at least 1 inch diameter) by species</span></span>
+<span id="cb134-2"><a href="#cb134-2" aria-hidden="true" tabindex="-1"></a>tree5 <span class="ot">&lt;-</span> <span class="fu">modMAtree</span>(</span>
+<span id="cb134-3"><a href="#cb134-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">MApopdat =</span> MApopdat,         <span class="co"># pop - population calculations</span></span>
+<span id="cb134-4"><a href="#cb134-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">MAmethod =</span> <span class="st">&quot;greg&quot;</span>,           <span class="co"># est - model-assisted method</span></span>
+<span id="cb134-5"><a href="#cb134-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">landarea =</span> <span class="st">&quot;FOREST&quot;</span>,         <span class="co"># est - forest land filter</span></span>
+<span id="cb134-6"><a href="#cb134-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">estvar =</span> <span class="st">&quot;TPA_UNADJ&quot;</span>,               <span class="co"># est - number of trees per acre </span></span>
+<span id="cb134-7"><a href="#cb134-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">estvar.filter =</span> <span class="st">&quot;STATUSCD == 1&quot;</span>,    <span class="co"># est - live trees only</span></span>
+<span id="cb134-8"><a href="#cb134-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">rowvar =</span> <span class="st">&quot;SPCD&quot;</span>,             <span class="co"># est - row domain</span></span>
+<span id="cb134-9"><a href="#cb134-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">returntitle =</span> <span class="cn">TRUE</span>,          <span class="co"># out - return title information</span></span>
+<span id="cb134-10"><a href="#cb134-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">table_opts =</span> <span class="fu">table_options</span>(    </span>
+<span id="cb134-11"><a href="#cb134-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">row.FIAname =</span> <span class="cn">TRUE</span>,          <span class="co"># est - row domain names</span></span>
+<span id="cb134-12"><a href="#cb134-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">allin1 =</span> <span class="cn">FALSE</span>               <span class="co"># out - return output with est and pse</span></span>
+<span id="cb134-13"><a href="#cb134-13" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb134-14"><a href="#cb134-14" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div>
+<p>We can also look at the output list and estimates again:</p>
+<div class="sourceCode" id="cb135"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb135-1"><a href="#cb135-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Look at output list</span></span>
+<span id="cb135-2"><a href="#cb135-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(tree5)</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## [1] &quot;est&quot;      &quot;titlelst&quot; &quot;raw&quot;      &quot;statecd&quot;  &quot;invyr&quot;</code></pre>
+</details>
+<div class="sourceCode" id="cb137"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb137-1"><a href="#cb137-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Estimate and percent sampling error of estimate</span></span>
+<span id="cb137-2"><a href="#cb137-2" aria-hidden="true" tabindex="-1"></a>tree5<span class="sc">$</span>est</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##            Species    Estimate Percent Sampling Error
+## 1    subalpine fir  67863340.4                  29.32
+## 2 Engelmann spruce  50423486.8                  29.88
+## 3   lodgepole pine 182515829.5                  18.92
+## 4      limber pine   4546777.7                  88.44
+## 5      Douglas-fir  24883447.6                  73.23
+## 6    quaking aspen  11295394.2                  72.77
+## 7            Total 341528276.1                  13.13</code></pre>
+</details>
+</details>
+</div>
+<div id="example-11-number-of-live-trees-plus-seedlings-by-species-wyoming-2011-2013" class="section level4">
+<h4>Example 11: Number of live trees (plus seedlings) by species,
+Wyoming, 2011-2013</h4>
+<details>
+<summary>
+View Example
+</summary>
+<p>We can also add seedlings.</p>
+<p>Note: seedling data are only available for number of trees (estvar =
+TPA_UNADJ).</p>
+<p>Note: must include seedling data in population data calculations.</p>
+<div class="sourceCode" id="cb139"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb139-1"><a href="#cb139-1" aria-hidden="true" tabindex="-1"></a>MApopdat_seed <span class="ot">&lt;-</span> <span class="fu">modMApop</span>(<span class="at">popTabs =</span> <span class="fu">list</span>(<span class="at">tree =</span> WYtree,</span>
+<span id="cb139-2"><a href="#cb139-2" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">cond =</span> WYcond,</span>
+<span id="cb139-3"><a href="#cb139-3" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">seed =</span> WYseed),</span>
+<span id="cb139-4"><a href="#cb139-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">pltassgn =</span> WYpltassgn,</span>
+<span id="cb139-5"><a href="#cb139-5" aria-hidden="true" tabindex="-1"></a>                     <span class="at">auxdat =</span> modeldat)</span></code></pre></div>
+<div class="sourceCode" id="cb140"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb140-1"><a href="#cb140-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of live trees by species, including seedlings</span></span>
+<span id="cb140-2"><a href="#cb140-2" aria-hidden="true" tabindex="-1"></a>tree6 <span class="ot">&lt;-</span> <span class="fu">modMAtree</span>(</span>
+<span id="cb140-3"><a href="#cb140-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">MApopdat =</span> MApopdat_seed,         <span class="co"># pop - population calculations</span></span>
+<span id="cb140-4"><a href="#cb140-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">MAmethod =</span> <span class="st">&quot;greg&quot;</span>,           <span class="co"># est - model-assisted method</span></span>
+<span id="cb140-5"><a href="#cb140-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">estseed =</span> <span class="st">&quot;add&quot;</span>,             <span class="co"># est - add seedling data</span></span>
+<span id="cb140-6"><a href="#cb140-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">landarea =</span> <span class="st">&quot;FOREST&quot;</span>,         <span class="co"># est - forest land filter</span></span>
+<span id="cb140-7"><a href="#cb140-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">estvar =</span> <span class="st">&quot;TPA_UNADJ&quot;</span>,               <span class="co"># est - number of trees per acre </span></span>
+<span id="cb140-8"><a href="#cb140-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">estvar.filter =</span> <span class="st">&quot;STATUSCD == 1&quot;</span>,    <span class="co"># est - live trees only</span></span>
+<span id="cb140-9"><a href="#cb140-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">rowvar =</span> <span class="st">&quot;SPCD&quot;</span>,             <span class="co"># est - row domain</span></span>
+<span id="cb140-10"><a href="#cb140-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">returntitle =</span> <span class="cn">TRUE</span>,          <span class="co"># out - return title information</span></span>
+<span id="cb140-11"><a href="#cb140-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">table_opts =</span> <span class="fu">table_options</span>(</span>
+<span id="cb140-12"><a href="#cb140-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">row.FIAname =</span> <span class="cn">TRUE</span>,          <span class="co"># est - row domain names</span></span>
+<span id="cb140-13"><a href="#cb140-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">allin1 =</span> <span class="cn">FALSE</span>)              <span class="co"># out - return output with est and pse</span></span>
+<span id="cb140-14"><a href="#cb140-14" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div>
+<p>And again we can look at our outputs and compare estimates:</p>
+<div class="sourceCode" id="cb141"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb141-1"><a href="#cb141-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Look at output list</span></span>
+<span id="cb141-2"><a href="#cb141-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(tree6)</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>## [1] &quot;est&quot;      &quot;titlelst&quot; &quot;raw&quot;      &quot;statecd&quot;  &quot;invyr&quot;</code></pre>
+</details>
+<div class="sourceCode" id="cb143"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb143-1"><a href="#cb143-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Estimate and percent sampling error of estimate</span></span>
+<span id="cb143-2"><a href="#cb143-2" aria-hidden="true" tabindex="-1"></a>tree6<span class="sc">$</span>est</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##            Species    Estimate Percent Sampling Error
+## 1    subalpine fir 393526597.1                  23.98
+## 2 Engelmann spruce 109946165.6                  33.08
+## 3   lodgepole pine 250563090.6                  18.13
+## 4      limber pine  39217057.2                  90.57
+## 5      Douglas-fir    49781891                  79.39
+## 6    quaking aspen 105247371.8                  61.16
+## 7            Total 948282173.2                     16</code></pre>
+</details>
+<div class="sourceCode" id="cb145"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb145-1"><a href="#cb145-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Compare estimates with and without seedlings</span></span>
+<span id="cb145-2"><a href="#cb145-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(tree5<span class="sc">$</span>est)</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##            Species    Estimate Percent Sampling Error
+## 1    subalpine fir  67863340.4                  29.32
+## 2 Engelmann spruce  50423486.8                  29.88
+## 3   lodgepole pine 182515829.5                  18.92
+## 4      limber pine   4546777.7                  88.44
+## 5      Douglas-fir  24883447.6                  73.23
+## 6    quaking aspen  11295394.2                  72.77</code></pre>
+</details>
+<div class="sourceCode" id="cb147"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb147-1"><a href="#cb147-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(tree6<span class="sc">$</span>est)</span></code></pre></div>
+<details>
+<summary>
+output
+</summary>
+<pre><code>##            Species    Estimate Percent Sampling Error
+## 1    subalpine fir 393526597.1                  23.98
+## 2 Engelmann spruce 109946165.6                  33.08
+## 3   lodgepole pine 250563090.6                  18.13
+## 4      limber pine  39217057.2                  90.57
+## 5      Douglas-fir    49781891                  79.39
+## 6    quaking aspen 105247371.8                  61.16</code></pre>
+</details>
+</details>
+<!-- #### Example 11: Number of seedlings by species, Wyoming, 2011-2013 -->
+<!-- Of course, we can also look at *only* seedlings. -->
+<!-- Note: seedling data are only available for number of trees (estvar = TPA_UNADJ). -->
+<!-- Note: must include seedling data in population data calculations. -->
+<!-- ```{r} -->
+<!-- ## Number of live trees seedlings by species -->
+<!-- tree7 <- modMAtree( -->
+<!--     MApopdat = MApopdat_seed,         # pop - population calculations -->
+<!--     MAmethod = "greg",           # est - model-assisted method -->
+<!--     estseed = "only",            # est - add seedling data -->
+<!--     landarea = "FOREST",         # est - forest land filter -->
+<!--     estvar = "TPA_UNADJ",        # est - number of trees per acre  -->
+<!--     rowvar = "SPCD",             # est - row domain -->
+<!--     returntitle = TRUE,          # out - return title information -->
+<!--     table_opts = table_options( -->
+<!--       row.FIAname = TRUE,          # est - row domain names -->
+<!--       allin1 = FALSE               # out - return output with est and pse -->
+<!--       ) -->
+<!--     ) -->
+<!-- ``` -->
+<!-- And again we can look at our outputs and compare estimates: -->
+<!-- ```{r} -->
+<!-- ## Look at output list -->
+<!-- names(tree7) -->
+<!-- ## Estimate and percent sampling error of estimate -->
+<!-- tree7$est -->
+<!-- ## Compare estimates with, without, and only seedlings -->
+<!-- head(tree5$est) -->
+<!-- head(tree6$est) -->
+<!-- head(tree7$est) -->
+<!-- ``` -->
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

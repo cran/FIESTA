@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>FIESTA - Spatial Tools</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">FIESTA - Spatial Tools</h1>
+
+
+
+<div id="fiesta-overview" class="section level2">
+<h2><code>FIESTA</code> Overview</h2>
+<p>The R package, <code>FIESTA</code> (Forest Inventory ESTimation and
+Analysis) is a research estimation tool for analysts that work with
+sample-based inventory data from the U.S. Department of Agriculture,
+Forest Service, Forest Inventory and Analysis (FIA) Program to
+accommodate: unique population boundaries, different evaluation time
+periods, customized stratification schemes, non-standard variance
+equations, integration of multi-scale remotely-sensed data and other
+ancillary information, and interaction with other modeling and
+estimation tools from CRAN R’s library of packages. <code>FIESTA</code>
+contains a collection of functions that can access FIA databases,
+summarize and compile plot and spatial data, and generate estimates with
+associated sampling errors.</p>
+<p>Functions are organized by type or objective and are named with a
+corresponding prefix:</p>
+<p><strong>Core Functions</strong></p>
+<ul>
+<li>Database tools (<code>DB</code>) - functions for querying and
+extracting data from FIA’s national database.</li>
+<li>Data tools (<code>dat</code>) - functions for summarizing and
+exploring FIA data.</li>
+<li>Spatial tools (<code>sp</code>) - functions for manipulating and
+summarizing spatial data.</li>
+</ul>
+<p><strong>Estimation Modules</strong></p>
+<ul>
+<li>Green-Book (<code>GB</code>) - functions for FIA’s standard
+‘Green-Book’ estimators.</li>
+<li>Photo-Based (<code>PB</code>) - functions for supplementary
+photo-based estimators.</li>
+<li>Small Area (<code>SA</code>) - functions for integration with
+available small area estimators (SAE).</li>
+<li>Model-Assisted (<code>MA</code>) - functions for integration with
+available Model-Assisted estimators.</li>
+</ul>
+<p><strong>Analysis Tools</strong></p>
+<ul>
+<li>Analysis tools (<code>an</code>) - wrapper functions for
+stream-lining estimation processes.</li>
+</ul>
+</div>
+<div id="overview-of-fiesta-spatial-sp-tools" class="section level2">
+<h2>Overview of <code>FIESTA</code> spatial (<code>sp</code>) tools</h2>
+<p><code>FIESTA</code>’s spatial tools allow for summarizing and
+manipulating spatial data for use in <code>FIESTA</code>’s estimation
+modules.</p>
+<table>
+<colgroup>
+<col width="18%" />
+<col width="81%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>FUNCTION</th>
+<th>DESCRIPTION</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#spImportSpatial">spImportSpatial()</a></td>
+<td>Imports a spatial layer to a sf object.</td>
+</tr>
+<tr class="even">
+<td><a href="#spExportSpatial">spExportSpatial()</a></td>
+<td>Exports a sf object to a spatial layer.</td>
+</tr>
+<tr class="odd">
+<td><a href="#spMakeSpatialPoints">spMakeSpatialPoints()</a></td>
+<td>Generates an S4 SpatialPoints object from X/Y coordinates.</td>
+</tr>
+<tr class="even">
+<td><a href="#spReprojectSpatial">spReprojectSpatial()</a></td>
+<td>Reprojects a sf object.</td>
+</tr>
+<tr class="odd">
+<td><a href="#spClipPoint">spClipPoint()</a></td>
+<td>Subset points with a Spatial polygon layer.</td>
+</tr>
+<tr class="even">
+<td><a href="#spClipPoly">spClipPoly()</a></td>
+<td>Subset Spatial polygons layer with another Spatial polygons
+layer.</td>
+</tr>
+<tr class="odd">
+<td><a href="#spClipRast">spClipRast()</a></td>
+<td>Subset raster layer with a Spatial polygons layer.</td>
+</tr>
+<tr class="even">
+<td><a href="#spExtractPoly">spExtractPoly()</a></td>
+<td>Extracts point attribute values from Spatial polygons layer(s).</td>
+</tr>
+<tr class="odd">
+<td><a href="#spExtractRast">spExtractRast()</a></td>
+<td>Extracts point attribute values from raster layer(s).</td>
+</tr>
+<tr class="even">
+<td><a href="#spGetXY">spGetXY()</a></td>
+<td>Wrapper: Extracts XY coordinates and subsets to boundary.</td>
+</tr>
+<tr class="odd">
+<td><a href="#spGetXY">spGetPlots()</a></td>
+<td>Wrapper: Extracts plot data and subsets to boundary.</td>
+</tr>
+<tr class="even">
+<td><a href="#spGetAuxiliary">spGetAuxiliary()</a></td>
+<td>Wrapper: Extracts point attribute values, area for estimation
+unit(s), and zonal statitics for strata predictor layers.</td>
+</tr>
+<tr class="odd">
+<td><a href="#spGetEstUnit">spGetEstUnit()</a></td>
+<td>Wrapper: Extracts point attribute values and area for estimation
+unit(s).</td>
+</tr>
+<tr class="even">
+<td><a href="#spGetStrata">spGetStrata()</a></td>
+<td>Wrapper: Extracts point attribute values, area for estimation
+unit(s), and pixel counts for strata spatial layer.</td>
+</tr>
+<tr class="odd">
+<td><a href="#spUnionPoly">spUnionPoly()</a></td>
+<td>Generates one Spatial polygons object from two Spatial polygons
+layers.</td>
+</tr>
+<tr class="even">
+<td><a href="#spZonalRast">spZonalRast()</a></td>
+<td>Extracts summary statistics by polygon (i.e., zone) for a
+raster.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="objective-of-tutorial" class="section level2">
+<h2>Objective of tutorial</h2>
+<p>The objective of this tutorial is to demonstrate how to use
+<code>FIESTA</code>’s spatial tools for manipulating and summarizing
+spatial data. The examples use data from three inventory years of field
+measurements in the state of Wyoming, from FIADB_1.7.2.00, last updated
+June 20, 2018, downloaded on June 25, 2018 and stored as internal data
+objects in <code>FIESTA</code>.</p>
+</div>
+<div id="example-data---wyoming-wy-inventory-years-2011-2012" class="section level2">
+<h2>Example data - Wyoming (WY), Inventory Years 2011-2012</h2>
+<table>
+<colgroup>
+<col width="12%" />
+<col width="87%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Data Frame</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>WYplt</td>
+<td>WY plot-level data</td>
+</tr>
+<tr class="even">
+<td>WYcond</td>
+<td>WY condition-level data</td>
+</tr>
+<tr class="odd">
+<td>WYtree</td>
+<td>WY tree-level data</td>
+</tr>
+</tbody>
+</table>
+<table>
+<colgroup>
+<col width="27%" />
+<col width="72%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>External data</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>WYbighorn_adminbnd.shp</td>
+<td>Polygon shapefile of WY Bighorn National Forest Administrative
+boundary*</td>
+</tr>
+<tr class="even">
+<td>WYbighorn_districtbnd.shp</td>
+<td>Polygon shapefile of WY Bighorn National Forest District
+boundaries**</td>
+</tr>
+<tr class="odd">
+<td>WYbighorn_forest_nonforest_250m.tif</td>
+<td>GeoTIFF raster of predicted forest/nonforest (1/0) for
+stratification***</td>
+</tr>
+<tr class="even">
+<td>WYbighorn_dem_250m.img</td>
+<td>Erdas Imagine raster of elevation change, in meters****</td>
+</tr>
+</tbody>
+</table>
+<p>*USDA Forest Service, Automated Lands Program (ALP). 2018.
+S_USA.AdministrativeForest (). Description: An area encompassing all the
+National Forest System lands administered by an administrative unit. The
+area encompasses private lands, other governmental agency lands, and may
+contain National Forest System lands within the proclaimed boundaries of
+another administrative unit. All National Forest System lands fall
+within one and only one Administrative Forest Area.</p>
+<p>**USDA Forest Service, Automated Lands Program (ALP). 2018.
+S_USA.RangerDistrict (<a href="http://data.fs.usda.gov/geodata/edw" class="uri">http://data.fs.usda.gov/geodata/edw</a>). Description: A
+depiction of the boundary that encompasses a Ranger District.</p>
+<p>***Based on MODIS-based classified map resampled from 250m to 500m
+resolution and reclassified from 3 to 2 classes: 1:forest; 2:nonforest.
+Projected in Albers Conical Equal Area, Datum NAD27 (Ruefenacht et
+al. 2008). Clipped to extent of WYbighorn_adminbnd.shp.</p>
+<p>****USGS National Elevation Dataset (NED), resampled from 30m
+resolution to 250m. Projected in Albers Conical Equal Area, Datum NAD27
+(U.S. Geological Survey 2017). Clipped to boundary of
+WYbighorn_adminbnd.shp.</p>
+<div id="set-up" class="section level3">
+<h3>Set up</h3>
+<p>First, you’ll need to load the <code>FIESTA</code> library:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(FIESTA)</span></code></pre></div>
+<p>Next, you’ll have to load some external data from the
+<code>FIESTA</code> package and set up objects in your <code>R</code>
+global environment:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># File names for external spatial data</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>WYbhfn <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                      <span class="st">&quot;sp_data/WYbighorn_adminbnd.shp&quot;</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                      <span class="at">package =</span> <span class="st">&quot;FIESTA&quot;</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>WYbhdistfn <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                          <span class="st">&quot;sp_data/WYbighorn_districtbnd.shp&quot;</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                          <span class="at">package =</span> <span class="st">&quot;FIESTA&quot;</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>WYbhdist.att <span class="ot">&lt;-</span> <span class="st">&quot;DISTRICTNA&quot;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>fornffn <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                       <span class="st">&quot;sp_data/WYbighorn_forest_nonforest_250m.tif&quot;</span>,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                       <span class="at">package =</span> <span class="st">&quot;FIESTA&quot;</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>demfn <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>,</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>                     <span class="st">&quot;sp_data/WYbighorn_dem_250m.img&quot;</span>,</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>                     <span class="at">package =</span> <span class="st">&quot;FIESTA&quot;</span>)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Other spatial layers used for examples, extracted using the raster package, getData function.</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># County-level boundaries for USA and subset for Wyoming (Note: must have internet connection)</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>USAco <span class="ot">&lt;-</span> raster<span class="sc">::</span><span class="fu">getData</span>(<span class="st">&quot;GADM&quot;</span>, <span class="at">country =</span> <span class="st">&quot;USA&quot;</span>, <span class="at">level =</span> <span class="dv">2</span>)    </span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>WYco <span class="ot">&lt;-</span> USAco[USAco<span class="sc">$</span>NAME_1 <span class="sc">==</span> <span class="st">&quot;Wyoming&quot;</span>,]</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(USAco<span class="sc">@</span>data)</span></code></pre></div>
+<p>Finally, you’ll need to set up an “outfolder”. This is just a file
+path to a folder where you’d like <code>FIESTA</code> to send your data
+output. For this vignette, we have saved our outfolder file path as the
+<code>outfolder</code> object.</p>
+</div>
+</div>
+<div id="examples" class="section level2">
+<h2>Examples</h2>
+<p>In the remainder of this vignette, we provide examples of using the
+functions in the <code>sp</code> portion of <code>FIESTA</code>.</p>
+<div id="spimportspatial" class="section level3">
+<h3><a name="spImportSpatial"></a><code>spImportSpatial()</code></h3>
+<p>The <code>spImportSpatial</code> function imports a spatial layer
+(e.g., ESRI Shapefile) to a simple feature (<code>sf</code>) object.</p>
+<details>
+<summary>
+View Example
+</summary>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Import external data shapefiles</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>WYbh <span class="ot">&lt;-</span> <span class="fu">spImportSpatial</span>(WYbhfn)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>WYbhdist <span class="ot">&lt;-</span> <span class="fu">spImportSpatial</span>(WYbhdistfn)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Display boundary</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(WYbhdist), <span class="at">border=</span><span class="st">&quot;blue&quot;</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(WYbh), <span class="at">add=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+</details>
+</div>
+<div id="spexportspatial" class="section level3">
+<h3><a name="spExportSpatial"></a><code>spExportSpatial()</code></h3>
+<p>The <code>spExportSpatial</code> function exports an <code>sf</code>
+object.</p>
+<details>
+<summary>
+View Example
+</summary>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Export Spatial Polygons layer to a shapefile</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">spExportSpatial</span>(WYbh, </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">savedata_opts =</span> <span class="fu">list</span>(<span class="at">out_dsn =</span> <span class="st">&quot;WYbh.shp&quot;</span>, </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">outfolder =</span> outfolder, </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">overwrite_dsn =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>                )</span></code></pre></div>
+</details>
+</div>
+<div id="spmakespatialpoints" class="section level3">
+<h3><a name="spMakeSpatialPoints"></a><code>spMakeSpatialPoints()</code></h3>
+<p>The <code>spMakeSpatialPoints</code> function generates an
+<code>sf</code> points object with a defined projection. Note: The
+coordinate reference system (crs) is: <code>prj = &quot;longlat&quot;</code> and
+<code>datum = &quot;NAD83&quot;</code>.</p>
+<details>
+<summary>
+View Example
+</summary>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(WYplt)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>WYspplt <span class="ot">&lt;-</span> <span class="fu">spMakeSpatialPoints</span>(<span class="at">xyplt =</span> WYplt, </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                               <span class="at">xy.uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                               <span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                               <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>, </span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                               <span class="at">prj =</span> <span class="st">&quot;longlat&quot;</span>, </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>                               <span class="at">datum =</span> <span class="st">&quot;NAD83&quot;</span>)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(WYspplt)</span></code></pre></div>
+<p>We can also use EPSG code with <code>spMakeSpatialPoints</code>.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>WYspplt <span class="ot">&lt;-</span> <span class="fu">spMakeSpatialPoints</span>(<span class="at">xyplt =</span> WYplt, </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                               <span class="at">xy.uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                               <span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                               <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>, </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>                               <span class="at">xy.crs =</span> <span class="dv">4269</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>                               )</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>WYspplt </span></code></pre></div>
+<p>To view our output we can run the following code.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Display output</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(WYbhdist))</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(WYspplt), <span class="at">add=</span><span class="cn">TRUE</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="do">## </span><span class="al">NOTE</span><span class="do">: To display multiple layers, all layers must be in the same coordinate system.</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(<span class="fu">list</span>(WYbh, WYbhdist, WYspplt), sf<span class="sc">::</span>st_crs)</span></code></pre></div>
+<p>And finally we export the spatial points to an outfolder.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>WYspplt <span class="ot">&lt;-</span> <span class="fu">spMakeSpatialPoints</span>(<span class="at">xyplt =</span> WYplt,</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                               <span class="at">xy.uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                               <span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                               <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                               <span class="at">xy.crs =</span> <span class="dv">4269</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>                               <span class="at">exportsp =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>                               <span class="at">savedata_opts =</span> <span class="fu">list</span>(</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">out_dsn =</span> <span class="st">&quot;spplt&quot;</span>,</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">out_fmt =</span> <span class="st">&quot;shp&quot;</span>,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">outfolder =</span> outfolder,</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">out_layer =</span> <span class="st">&quot;WYplots&quot;</span>,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">overwrite_layer =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>                               )</span></code></pre></div>
+</details>
+</div>
+<div id="spreprojectvector" class="section level3">
+<h3><a name="spReprojectVector"></a><code>spReprojectVector()</code></h3>
+<p>The <code>spReprojectVector</code> function reprojects a spatial
+vector layer. Note: The layer must have a defined coordinate reference
+system (test using <code>sf::st_crs</code>).</p>
+<details>
+<summary>
+View Example
+</summary>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>sf<span class="sc">::</span><span class="fu">st_crs</span>(WYspplt)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>prj <span class="ot">&lt;-</span> <span class="st">&quot;+proj=utm +zone=12 +ellps=GRS80 +datum=NAD83 +units=m +no_defs&quot;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>WYspplt.utm12 <span class="ot">&lt;-</span> <span class="fu">spReprojectVector</span>(<span class="at">layer =</span> WYspplt, </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">crs.new =</span> prj)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Check results</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>sf<span class="sc">::</span><span class="fu">st_crs</span>(WYspplt.utm12)</span></code></pre></div>
+</details>
+</div>
+<div id="spclippoint" class="section level3">
+<h3><a name="spClipPoint"></a><code>spClipPoint()</code></h3>
+<p>The <code>spClipPoint</code> function subsets
+<code>SpatialPoints</code> or point file with a Spatial polygon
+boundary.</p>
+<details>
+<summary>
+View Example
+</summary>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Get points within Bighorn National Forest boundary (project on the fly)</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>WYbhptslst <span class="ot">&lt;-</span> <span class="fu">spClipPoint</span>(<span class="at">xyplt =</span> WYplt, </span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                          <span class="at">uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>                          <span class="at">clippolyv =</span> WYbh, </span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>                          <span class="at">spMakeSpatial_opts=</span><span class="fu">list</span>(<span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>, </span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">prj =</span> <span class="st">&quot;longlat&quot;</span>, </span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">datum =</span> <span class="st">&quot;NAD83&quot;</span>)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>                          )</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>WYbhptslst <span class="ot">&lt;-</span> <span class="fu">spClipPoint</span>(<span class="at">xyplt =</span> WYplt, </span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>                          <span class="at">uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>                          <span class="at">clippolyv =</span> WYbh, </span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>                          <span class="at">savedata =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>                          <span class="at">exportsp =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>                          <span class="at">spMakeSpatial_opts=</span><span class="fu">list</span>(<span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>, </span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">prj =</span> <span class="st">&quot;longlat&quot;</span>, </span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>                                                  <span class="at">datum =</span> <span class="st">&quot;NAD83&quot;</span>), </span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>                          <span class="at">savedata_opts =</span> <span class="fu">list</span>(<span class="at">outfolder=</span>outfolder, </span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>                                               <span class="at">out_layer =</span> <span class="st">&quot;WYbh&quot;</span>)</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>                          )</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(WYbhptslst)</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>WYbhspplt <span class="ot">&lt;-</span> WYbhptslst<span class="sc">$</span>clip_xyplt</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>WYbhprj <span class="ot">&lt;-</span> WYbhptslst<span class="sc">$</span>clip_polyv</span></code></pre></div>
+<p>Next we check and display the output:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>WYbhspplt</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(WYbhprj), <span class="at">border=</span><span class="st">&quot;red&quot;</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(WYbhspplt), <span class="at">add=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<p>Note: If the projection of spplt is not the same as the points layer,
+the points layer will be reprojected to the same projection as
+<code>clippolyv</code> (See notes in help file for more info).</p>
+<p>Now we generate a sf object first, then clip <code>sf</code> points
+with the <code>spClipPoint</code> function:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>WYspplt <span class="ot">&lt;-</span> <span class="fu">spMakeSpatialPoints</span>(<span class="at">xyplt =</span> WYplt, </span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>                               <span class="at">xy.uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>                               <span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>                               <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>, </span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>                               <span class="at">xy.crs =</span> <span class="dv">4269</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>WYbhptslst <span class="ot">&lt;-</span> <span class="fu">spClipPoint</span>(<span class="at">xyplt =</span> WYspplt, </span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>                          <span class="at">uniqueid =</span> <span class="st">&quot;CN&quot;</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>                          <span class="at">clippolyv =</span> WYbh)</span></code></pre></div>
+<p>We can also subset other tales with clipped points.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>WYbhptslst <span class="ot">&lt;-</span> <span class="fu">spClipPoint</span>(<span class="at">xyplt =</span> WYspplt, </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>                          <span class="at">uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                          <span class="at">clippolyv =</span> WYbh, </span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>                          <span class="at">othertabnms =</span> <span class="fu">c</span>(<span class="st">&quot;WYcond&quot;</span>, <span class="st">&quot;WYtree&quot;</span>))</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(WYbhptslst)</span></code></pre></div>
+<p>Next, we can export clipped points.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Export clipped points</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">spExportSpatial</span>(WYbhspplt, </span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">savedata_opts =</span> <span class="fu">list</span>(<span class="at">out_layer =</span> <span class="st">&quot;WYbhpts&quot;</span>, </span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">outfolder =</span> outfolder, </span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">overwrite_layer =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>                )</span></code></pre></div>
+<p>Finally, we can get points within Bighorn National Forest boundary
+(project on the fly) and save to an outfolder.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>WYbhptslst <span class="ot">&lt;-</span> <span class="fu">spClipPoint</span>(<span class="at">xyplt =</span> WYplt, </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>                          <span class="at">uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                          <span class="at">clippolyv =</span> WYbh, </span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                          <span class="at">othertabnms =</span> <span class="fu">c</span>(<span class="st">&quot;WYcond&quot;</span>, <span class="st">&quot;WYtree&quot;</span>), </span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>                          <span class="at">exportsp =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>                          <span class="at">spMakeSpatial_opts=</span><span class="fu">list</span>(<span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>                                        <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>, </span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>                                        <span class="at">prj =</span> <span class="st">&quot;longlat&quot;</span>, </span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>                                        <span class="at">datum =</span> <span class="st">&quot;NAD83&quot;</span>), </span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>                          <span class="at">savedata_opts =</span> <span class="fu">list</span>(</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>                                        <span class="at">outfolder =</span> outfolder, </span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>                                        <span class="at">overwrite_layer =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>                                        <span class="at">outfn.pre =</span> <span class="st">&quot;clip&quot;</span>)</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>                          )</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(WYbhptslst)</span></code></pre></div>
+</details>
+</div>
+<div id="spclippoly" class="section level3">
+<h3><a name="spClipPoly"></a><code>spClipPoly()</code></h3>
+The <code>spClipPoly</code> function clips (intersects) a polygon vector
+layer with another polygon vector layer.
+<details>
+<summary>
+View Example
+</summary>
+<p>We first subsect the USAco <code>SpatialPolygons</code> layer with
+<code>WYbighorn</code>. Note: you must download USAco from the
+<code>raster</code> package. See the “Set Up” section above.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>WYbhco <span class="ot">&lt;-</span> <span class="fu">spClipPoly</span>(<span class="at">polyv =</span> USAco,</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>                             <span class="at">clippolyv =</span> WYbh)</span></code></pre></div>
+<p>We can now check and display <code>WYbighorn_co</code> with
+labels.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(WYbhco)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(WYbhco[<span class="st">&#39;NAME_2&#39;</span>]), <span class="at">col =</span> <span class="fu">sf.colors</span>(<span class="fu">nrow</span>(WYbhco)))</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>coords <span class="ot">&lt;-</span> <span class="fu">st_coordinates</span>(<span class="fu">st_centroid</span>(<span class="fu">st_geometry</span>(WYbhco)))</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(coords[,<span class="st">&quot;X&quot;</span>], coords[,<span class="st">&quot;Y&quot;</span>], WYbhco[[<span class="st">&quot;NAME_2&quot;</span>]])</span></code></pre></div>
+</details>
+</div>
+<div id="spcliprast" class="section level3">
+<h3><a name="spClipRast"></a><code>spClipRast()</code></h3>
+<p>The <code>spClipRast</code> function subsets a raster to a polygon
+extent or boundary.</p>
+<details>
+<summary>
+View Example
+</summary>
+<p>First, we subset the strata layer with the Medicine Wheel district
+boundary</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>WYbhdist</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>WYbhMW <span class="ot">&lt;-</span> WYbhdist[WYbhdist<span class="sc">$</span>DISTRICTNA <span class="sc">==</span> <span class="st">&quot;Medicine Wheel Ranger District&quot;</span>,]</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(WYbhdist))</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(WYbhMW), <span class="at">border=</span><span class="st">&quot;red&quot;</span>, <span class="at">add=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<p>Next, we can clip the raster. Note: If the projection of
+<code>polyv</code> is not the same as <code>rast</code>,
+<code>polyv</code> will by reprojected to the same projection as
+<code>rast</code> before clipping (See note in the help file for more
+details).</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>WYbhMW.fornf <span class="ot">&lt;-</span> <span class="fu">spClipRast</span>(fornffn, </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>                           <span class="at">clippolyv =</span> WYbhMW, </span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>                           <span class="at">outfolder =</span> outfolder)</span></code></pre></div>
+<p>Finally, we display the results:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>WYbhMWprj <span class="ot">&lt;-</span> <span class="fu">crsCompare</span>(WYbhMW, </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">rasterInfo</span>(WYbhMW.fornf)<span class="sc">$</span>crs)<span class="sc">$</span>x</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>raster<span class="sc">::</span><span class="fu">plot</span>(raster<span class="sc">::</span><span class="fu">raster</span>(WYbhMW.fornf))</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(WYbhMWprj), </span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">border =</span> <span class="st">&quot;red&quot;</span>, </span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+</details>
+</div>
+<div id="spextractpoly" class="section level3">
+<h3><a name="spExtractPoly"></a><code>spExtractPoly()</code></h3>
+<p>The <code>spExtractPoly</code> function subsets a
+<code>SpatialPolygons</code> layer with another
+<code>SpatialPolygons</code> layer.</p>
+<details>
+<summary>
+View Example
+</summary>
+<p>First, we extract polygon attributes from <code>WYbighorn</code> to
+<code>WYpts</code>, keeping <code>NULL</code> values. Note: If the
+projection of <code>spplt</code> is not the same as the
+<code>SpatialPoints</code>, the <code>SpatialPoints</code> layer will be
+reprojected to the same projection as <code>clippolyv</code> before the
+evaluation points (See the note in help file for more details).</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>extpolylst <span class="ot">&lt;-</span> <span class="fu">spExtractPoly</span>(WYspplt, </span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>                            <span class="at">xy.uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>                            <span class="at">polyvlst =</span> WYbhdist)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>WYspplt_bh <span class="ot">&lt;-</span> extpolylst<span class="sc">$</span>spxyext</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(WYspplt)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(WYspplt_bh)</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(WYspplt_bh)</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(WYspplt_bh[<span class="st">&quot;DISTRICTNA&quot;</span>], <span class="at">pch =</span> <span class="dv">8</span>)</span></code></pre></div>
+<p>Next we can extract a subset of polygon attributes from
+<code>WYbighorn</code> to <code>WYpts</code>, not keeping
+<code>NULL</code> values.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>extpolylst <span class="ot">&lt;-</span> <span class="fu">spExtractPoly</span>(WYspplt, </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>                            <span class="at">xy.uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>                            <span class="at">polyvlst =</span> WYbh, </span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>                            <span class="at">polyvarlst =</span> <span class="fu">c</span>(<span class="st">&quot;FORESTNUMB&quot;</span>, <span class="st">&quot;FORESTNAME&quot;</span>), </span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>                            <span class="at">keepNA =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>WYspplt_bh2 <span class="ot">&lt;-</span> extpolylst<span class="sc">$</span>spxyext</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(WYspplt)</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(WYspplt_bh2)</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(WYspplt_bh2)</span></code></pre></div>
+</details>
+</div>
+<div id="spextractrast" class="section level3">
+<h3><a name="spExtractRast"></a><code>spExtractRast()</code></h3>
+<p>The <code>spExtractRast</code> function subsets a
+<code>SpatialPolygons</code> layer with another
+<code>SpatialPolygons</code> layer.</p>
+<details>
+<summary>
+View Example
+</summary>
+<p>We can extract raster values from <code>WYdem</code> to
+<code>WYpts</code>, not keeping <code>NULL</code> values.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>extrastlst <span class="ot">&lt;-</span> <span class="fu">spExtractRast</span>(WYspplt, </span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>                            <span class="at">rastlst =</span> <span class="fu">c</span>(fornffn, demfn), </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>                            <span class="at">xy.uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>                            <span class="at">keepNA =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>WYspplt_dem <span class="ot">&lt;-</span> extrastlst<span class="sc">$</span>sppltext</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(WYspplt)</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(WYspplt_dem)</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(WYspplt_dem)</span></code></pre></div>
+</details>
+</div>
+<div id="spgetauxiliary" class="section level3">
+<h3><a name="spGetAuxiliary"></a><code>spGetAuxiliary()</code></h3>
+<p>The <code>spGetAuxiliary</code> function extracts data and zonal
+statistics for model-assisted or model-based (small area) estimation.
+The major steps are as follows:</p>
+<ol style="list-style-type: decimal">
+<li>Check parameters<br />
+</li>
+<li>Extract point values from <code>dunit_layer</code><br />
+</li>
+<li>Set up output data structures<br />
+</li>
+<li>Extract point values and get zonal statistics from continuous raster
+layers<br />
+</li>
+<li>Extract point values and get zonal statistics from categorical
+raster layers<br />
+</li>
+<li>Get total acres from <code>domlayer</code> (if
+<code>areacalc = TRUE</code>)</li>
+</ol>
+<details>
+<summary>
+View Example
+</summary>
+<p>First we generate an <code>sf</code> object from the WY plot data,
+public coordinates (<code>xvar = &quot;LON_PUBLIC&quot;</code>,
+<code>yvar = &quot;LAT_PUBLIC&quot;</code>). Note: the public coordinate
+projection information is: <code>prj = &quot;longlat&quot;</code>,
+<code>datum = &quot;NAD83&quot;</code>.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>WYspplt <span class="ot">&lt;-</span> <span class="fu">spMakeSpatialPoints</span>(<span class="at">xyplt =</span> WYplt, </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>                               <span class="at">xy.uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>                               <span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>                               <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>, </span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>                               <span class="at">xy.crs =</span> <span class="dv">4269</span>)</span></code></pre></div>
+<p>Next, we derive new layers from <code>dem</code>.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(raster)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>dem <span class="ot">&lt;-</span> <span class="fu">raster</span>(demfn)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>slp <span class="ot">&lt;-</span> raster<span class="sc">::</span><span class="fu">terrain</span>(dem, </span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>                       <span class="at">opt =</span> <span class="st">&quot;slope&quot;</span>,</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>                       <span class="at">unit =</span> <span class="st">&quot;degrees&quot;</span>, </span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>                       <span class="at">filename =</span> <span class="fu">paste0</span>(outfolder, <span class="st">&quot;/WYbh_slp.img&quot;</span>), </span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>                       <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>asp <span class="ot">&lt;-</span> raster<span class="sc">::</span><span class="fu">terrain</span>(dem,</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>                       <span class="at">opt =</span> <span class="st">&quot;aspect&quot;</span>, </span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>                       <span class="at">unit =</span> <span class="st">&quot;degrees&quot;</span>, </span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>                       <span class="at">filename =</span> <span class="fu">paste0</span>(outfolder, <span class="st">&quot;/WYbh_asp.img&quot;</span>),</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>                       <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p>Finally, we extract estimation unit and zonal raster statistics
+(i.e., mean).</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>rastlst.cont <span class="ot">&lt;-</span> <span class="fu">c</span>(demfn, slp, asp)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>rastlst.cont.name <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;dem&quot;</span>, <span class="st">&quot;slp&quot;</span>, <span class="st">&quot;asp&quot;</span>)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>rastlst.cat <span class="ot">&lt;-</span> fornffn</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>rastlst.cat.name <span class="ot">&lt;-</span> <span class="st">&quot;fornf&quot;</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>modeldat <span class="ot">&lt;-</span> <span class="fu">spGetAuxiliary</span>(<span class="at">xyplt =</span> WYspplt, </span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>                           <span class="at">uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>                           <span class="at">unit_layer =</span> WYbhfn, </span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>                           <span class="at">unitvar =</span> <span class="cn">NULL</span>, </span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>                           <span class="at">rastlst.cont =</span> rastlst.cont, </span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>                           <span class="at">rastlst.cont.name =</span> rastlst.cont.name, </span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>                           <span class="at">rastlst.cat =</span> rastlst.cat, </span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>                           <span class="at">rastlst.cat.name =</span> rastlst.cat.name, </span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>                           <span class="at">rastlst.cont.stat =</span> <span class="st">&quot;mean&quot;</span>, </span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>                           <span class="at">asptransform =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>                           <span class="at">rast.asp =</span> asp, </span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>                           <span class="at">keepNA =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>                           <span class="at">showext =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>                           <span class="at">savedata =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(modeldat)</span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>pltassgn <span class="ot">&lt;-</span> modeldat<span class="sc">$</span>pltassgn</span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>unitzonal <span class="ot">&lt;-</span> modeldat<span class="sc">$</span>unitzonal</span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>unitvar <span class="ot">&lt;-</span> modeldat<span class="sc">$</span>dunitvar</span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>inputdf <span class="ot">&lt;-</span> modeldat<span class="sc">$</span>inputdf</span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>unitarea <span class="ot">&lt;-</span> modeldat<span class="sc">$</span>unitarea</span>
+<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>areavar <span class="ot">&lt;-</span> modeldat<span class="sc">$</span>areavar</span>
+<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a>inputdf <span class="ot">&lt;-</span> modeldat<span class="sc">$</span>inputdf</span>
+<span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a>prednames <span class="ot">&lt;-</span> modeldat<span class="sc">$</span>prednames</span>
+<span id="cb26-30"><a href="#cb26-30" aria-hidden="true" tabindex="-1"></a>zonalnames <span class="ot">&lt;-</span> modeldat<span class="sc">$</span>zonalnames</span>
+<span id="cb26-31"><a href="#cb26-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-32"><a href="#cb26-32" aria-hidden="true" tabindex="-1"></a>unitvar</span>
+<span id="cb26-33"><a href="#cb26-33" aria-hidden="true" tabindex="-1"></a>areavar</span>
+<span id="cb26-34"><a href="#cb26-34" aria-hidden="true" tabindex="-1"></a>unitzonal</span>
+<span id="cb26-35"><a href="#cb26-35" aria-hidden="true" tabindex="-1"></a>unitarea</span>
+<span id="cb26-36"><a href="#cb26-36" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(pltassgn)</span>
+<span id="cb26-37"><a href="#cb26-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-38"><a href="#cb26-38" aria-hidden="true" tabindex="-1"></a>prednames</span>
+<span id="cb26-39"><a href="#cb26-39" aria-hidden="true" tabindex="-1"></a>zonalnames</span></code></pre></div>
+</details>
+</div>
+<div id="spgetxy" class="section level3">
+<h3><a name="spGetXY"></a><code>spGetXY()</code></h3>
+<p>The <code>spGetXY</code> function extracts XY data within a given
+boundary.</p>
+<details>
+<summary>
+View Example
+</summary>
+<p>We can extract public coordinates within WY Bighorn NF boundary,
+returning spatial (spxy) and nonspatial plot identifiers (pltids).</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>WYbhxy <span class="ot">&lt;-</span> <span class="fu">spGetXY</span>(<span class="at">bnd =</span> WYbhfn,</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">xy_datsource =</span> <span class="st">&quot;datamart&quot;</span>,</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">evalCur =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">returnxy =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(WYbhxy)</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>pltids <span class="ot">&lt;-</span> WYbhxy<span class="sc">$</span>pltids</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(pltids)</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>spxy <span class="ot">&lt;-</span> WYbhxy<span class="sc">$</span>spxy</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(spxy))</span></code></pre></div>
+<p>Or, returning only nonspatial plot identifiers (pltids).</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>WYbhxyids <span class="ot">&lt;-</span> <span class="fu">spGetXY</span>(<span class="at">bnd =</span> WYbhfn,</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">xy_datsource =</span> <span class="st">&quot;datamart&quot;</span>,</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">evalCur =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">returnxy =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(WYbhxyids)</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>pltids <span class="ot">&lt;-</span> WYbhxyids<span class="sc">$</span>pltids</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(pltids)</span></code></pre></div>
+</details>
+</div>
+<div id="spgetplots" class="section level3">
+<h3><a name="spGetPlots"></a><code>spGetPlots()</code></h3>
+<p>The <code>spGetPlots</code> function extracts plot data within a
+given boundary.</p>
+<details>
+<summary>
+View Example
+</summary>
+<p>We can extract public coordinates within WY Bighorn NF boundary.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>WYbhdat <span class="ot">&lt;-</span> <span class="fu">spGetPlots</span>(<span class="at">bnd =</span> WYbhfn, </span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>                      <span class="at">states =</span> <span class="st">&quot;Wyoming&quot;</span>,</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">datsource =</span> <span class="st">&quot;datamart&quot;</span>, </span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>                      <span class="at">evalCur =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>                      <span class="at">istree =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(WYbhdat)</span></code></pre></div>
+</details>
+</div>
+<div id="spgetestunit" class="section level3">
+<h3><a name="spGetEstUnit"></a><code>spGetEstUnit()</code></h3>
+<p>The <code>spGetEstUnit</code> function extracts estimation unit
+values to plots and calculate area by estimation unit.</p>
+<details>
+<summary>
+View Example
+</summary>
+<p>First, we create a <code>SpatialPoints</code> object from
+<code>WYplt</code></p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>WYspplt <span class="ot">&lt;-</span> <span class="fu">spMakeSpatialPoints</span>(<span class="at">xyplt =</span> WYplt, </span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>                               <span class="at">xy.uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>                               <span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>                               <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>, </span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>                               <span class="at">xy.crs =</span> <span class="dv">4269</span>)</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>xyplt <span class="ot">&lt;-</span> WYspplt</span></code></pre></div>
+<div id="by-bighorn-national-forest" class="section level4">
+<h4>By Bighorn National Forest</h4>
+<p>We now get estimation unit acres for Bighorn National Forest.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>unitdat.bh <span class="ot">&lt;-</span> <span class="fu">spGetEstUnit</span>(<span class="at">xyplt =</span> WYplt, </span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>                           <span class="at">uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>                           <span class="at">unit_layer =</span> WYbhfn, </span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>                           <span class="at">spMakeSpatial_opts=</span><span class="fu">list</span>(<span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>                                                   <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>, </span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>                                                   <span class="at">prj =</span> <span class="st">&quot;longlat&quot;</span>, </span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>                                                   <span class="at">datum =</span> <span class="st">&quot;NAD83&quot;</span>)</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>                           )</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(unitdat.bh)</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>unitarea.bh <span class="ot">&lt;-</span> unitdat.bh<span class="sc">$</span>unitarea</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>unitvar.bh <span class="ot">&lt;-</span> unitdat.bh<span class="sc">$</span>unitvar</span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>areavar.bh <span class="ot">&lt;-</span> unitdat.bh<span class="sc">$</span>areavar</span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>unitarea.bh</span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>unitvar.bh</span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>areavar.bh</span></code></pre></div>
+</div>
+<div id="by-bighorn-national-forest-district" class="section level4">
+<h4>By Bighorn National Forest District</h4>
+<p>We now get estimation unit acres and strata information for Bighorn
+National Forest.</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>unitdat.bhdist <span class="ot">&lt;-</span> <span class="fu">spGetEstUnit</span>(<span class="at">xyplt =</span> WYplt, </span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>                               <span class="at">uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>                               <span class="at">unit_layer =</span> WYbhdistfn, </span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>                               <span class="at">unitvar =</span> <span class="st">&quot;DISTRICTNA&quot;</span>, </span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>                               <span class="at">spMakeSpatial_opts=</span><span class="fu">list</span>(<span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>                                                       <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>, </span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>                                                       <span class="at">prj =</span> <span class="st">&quot;longlat&quot;</span>, </span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>                                                       <span class="at">datum =</span> <span class="st">&quot;NAD83&quot;</span>)</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>                               )</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(unitdat.bhdist)</span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>unitarea.bhdist <span class="ot">&lt;-</span> unitdat.bhdist<span class="sc">$</span>unitarea</span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>unitvar.bhdist <span class="ot">&lt;-</span> unitdat.bhdist<span class="sc">$</span>unitvar</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>areavar.bhdist <span class="ot">&lt;-</span> unitdat.bhdist<span class="sc">$</span>areavar</span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>unitarea.bhdist</span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>unitvar.bhdist</span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>areavar.bhdist</span></code></pre></div>
+</details>
+</div>
+</div>
+<div id="spgetstrata" class="section level3">
+<h3><a name="spGetStrata"></a><code>spGetStrata()</code></h3>
+<p>The <code>spGetStrata</code> function is a wrapper to extract
+attribute and area from a polygon or raster estimation unit layer and a
+polygon or raster layer with strata pixel categories.</p>
+<details>
+<summary>
+View Example
+</summary>
+<p>First, we generate an <code>sf</code> object from the WY plot data,
+public coordinates (<code>xvar = &quot;LON_PUBLIC&quot;</code>,
+<code>yvar = &quot;LAT_PUBLIC&quot;</code>). Note: The public coordinate
+projection information is: <code>prj = &quot;longlat&quot;</code>,
+<code>datum = &quot;NAD83&quot;</code>.</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>WYspplt <span class="ot">&lt;-</span> <span class="fu">spMakeSpatialPoints</span>(<span class="at">xyplt =</span> WYplt, </span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>                               <span class="at">xy.uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>                               <span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>                               <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>, </span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>                               <span class="at">xy.crs =</span> <span class="dv">4269</span>)</span></code></pre></div>
+<p>Next, we extract polygon attributes from <code>WYbighorn</code> to
+<code>WYpts</code>, keeping <code>NULL</code> values.</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>stratlst <span class="ot">&lt;-</span> <span class="fu">spGetStrata</span>(WYspplt, </span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">unit_layer =</span> WYbhfn, </span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>                        <span class="at">strattype =</span> <span class="st">&quot;RASTER&quot;</span>, </span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>                        <span class="at">strat_layer =</span> fornffn) </span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(stratlst) </span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>stratlst<span class="sc">$</span>stratalut</span></code></pre></div>
+</details>
+</div>
+<div id="spunionpoly" class="section level3">
+<h3><a name="spUnionPoly"></a><code>spUnionPoly()</code></h3>
+<p>The <code>spUnionPoly</code> function generates a unioned
+<code>sf</code> object with polygons and attributes from two
+<code>sf</code> polygon objects.</p>
+<details>
+<summary>
+View Example
+</summary>
+<p>First, we import spatial data with <code>spImportSpatial</code>, and
+then extract polygon attributes from <code>WYbighorn</code> to
+<code>WYpts</code>, keeping <code>NULL</code> values.</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>WYbh <span class="ot">&lt;-</span> <span class="fu">spImportSpatial</span>(WYbhfn)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>polyUnion <span class="ot">&lt;-</span> <span class="fu">spUnionPoly</span>(<span class="at">polyv1 =</span> USAco[USAco<span class="sc">$</span>NAME_1 <span class="sc">==</span> <span class="st">&quot;Wyoming&quot;</span>,], </span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>                         <span class="at">polyv2 =</span> WYbh, </span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>                         <span class="at">areacalc=</span><span class="cn">TRUE</span>)</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(polyUnion))</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(polyUnion)</span></code></pre></div>
+</details>
+</div>
+<div id="spzonalrast" class="section level3">
+<h3><a name="spZonalRast"></a><code>spZonalRast()</code></h3>
+<p>The <code>spZonalRast</code> function extracts summary statistics by
+polygon (i.e., zone).</p>
+<details>
+<summary>
+View Example
+</summary>
+<p>First, we import spatial data with <code>spImportSpatial</code>, and
+then extract polygon attributes from <code>WYbighorn</code> to
+<code>WYpts</code>, keeping <code>NULL</code> values.</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>WYbhdist <span class="ot">&lt;-</span> <span class="fu">spImportSpatial</span>(WYbhdistfn)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>zonallst <span class="ot">&lt;-</span> <span class="fu">spZonalRast</span>(<span class="at">polyv =</span> WYbhdist, </span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>                        <span class="at">polyv.att =</span> <span class="st">&quot;DISTRICTNA&quot;</span>, </span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>                        <span class="at">rastfn =</span> demfn, </span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>                        <span class="at">zonalstat =</span> <span class="fu">c</span>(<span class="st">&quot;mean&quot;</span>, <span class="st">&quot;sum&quot;</span>)) </span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(zonallst) </span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>zonalext <span class="ot">&lt;-</span> zonallst<span class="sc">$</span>zonalext</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>outname <span class="ot">&lt;-</span> zonallst<span class="sc">$</span>outname</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>rasterfile <span class="ot">&lt;-</span> zonallst<span class="sc">$</span>rasterfile</span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(zonalext)</span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>outname</span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>rasterfile</span></code></pre></div>
+</details>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2151 @@
+---
+title: "FIESTA - Green-book Estimators"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{FIESTA - Green-book Estimators}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include = F}
+library(knitr)
+knitr::opts_chunk$set(message = F, warning = F)
+```
+
+```{r, include=FALSE}
+# Sets up output folding
+hooks = knitr::knit_hooks$get()
+hook_foldable = function(type) {
+  force(type)
+  function(x, options) {
+    res = hooks[[type]](x, options)
+    
+    if (isFALSE(options[[paste0("fold.", type)]])) return(res)
+    
+    paste0(
+      "<details><summary>", type, "</summary>\n\n",
+      res,
+      "\n\n</details>"
+    )
+  }
+}
+knitr::knit_hooks$set(
+  output = hook_foldable("output"),
+  plot = hook_foldable("plot")
+)
+```
+
+
+## Green-Book (GB) module overview
+
+`FIESTA`'s Green-Book (GB) module calculates population estimates and their sampling errors based on Bechtold and Patterson's (2005), 'Green-Book' for FIA's nationally-consistent, systematic annual sample design, chapter 4 (Scott et al. 2005). FIA's sample design is based on 2 phases: the first phase uses remotely-sensed data to stratify the land area to increase precision of estimates; while the 2nd phase obtains photo and ground observations and measurements for a suite of information across a hexagonal grid, each approximately 6000 acres in size. The associated estimators and variance estimators are used for area and tree attribute totals with the assumption of a simple random, stratified design and double sampling for stratification. Adjustment factors are calculated by estimation unit and strata to account for nonsampled (nonresponse) conditions.   
+
+Functions include non-ratio estimators for area and tree estimates by domain and ratio-of-means estimators for per-acre and per-tree estimates within domain. In addition, `FIESTA` adjusts for nonsampled conditions, supports post-stratification for reducing variance, and reports by estimation unit or a summed combination of estimation units. Output from the Green-Book module was tested and compared to output from FIA's publicly-available online tool (EVALIDator - https://apps.fs.usda.gov/Evalidator/evalidator.jsp) for state-level population estimates and associated sampling errors generated from the FIA Database (FIADB).
+
+## Objective of tutorial
+
+The Green-Book estimators can be used with FIA's standard state-level population data (i.e, Evaluation) from the FIA database (FIADB) and also population data from a custom boundary. The population data includes a set of FIA plot data and summarized auxiliary information for post-stratification, including a table of area by estimation unit within the population, and a table of strata proportions by estimation unit. This tutorial steps through several examples using FIESTA's Green Book module, for three different populations: (POP1) an FIA standard Evaluation, Wyoming 561301; (POP2) a custom boundary with one population, Bighorn National Forest; and (POP3) a custom boundary with sub-populations, Bighorn National Forest Districts. All examples can be used with any population, standard or custom.
+
+
+
+## GB Examples
+<a name="GBfun"></a>
+
+### GB Example Data
+<details>
+  <summary>View GB Example Data</summary>
+
+*Example FIA plot data from FIADB*
+
+The examples use FIA plot data from FIA Evaluation 561301, including three inventory years of field measurements in the state of Wyoming, from FIADB_1.7.2.00, last updated June 20, 2018, downloaded on June 25, 2018, and stored as internal data objects in `FIESTA`. 
+
+
+
+**Wyoming (WY), Inventory Years 2011-2013 (Evaluation 561301)**
+
+Data Frame  | Description
+:-----------| :-----------------------------------------------------------------------------------
+WYplt       | WY plot-level data
+WYcond      | WY condition-level data
+WYtree      | WY tree-level data
+
+
+*Example Auxiliary data*
+
+Auxiliary data for state-level estimates, including plot-level estimation unit and stratum assignments; area by estimation unit; and pixel counts by strata class and estimation unit, were downloaded from FIADB at the same time, from the same FIA Evaluation (i.e., 561301), and stored as internal data objects in `FIESTA`. Estimates using auxiliary data from FIADB can be compared with EVALIDator estimates, using the 2013 evaluation (https://apps.fs.usda.gov/Evalidator/evalidator.jsp).
+
+Auxiliary data for the custom boundaries are summarized from spatial layers stored as external objects in FIESTA, originating from the USDA Forest Service, Automated Lands Program (ALP; 2018) and from a 250m resolution, Moderate Resolution Imaging Spectroradiometer (MODIS), classified map, reclassified from 3 to 2 classes: 1:forest; 2:nonforest (Ruefenacht et al. 2008)
+
+
+
+**Wyoming (WY), Auxiliary data from FIADB (Evaluation 561301)**
+
+Data Frame  | Description
+:-----------| :-----------------------------------------------------------------------------------
+WYpltassgn  | WY plot-level data with strata and estimation unit assignments
+WYunitarea  | WY estimation unit look-up table with total acres by estimation unit (ESTUNIT)
+WYstratalut | WY strata look-up table with pixel counts (P1POINTCNT) by strata and estimation unit
+
+
+
+**Wyoming (WY), Auxiliary data from other sources**
+
+External data             | Description
+:-------------------------| :------------------------------------------------------------------------
+WYbighorn_adminbnd.shp    | Polygon shapefile of WY Bighorn National Forest Administrative boundary^1^
+WYbighorn_districtbnd.shp | Polygon shapefile of WY Bighorn National Forest District boundaries^2^
+WYbighorn_forest_nonforest_250m.tif| GeoTIFF raster of predicted forest/nonforest (1/0)^3^ 
+
+^1^USDA Forest Service, Automated Lands Program (ALP). 2018. S_USA.AdministrativeForest (http://data.fs.usda.gov/geodata/edw). Description: An area encompassing all the National Forest System lands administered by an administrative unit. The area encompasses private lands, other governmental agency lands, and may contain National Forest System lands within the proclaimed boundaries of another administrative unit. All National Forest System lands fall within one and only one Administrative Forest Area.
+
+^2^USDA Forest Service, Automated Lands Program (ALP). 2018. S_USA.RangerDistrict (http://data.fs.usda.gov/geodata/edw). Description: A depiction of the boundary that encompareasses a Ranger District.
+
+^3^Based on 250m resolution, Moderate Resolution Imaging Spectroradiometer (MODIS), classified map, reclassified from 3 to 2 classes: 1:forest; 2:nonforest. Projected in Albers Conical Equal Area, Datum NAD27 (Ruefenacht et al. 2008).
+
+</details>
+
+
+### Set up 
+
+First, you'll need to load the `FIESTA` library:
+
+```{r, warning = F, message = F}
+library(FIESTA)
+```
+
+Next, you'll need to set up an "outfolder". This is just a file path to a folder where you'd like `FIESTA` to send your data output. For this vignette, we have saved our outfolder file path as the `outfolder` object in a temporary directory. We also set a few default options preferred for this vignette.
+
+```{r}
+outfolder <- tempdir()
+```
+
+
+### Get auxiliary data for custom examples
+
+Now, we need to get the auxiliary data for the custom boundaries. The FIESTA *spGetStrata* function is a spatial wrapper function to facilitate extraction and summary of user-defined spatial data used for post-stratification. The function uses the FIESTA *spExtractPoly* and *spExtractRast* functions to subset (i.e., clip) plots to the boundary and extract values from estimation unit (i.e., polygon) and strata values (i.e., raster) to plot center locations, respectively. Other internal spatial functions calculate stratum pixel counts and area by estimation unit. If a polygon strata layer is given, the FIESTA *spPoly2Rast* function converts the polygon layer to raster before calculating strata weights. 
+
+Our custom examples demonstrate how to get data for one area of interest, or population (e.g, Bighorn National Forest) and for one area of interest, with multiple estimation units, or subpopulations (e.g., Bighorn National Forest Districts). 
+
+
+
+**Bighorn National Forest**
+
+
+<details>
+  <summary>View Getting Strata Data</summary>
+  
+```{r}
+
+# File names for spatial layers, stored as external data objects in FIESTA. 
+WYbhfn <- system.file("extdata", "sp_data/WYbighorn_adminbnd.shp", package="FIESTA")
+fornffn <- system.file("extdata", "sp_data/WYbighorn_forest_nonforest_250m.tif", package="FIESTA")
+
+
+# Get estimation unit and strata information for Bighorn National Forest.
+stratdat.bh <- spGetStrata(
+      xyplt = WYplt,
+      uniqueid = "CN", 
+      unit_layer = WYbhfn, 
+      strat_layer = fornffn,
+      spMakeSpatial_opts = list(xvar = "LON_PUBLIC", 
+                                yvar = "LAT_PUBLIC", 
+                                xy.crs = 4269)
+      )
+
+## Get names of output list components
+names(stratdat.bh)
+
+
+## Plot assignment of strata and estimation unit (ONEUNIT, STRATUMCD)
+head(stratdat.bh$pltassgn)
+
+## Area by estimation unit
+stratdat.bh$unitarea
+
+## Pixel counts and strata weights (strwt) by strata and estimation unit
+stratdat.bh$stratalut
+
+## Variable names
+stratdat.bh$unitvar        # Estimation unit variable
+stratdat.bh$strvar         # Strata variable
+stratdat.bh$areavar        # Area variable
+
+
+```
+
+</details>
+
+**Bighorn National Forest Districts**
+
+<details>
+  <summary>View Getting Strata Data (Districts)</summary>
+  
+```{r}
+# File names for external spatial data 
+WYbhdistfn <- system.file("extdata", "sp_data/WYbighorn_districtbnd.shp", package="FIESTA")
+WYbhdist.att <- "DISTRICTNA"
+fornffn <- system.file("extdata", "sp_data/WYbighorn_forest_nonforest_250m.tif", package="FIESTA")
+
+# Get estimation unit and strata information for Bighorn National Forest Districts
+stratdat.bhdist <- spGetStrata(
+      xyplt = WYplt,
+      uniqueid = "CN", 
+      unit_layer=WYbhdistfn, 
+      unitvar=WYbhdist.att,
+      strat_layer=fornffn,
+      spMakeSpatial_opts = list(xvar = "LON_PUBLIC", 
+                                yvar = "LAT_PUBLIC", 
+                                xy.crs = 4269)
+      )
+
+## Get names of output list components
+names(stratdat.bhdist)
+
+
+## Plot assignment of strata and estimation unit (DISTRICTNA, STRATUMCD)
+head(stratdat.bhdist$pltassgn)
+
+## Area by estimation units (Districts)
+stratdat.bhdist$unitarea
+
+## Pixel counts and strata weights (strwt) by strata and estimation unit
+stratdat.bhdist$stratalut
+
+
+## Variable names
+stratdat.bhdist$unitvar        # Estimation unit variable
+stratdat.bhdist$strvar         # Strata variable
+stratdat.bhdist$areavar        # Area variable
+
+```
+
+</details>
+
+### GB Module
+* [modGBpop()](#modGBpop)
+* [modGBarea()](#modGBarea)
+* [modGBtree()](#modGBtree)
+* [modGBratio()](#modGBratio)
+
+
+<a name="modGBpop"></a>
+
+### modGBpop()
+
+`FIESTA`'s population functions (`mod*pop`) check input data and perform population-level calculations, such as: summing number of sampled plots; adjusting for partial nonresponse; and standardizing auxiliary data. These functions are specific to each `FIESTA` module and are run prior to or within a module for any population of interest. 
+
+For `FIESTA`'s GB Module, the `modGBpop` function calculates and outputs: number of plots, adjustment factors, and an expansion factor by strata. The outputs are similar to data found in FIADB's pop_stratum table. The output from `modGBpop` can be used for one or more estimates from `modGBarea`, `modGBtree`, or `modGBratio` functions.
+
+
+
+#### POP1: FIADB POPULATION - Get population data for area and tree estimates for Wyoming, using post-stratification
+
+<details>
+  <summary>View Example</summary>
+  
+In this example, we use the sample Wyoming data (2013 Evaluation) stored in `FIESTA` to generate population data for the GB module. We check this output with the FIADB pop_stratum table from FIA DataMart for 561301 Evalid, using the `FIESTA::DBqryCSV` function.
+
+```{r, results = FALSE, message = F}
+```
+
+
+```{r, results = FALSE, message = F}
+GBpopdat <- modGBpop(
+  popTabs = list(cond = FIESTA::WYcond,          # FIA plot/condition data
+                 tree = FIESTA::WYtree,          # FIA tree data
+                 seed = FIESTA::WYseed),         # FIA seedling data
+  popTabIDs = list(cond = "PLT_CN"),             # unique ID of plot in cond
+  pltassgn = FIESTA::WYpltassgn,  # plot assignments
+  pltassgnid = "CN",              # unique ID of plot in pltassgn
+  pjoinid = "PLT_CN",             # plot id to join to pltassgn
+  unitarea = WYunitarea,          # area by estimation units
+  unitvar = "ESTN_UNIT",          # name of estimation unit
+  strata = TRUE,                  # if using post-stratification
+  stratalut = WYstratalut,        # strata classes and pixels counts
+  strata_opts = strata_options(getwt = TRUE)              # strata options
+  )
+
+
+```
+
+To get the names of the list components associated with the output of our call of `modGBpop`, we run the following code:
+
+```{r, results = T}
+names(GBpopdat)
+```
+
+From this list outputted by `GBpopdat` we can access many things. Some examples include the number of plots by plot status that can be accessed with the `plotsampcnt` item, the number of conditions by condition status with `condsampcnt`, the strata-level population data, including number of plots and adjustment factors with `stratalut`, and the adjustment factors added to the condition-level, tree-level, and seedling data with `condx`, `treex`, and `seedx`, respectfully. These objects can be seen below:
+
+```{r}
+## Look at output from GBpopdat
+GBpopdat$plotsampcnt	# Number of plots by plot status
+GBpopdat$condsampcnt	# Number of conditions by condition status
+# Strata-level population data, including number of plots and adjustment factors
+GBpopdat$stratalut  
+## Adjustment factors added to condition-level data
+GBpopdat$condx
+## Adjustment factors added to tree data
+GBpopdat$treex
+## Adjustment factors added to seedling data
+GBpopdat$seedx
+```
+
+One may also want to compare `FIESTA` output with FIADB pop_stratum table for WY in the 2013 evaluation to check for consistency. The can be done as follows: 
+
+```{r, results = TRUE, eval = FALSE}
+qry <- "select estn_unit, stratumcd, p1pointcnt, p2pointcnt, expns, 
+          adj_factor_macr, adj_factor_subp, adj_factor_micr from pop_stratum 
+        where evalid = 561301 order by estn_unit, stratumcd"
+pop_stratum <- DBqryCSV(
+                  qry, 
+                  states="Wyoming",
+                  sqltables="pop_stratum"
+                  )
+head(pop_stratum)
+head(GBpopdat$stratalut)
+```
+
+</details>
+
+
+#### POP2: CUSTOM POPULATION - Get population data for area and tree estimates for the Bighorn National Forest, using post-stratification
+
+<details>
+  <summary>View Example</summary>
+  
+In this example, we use the sample WY plot data (2013 Evaluation) in FIESTA and output from `spGetStrata` to generate population data for the Bighorn National Forest. Here, we have only one estimation unit within the population of interest (i.e., Bighorn National Forest), therefore strata and pixel counts are summarized to the population.
+
+If the `FIESTA::spGetStrata` function is used to obtain stratification data, the output list object can be input directly into `modGBpop` through the `GBstratdat` parameter. If other methods are used, the data are input through individual parameters.
+
+```{r, results = FALSE, message = F}
+```
+
+
+
+```{r}
+
+## Bighorn National Forest
+
+## Using output list from spGetStrata()
+GBpopdat.bh <- modGBpop(
+      popTabs=list(plt=WYplt, cond=WYcond, tree=WYtree, seed=WYseed),
+      stratdat=stratdat.bh)
+
+## Get names of output list components
+names(GBpopdat.bh)
+
+
+## Using output as individual parameter inputs
+GBpopdat.bh <- modGBpop(
+      popTabs=list(plt=WYplt, cond=WYcond, tree=WYtree, seed=WYseed),
+      popTabIDs=list(plt="CN"),
+      pltassgn=stratdat.bh$pltassgn, 
+      pltassgnid="CN", 
+      unitvar=stratdat.bh$unitvar, 
+      unitarea=stratdat.bh$unitarea, 
+      areavar=stratdat.bh$areavar, 
+      strata=TRUE,
+      stratalut=stratdat.bh$stratalut, 
+      strvar=stratdat.bh$strvar
+      )
+
+## Get names of output list components
+names(GBpopdat.bh)
+
+## Condition information with adjusted condition proportions for area
+head(GBpopdat.bh$condx)
+
+## Tree information with tree-level adjustment factors
+head(GBpopdat.bh$treex)
+
+## Seedling information with adjustment factors
+head(GBpopdat.bh$seedx)
+
+## Strata-level information, including number of plots by strata and strata-level adjustment factors
+GBpopdat.bh$stratalut
+
+
+```
+
+</details>
+
+
+</details>
+
+
+#### POP3: CUSTOM SUB-POPULATIONS - Get sub-population data for area and tree estimates for the Bighorn National Forest Districts, using post-stratification
+
+<details>
+  <summary>View Example</summary>
+
+In this example, we use the sample Wyoming plot data (2013 Evaluation) stored in FIESTA and output from `spGetStrata` to generate sub-population data for Bighorn National Forest Districts. Here, we have more than one estimation unit (i.e., sub-population) within the population of interest (i.e., Bighorn National Forest Districts), therefore strata and pixel counts are summarized by each District within the population.
+
+If the `FIESTA::spGetStrata` function is used to obtain stratification data, the output list object can be input directly into `modGBpop` through the `GBstratdat` parameter. If other methods are used, the data are input through individual parameters.
+
+```{r, results = FALSE, message = F}
+```
+
+
+
+```{r}
+
+## Bighorn National Forest District
+
+
+## Using output list from spGetStrata()
+GBpopdat.bhdist <- modGBpop(
+      popTabs=list(plt=WYplt, cond=WYcond, tree=WYtree, seed=WYseed), 
+      stratdat=stratdat.bhdist)
+
+## Get names of output list components
+names(GBpopdat.bhdist)
+
+GBpopdat.bhdist <- modGBpop(
+      popTabs=list(plt=WYplt, cond=WYcond, tree=WYtree, seed=WYseed), 
+      pltassgn=stratdat.bhdist$pltassgn, 
+      pltassgnid="CN", 
+      unitvar=stratdat.bhdist$unitvar, 
+      unitarea=stratdat.bhdist$unitarea, 
+      areavar=stratdat.bhdist$areavar,
+      strata=TRUE,
+      stratalut=stratdat.bhdist$stratalut, 
+      strvar=stratdat.bhdist$strvar
+      )
+
+
+## Get names of output list components
+names(GBpopdat.bhdist)
+ 
+## Condition information with adjusted condition proportions for area
+head(GBpopdat.bhdist$condx)
+
+## Tree information with tree-level adjustment factors
+head(GBpopdat.bhdist$treex)
+
+## Seedling information with adjustment factors
+head(GBpopdat.bhdist$seedx)
+
+## Strata-level information, including number of plots by strata and strata-level adjustment factors
+GBpopdat.bhdist$stratalut
+
+```
+
+</details>
+
+
+<a name="modGBarea()"></a>
+
+### modGBarea()
+
+`FIESTA`'s `modGBarea` function generates acre estimates by domain (e.g., Forest type). Calculations are based on Scott et al. 2015 ('Green-Book') for mapped forest inventory plots. The non-ratio estimator for estimating area by stratum and domain is used. Plots that are totally nonsampled are excluded from the estimation dataset. Next, an adjustment factor is calculated by strata to adjust for nonsampled (nonresponse) conditions that have proportion less than 1. The attribute is the proportion of the plot which is divided by the adjustment factor, and averaged by stratum. Strata means are combined using the strata weights and then expanded to acres using the total land area in the population.
+
+If there are more than one estimation unit (i.e., subpopulation) within the population, estimates are generated by estimation unit. If `sumunits=TRUE`, the estimates and percent standard errors returned are a sum combination of all estimation units. If `rawdata=TRUE`, the raw data returned will include estimates by estimation unit.  
+
+Parameters defined in the following examples are organized by category: population data (pop); estimation information (est); and output details (out).
+
+#### POP1: 1.1 Area of forest land, Wyoming, 2011-2013
+<details>
+  <summary>View Example</summary>
+
+Using the `modGBarea` function we generate estimates by estimation unit (i.e., ESTN_UNIT) and sum to population (i.e., WY). `FIESTA` then returns raw data for area of forest land, Wyoming, 2011-2013 (sum estimation units). Note that we set some options for our table output with the `table_opts` argument. For a full list of possible table options, you can run `help(table_options)`.
+
+The following estimates match output from Evalidator (https://apps.fs.usda.gov/Evalidator/evalidator.jsp) using the WY 2013 Evaluation. 
+
+```{r}
+area1.1 <- modGBarea(
+    GBpopdat = GBpopdat,      # pop - population calculations for WY, post-stratification
+    landarea = "FOREST",      # est - forest land filter
+    sumunits = TRUE,          # est - sum estimation units to population
+    )
+
+```
+
+To get the names of the list components associated with the output of our call of `modGBarea`, we run the following code:
+
+```{r, results = T}
+names(area1.1)
+```
+
+To easily access our estimate and percent sampling error of estimate we can just grab the `est` object from out outputted list: 
+
+```{r, results = T}
+area1.1$est
+```
+
+We can also look at raw data and titles for estimate, as shown below:
+
+```{r, results = TRUE}
+## Raw data (list object) for estimate
+raw1.1 <- area1.1$raw        # extract raw data list object from output
+names(raw1.1)
+head(raw1.1$unit_totest)    # estimates by estimation unit (i.e., ESTN_UNIT)
+raw1.1$totest               # estimates for population (i.e., WY)
+
+```
+
+</details>
+
+#### POP1: 1.2 Area by forest type on forest land, Wyoming, 2011-2013 
+<details>
+  <summary>View Example</summary>
+
+In this example, we look at adding rows to the output and include returntitle=TRUE to return title information.
+
+```{r}
+## Area of forest land by forest type, Wyoming, 2011-2013
+area1.2 <- modGBarea(
+    GBpopdat = GBpopdat,         # pop - population calculations for WY, post-stratification
+    landarea = "FOREST",         # est - forest land filter
+    rowvar = "FORTYPCD",         # est - row domain
+    sumunits = TRUE,             # est - sum estimation units to population
+    returntitle = TRUE           # out - return title information
+    )
+
+```
+
+Again, we can look at the contents of the output list. The output now includes titlelst, a list of associated titles.
+
+```{r}
+names(area1.2)
+```
+
+And the estimates: 
+
+```{r}
+## Estimate and percent sampling error of estimate
+area1.2$est
+```
+
+Along with raw data and titles:
+
+```{r}
+## Raw data (list object) for estimate
+raw1.2 <- area1.2$raw      # extract raw data list object from output
+names(raw1.2)
+head(raw1.2$unit_totest) # estimates by estimation unit (i.e., ESTN_UNIT)
+raw1.2$totest            # estimates for population (i.e., WY)
+head(raw1.2$unit_rowest) # estimates by row, by estimation unit (i.e., ESTN_UNIT)
+head(raw1.2$rowest)      # estimates by row for population (i.e., WY)
+
+
+## Titles (list object) for estimate
+titlelst1.2 <- area1.2$titlelst
+names(titlelst1.2)
+titlelst1.2
+
+```
+
+</details>
+
+#### POP1: 1.3 Area by forest type and stand-size class on forest land, Wyoming, 2011-2013
+<details>
+  <summary>View Example</summary>
+
+In this example, we look at adding rows and columns to output, including FIA names. We also output estimates and percent standard error in the same cell with the `allin1` argument in `table_options` and save data to an outfolder with the `outfolder` argument in `savedata_options`. 
+
+```{r}
+## Area of forest land by forest type and stand-size class, Wyoming, 2011-2013
+area1.3 <- modGBarea(
+    GBpopdat = GBpopdat,         # pop - population calculations for WY, post-stratification
+    landarea = "FOREST",         # est - forest land filter
+    rowvar = "FORTYPCD",         # est - row domain
+    colvar = "STDSZCD",          # est - column domain
+    sumunits = TRUE,             # est - sum estimation units to population
+    savedata = TRUE,             # out - save data to outfolder
+    returntitle = TRUE,          # out - return title information
+    table_opts = list(
+      row.FIAname = TRUE,          # table - row domain names
+      col.FIAname = TRUE,          # table - column domain names
+      allin1 = TRUE                # table - return output with est(pse)
+      ),
+    savedata_opts = list(
+      outfolder = outfolder,       # save - outfolder for saving data
+      outfn.pre = "WY"             # save - prefix for output files
+      )
+    )
+```
+
+We can again look at the output list, estimates, raw data, and titles:
+
+```{r}
+## Look at output list
+names(area1.3)
+
+## Estimate and percent sampling error of estimate
+head(area1.3$est)
+
+
+## Raw data (list object) for estimate
+raw1.3 <- area1.3$raw      # extract raw data list object from output
+names(raw1.3)
+head(raw1.3$unit_totest) # estimates by estimation unit (i.e., ESTN_UNIT)
+head(raw1.3$totest)      # estimates for population (i.e., WY)
+head(raw1.3$unit_rowest) # estimates by row, by estimation unit (i.e., ESTN_UNIT)
+head(raw1.3$rowest)      # estimates by row for population (i.e., WY)
+head(raw1.3$unit_colest) # estimates by column, by estimation unit (i.e., ESTN_UNIT)
+head(raw1.3$colest)      # estimates by column for population (i.e., WY)
+head(raw1.3$unit_grpest) # estimates by row and column, by estimation unit (i.e., ESTN_UNIT)
+head(raw1.3$grpest)      # estimates by row and column for population (i.e., WY)
+
+
+## Titles (list object) for estimate
+titlelst1.3 <- area1.3$titlelst
+names(titlelst1.3)
+titlelst1.3
+
+
+## List output files in outfolder
+list.files(outfolder, pattern = "WY_area")
+list.files(paste0(outfolder, "/rawdata"), pattern = "WY_area")
+```
+
+
+#### POP2: 2.1 Area by forest type and stand-size class, Bighorn National Forest
+<details>
+  <summary>View Example</summary>
+
+Note: Since we only have one estimation unit within the population of interest, we set sumunits=FALSE.
+  Also, we add ref.title to customize the title outputs.
+
+```{r}
+area2.1 <- modGBarea(
+    GBpopdat = GBpopdat.bh,       # pop - population calculations for Bighorn NF, post-stratification
+    landarea = "FOREST",          # est - forest land filter
+    sumunits = FALSE,             # est - sum estimation units to population
+    rowvar = "FORTYPCD",          # est - row domain
+    colvar = "STDSZCD",           # est - column domain
+    returntitle = TRUE,           # out - return title information
+    title_opts = list(
+      title.ref = "Bighorn National Forest, 2011-2013"  # title - customize title reference
+      ),
+    table_opts = list(   
+      row.FIAname = TRUE,         # table - return FIA row names
+      col.FIAname = TRUE          # table - return FIA column names
+      )
+    )
+```
+
+To get the names of the list components associated with the output of our call of `modGBarea`, we run the following code:
+
+```{r, results = T}
+names(area2.1)
+```
+
+To easily access our estimate and percent sampling error of estimate we can just grab the `est` object from our ouputted list: 
+
+```{r, results = T}
+area2.1$est
+```
+
+We can also look at raw data and titles for estimate, as shown below. Note the change in titles.
+
+```{r, results = TRUE}
+## Raw data (list object) for estimate
+raw2.1 <- area2.1$raw      # extract raw data list object from output
+names(raw2.1)
+head(raw2.1$unit_grpest)  # estimates by row and group domains
+
+
+## Titles (list object) for estimate
+titlelst2.1 <- area2.1$titlelst
+names(titlelst2.1)
+titlelst2.1
+
+```
+
+</details>
+
+
+#### POP2: 2.2 Area by forest type group and primary disturbance class, Bighorn National Forest
+<details>
+  <summary>View Example</summary>
+
+Note: Since we only have one estimation unit within the population of interest, we set sumunits=FALSE.
+  Let's also add a few more table options to control the forest type groups displayed in the table (rowlut) and fill the NULL values with 0s (estnull).
+
+```{r}
+
+area2.2 <- modGBarea(
+    GBpopdat = GBpopdat.bh,        # pop - population calculations for Bighorn NF, post-stratification
+    landarea = "FOREST",           # est - forest land filter
+    sumunits = TRUE,               # est - sum estimation units to population
+    rowvar = "FORTYPGRPCD",        # est - row domain
+    colvar = "DSTRBCD1",           # est - column domain
+    returntitle = TRUE,            # out - return title information
+    title_opts = list(
+      title.ref = "Bighorn National Forest, 2011-2013"  # title - customize title reference
+      ),
+    table_opts = list(   
+      row.FIAname = TRUE,          # table - return FIA row names
+      col.FIAname = TRUE,          # table - return FIA column names
+      estnull = 0,
+      rowlut = c(180, 200, 220, 260, 280, 900, 999),
+      raw.keep0 = TRUE
+      )
+    )
+
+```
+
+To get the names of the list components associated with the output of our call of `modGBarea`, we run the following code:
+
+```{r, results = T}
+names(area2.2)
+```
+
+To easily access our estimate and percent sampling error of estimate we can just grab the `est` object from our ouputted list: 
+
+```{r, results = T}
+area2.2$est
+```
+
+We can also look at raw data and titles for estimate, as shown below. Note the change in titles.
+
+```{r, results = TRUE}
+## Raw data (list object) for estimate
+raw2.2 <- area2.2$raw      # extract raw data list object from output
+names(raw2.2)
+head(raw2.2$unit_grpest)  # estimates by row and group domains
+
+
+## Titles (list object) for estimate
+titlelst2.2 <- area2.2$titlelst
+names(titlelst2.2)
+titlelst2.2
+
+```
+
+</details>
+
+
+
+
+#### POP3: 3.1 Area by forest type group and primary disturbance class, Bighorn National Forest Districts
+<details>
+  <summary>View Example</summary>
+
+In this example, we add a filter to remove from the table output, where there is no visible disturbance. This filter does not change the population data set the estimates are derived from, it only changes the output.
+
+```{r}
+area3.1 <- modGBarea(
+    GBpopdat = GBpopdat.bhdist,    # pop - population calculations for Bighorn NF, post-stratification
+    landarea = "FOREST",           # est - forest land filter
+    sumunits = TRUE,               # est - sum estimation units to population
+    pcfilter = "DSTRBCD1 > 0",     # est - condition filter for table output
+    rowvar = "FORTYPGRPCD",        # est - row domain
+    colvar = "DSTRBCD1",           # est - column domain
+    returntitle = TRUE,            # out - return title information
+    title_opts = list(
+      title.ref = "Bighorn National Forest, 2011-2013"  # title - customize title reference
+      ),
+    table_opts = list(   
+      row.FIAname = TRUE,          # table - return FIA row names
+      col.FIAname = TRUE           # table - return FIA column names
+      )
+    )
+
+```
+
+To get the names of the list components associated with the output of our call of `modGBarea`, we run the following code:
+
+```{r, results = T}
+names(area3.1)
+```
+
+To easily access our estimate and percent sampling error of estimate we can just grab the `est` object from our ouputted list: 
+
+```{r, results = T}
+area3.1$est
+```
+
+We can also look at raw data and titles for estimate, as shown below:
+
+```{r, results = TRUE}
+## Raw data (list object) for estimate
+raw3.1 <- area3.1$raw       # extract raw data list object from output
+names(raw3.1)
+head(raw3.1$unit_rowest)   # estimates by estimation unit for row domains
+raw3.1$rowest              # estimates for population for row domains
+
+head(raw3.1$unit_colest)   # estimates by estimation unit for column domains
+raw3.1$colest              # estimates for population for column domains
+
+
+## Titles (list object) for estimate
+titlelst3.1 <- area3.1$titlelst
+names(titlelst3.1)
+titlelst3.1
+
+```
+
+</details>
+
+
+
+
+</details>
+
+<a name="modGBtree"></a>
+
+### modGBtree
+
+`FIESTA`'s `modGBtree` function generates tree estimates by domain (e.g., Forest type) and/or tree domain (e.g., Species). Calculations are based on Scott et al. 2005 ('the green-book') for mapped forest inventory plots. The non-ratio estimator for estimating tree attributes by stratum and domain is used. Plots that are totally nonsampled are excluded from estimation dataset. Next, an adjustment factor is calculated by strata to adjust for nonsampled (nonresponse) conditions that have proportion less than 1. Attributes adjusted to a per-acre value are summed by plot, divided by the adjustment factor, and averaged by stratum. Strata means are combined using the strata weights and then expanded to using the total land area in the population. 
+
+If there are more than one estimation unit (i.e., subpopulation) within the population, estimates are generated by estimation unit. If `sumunits = TRUE`, the estimates and percent standard errors returned are a sum combination of all estimation units. If `rawdata = TRUE`, the raw data returned will include estimates by estimation unit.  
+
+Parameters defined in the following examples are organized by category: population data (pop); estimation information (est); and output details (out).
+
+The following reference table can be used for defining `estvar` and `estvar.filter`:
+
+```{r}
+FIESTAutils::ref_estvar[, c("ESTTITLE", "ESTVAR", "ESTFILTER", "ESTUNITS")]
+```
+
+
+#### POP1: 1.1 Net cubic-foot volume of live trees, Wyoming, 2011-2013
+<details>
+  <summary>View Example</summary>
+
+Now, we can generate estimates by estimation unit (i.e., ESTN_UNIT) and sum to population (i.e., WY) with `modGBtree`: 
+
+```{r}
+## Return raw data and titles
+## Total net cubic-foot volume of live trees (at least 5 inches diameter), Wyoming, 2011-2013 
+tree1.1 <- modGBtree(
+    GBpopdat = GBpopdat,         # pop - population calculations
+    landarea = "FOREST",         # est - forest land filter
+    sumunits = TRUE,             # est - sum estimation units to population
+    estvar = "VOLCFNET",               # est - net cubic-foot volume
+    estvar.filter = "STATUSCD == 1",   # est - live trees only
+    returntitle = TRUE           # out - return title information
+    )
+
+```
+
+We can now take a look at the output list, estimates and percent sampling errors, raw data, and titles:
+
+```{r}
+## Look at output list
+names(tree1.1)
+
+## Estimate and percent sampling error of estimate
+tree1.1$est
+
+
+## Raw data (list object) for estimate
+raw1.1 <- tree1.1$raw      # extract raw data list object from output
+names(raw1.1)
+head(raw1.1$unit_totest)   # estimates by estimation unit (i.e., ESTN_UNIT)
+head(raw1.1$totest)        # estimates for population (i.e., WY)
+
+
+## Titles (list object) for estimate
+titlelst1.1 <- tree1.1$titlelst
+names(titlelst1.1)
+titlelst1.1
+```
+
+</details>
+
+#### POP1: 1.2 Net cubic-foot volume of live trees by forest type, Wyoming, 2011-2013
+<details>
+  <summary>View Example</summary>
+
+This example adds rows to the output for net cubic-foot volume of live trees (at least 5 inches diameter) by forest type, Wyoming, 2011-2013. We also choose to return titles with `returntitle = TRUE`. 
+
+```{r}
+tree1.2 <- modGBtree(
+    GBpopdat = GBpopdat,         # pop - population calculations
+    landarea = "FOREST",         # est - forest land filter
+    sumunits = TRUE,             # est - sum estimation units to population
+    estvar = "VOLCFNET",               # est - net cubic-foot volume
+    estvar.filter = "STATUSCD == 1",   # est - live trees only
+    rowvar = "FORTYPCD",         # est - row domain 
+    returntitle = TRUE           # out - return title information
+    )
+
+```
+
+Again, we investigate the output of the returned list:
+
+```{r}
+## Look at output list
+names(tree1.2)
+
+## Estimate and percent sampling error of estimate
+tree1.2$est
+
+## Raw data (list object) for estimate
+raw1.2 <- tree1.2$raw      # extract raw data list object from output
+names(raw1.2)
+head(raw1.2$unit_totest)   # estimates by estimation unit (i.e., ESTN_UNIT)
+head(raw1.2$totest)        # estimates for population (i.e., WY)
+head(raw1.2$unit_rowest)   # estimates by row, by estimation unit (i.e., ESTN_UNIT)
+head(raw1.2$rowest)        # estimates by row for population (i.e., WY)
+
+
+## Titles (list object) for estimate
+titlelst1.2 <- tree1.2$titlelst
+names(titlelst1.2)
+titlelst1.2
+
+```
+
+
+We can also create a simple barplot from the output:
+
+```{r}
+## Create barplot
+datBarplot(
+      raw1.2$unit_rowest, 
+      xvar = titlelst1.2$title.rowvar, 
+      yvar = "est"
+      )
+
+```
+
+
+And a fancier barplot:
+
+```{r}
+
+## Create fancier barplot
+datBarplot(
+      raw1.2$unit_rowest, 
+      xvar = titlelst1.2$title.rowvar, 
+      yvar = "est",
+      errbars = TRUE, 
+      sevar = "est.se", 
+      main = FIESTAutils::wraptitle(titlelst1.2$title.row, 75),
+      ylabel = titlelst1.2$title.yvar, 
+      divideby = "million"
+      )
+
+```
+
+</details>
+
+#### POP1: 1.3 Net cubic-foot volume of live trees by forest type and stand-size class, Wyoming, 2011-2013
+<details>
+  <summary>View Example</summary>
+
+This examples adds rows and columns to the output, including FIA names, for net cubic-foot volume of live trees (at least 5 inches diameter) by forest type and stand-size class, Wyoming, 2011-2013. We also use the `*_options` functions to return output with estimates (est) and percent standard error (pse) in same cell - est(pse) with `allin1 = TRUE` and save data to an outfolder with `savedata = TRUE` and `outfolder = outfolder`. 
+
+```{r}
+tree1.3 <- modGBtree(
+    GBpopdat = GBpopdat,         # pop - population calculations
+    landarea = "FOREST",         # est - forest land filter
+    sumunits = TRUE,             # est - sum estimation units to population
+    estvar = "VOLCFNET",               # est - net cubic-foot volume
+    estvar.filter = "STATUSCD  == 1",   # est - live trees only
+    rowvar = "FORTYPCD",         # est - row domain
+    colvar = "STDSZCD",          # est - column domain
+    returntitle = TRUE,          # out - return title information
+    savedata = TRUE,             # out - save data to outfolder
+    table_opts = table_options(
+      row.FIAname = TRUE,          # est - row domain names
+      col.FIAname = TRUE,          # est - column domain names
+      allin1 = TRUE                # out - return output with est(pse)
+    ),
+    savedata_opts = savedata_options(
+      outfolder = outfolder,       # out - outfolder for saving data
+      outfn.pre = "WY"             # out - prefix for output files
+      )
+    )
+
+```
+
+Again, we investigate the output of the returned list:
+
+```{r}
+## Look at output list from modGBarea()
+names(tree1.3)
+
+## Estimate and percent sampling error of estimate
+tree1.3$est
+
+
+## Raw data (list object) for estimate
+raw1.3 <- tree1.3$raw      # extract raw data list object from output
+names(raw1.3)
+head(raw1.3$unit_totest)   # estimates by estimation unit (i.e., ESTN_UNIT)
+head(raw1.3$totest)        # estimates for population (i.e., WY)
+head(raw1.3$unit_rowest)   # estimates by row, by estimation unit (i.e., ESTN_UNIT)
+head(raw1.3$rowest)        # estimates by row for population (i.e., WY)
+head(raw1.3$unit_colest)   # estimates by column, by estimation unit (i.e., ESTN_UNIT)
+head(raw1.3$colest)        # estimates by column for population (i.e., WY)
+head(raw1.3$unit_grpest)   # estimates by row and column, by estimation unit (i.e., ESTN_UNIT)
+head(raw1.3$grpest)        # estimates by row and column for population (i.e., WY)
+
+
+## Titles (list object) for estimate
+titlelst1.3 <- tree1.3$titlelst
+names(titlelst1.3)
+titlelst1.3
+
+
+## List output files in outfolder
+list.files(outfolder, pattern = "WY_tree")
+list.files(paste0(outfolder, "/rawdata"), pattern = "WY_tree")
+
+```
+
+</details>
+
+#### POP1: 1.4 Number of live trees by species, Wyoming, 2011-2013
+<details>
+  <summary>View Example</summary>
+
+We can use tree domain in estimation output rows:
+
+```{r}
+## Number of live trees (at least 1 inch diameter) by species
+tree1.4 <- modGBtree(
+    GBpopdat = GBpopdat,         # pop - population calculations
+    landarea = "FOREST",         # est - forest land filter
+    sumunits = TRUE,             # est - sum estimation units to population
+    estvar = "TPA_UNADJ",               # est - number of trees per acre 
+    estvar.filter = "STATUSCD == 1",    # est - live trees only
+    rowvar = "SPCD",             # est - row domain
+    returntitle = TRUE,          # out - return title information
+    table_opts = table_options(    
+      row.FIAname = TRUE,          # est - row domain names
+      allin1 = FALSE               # out - return output with est and pse
+      )
+    )
+
+```
+
+We can also look at the output list and estimates again:
+
+```{r}
+## Look at output list
+names(tree1.4)
+
+## Estimate and percent sampling error of estimate
+tree1.4$est
+```
+
+</details>
+
+#### POP1: 1.5 Number of live trees (plus seedlings) by species, Wyoming, 2011-2013
+<details>
+  <summary>View Example</summary>
+
+We can also add seedlings. 
+
+Note: seedling data are only available for number of trees (estvar = TPA_UNADJ).
+
+Note: must include seedling data in population data calculations.
+
+```{r}
+## Number of live trees by species, including seedlings
+tree1.5 <- modGBtree(
+    GBpopdat = GBpopdat,         # pop - population calculations
+    estseed = "add",             # est - add seedling data
+    landarea = "FOREST",         # est - forest land filter
+    sumunits = TRUE,             # est - sum estimation units to population
+    estvar = "TPA_UNADJ",               # est - number of trees per acre 
+    estvar.filter = "STATUSCD == 1",    # est - live trees only
+    rowvar = "SPCD",             # est - row domain
+    returntitle = TRUE,          # out - return title information
+    table_opts = table_options(
+      row.FIAname = TRUE,          # est - row domain names
+      allin1 = FALSE,              # out - return output with est and pse
+      )
+    )
+
+```
+
+And again we can look at our outputs and compare estimates:
+
+```{r}
+## Look at output list
+names(tree1.5)
+
+## Estimate and percent sampling error of estimate
+tree1.5$est
+
+
+## Compare estimates with and without seedlings
+head(tree1.4$est)
+head(tree1.5$est)
+```
+
+</details>
+
+#### POP1: 1.6 Number of seedlings by species, Wyoming, 2011-2013
+<details>
+  <summary>View Example</summary>
+
+Of course, we can also look at *only* seedlings.
+
+Note: seedling data are only available for number of trees (estvar = TPA_UNADJ).
+
+Note: must include seedling data in population data calculations.
+
+```{r}
+## Number of live trees seedlings by species
+tree1.6 <- modGBtree(
+    GBpopdat = GBpopdat,         # pop - population calculations
+    estseed = "only",            # est - add seedling data
+    landarea = "FOREST",         # est - forest land filter
+    sumunits = TRUE,             # est - sum estimation units to population
+    estvar = "TPA_UNADJ",        # est - number of trees per acre 
+    rowvar = "SPCD",             # est - row domain
+    returntitle = TRUE,          # out - return title information
+    table_opts = table_options(
+      row.FIAname = TRUE,          # est - row domain names
+      allin1 = FALSE               # out - return output with est and pse
+      )
+    )
+
+```
+
+And again we can look at our outputs and compare estimates:
+
+```{r}
+## Look at output list
+names(tree1.6)
+
+## Estimate and percent sampling error of estimate
+tree1.6$est
+
+## Compare estimates with, without, and only seedlings
+head(tree1.4$est)
+head(tree1.5$est)
+head(tree1.6$est)
+```
+
+</details>
+
+#### POP2: 2.1 Number of live trees by forest type and species on forest land, Bighorn National Forest
+<details>
+  <summary>View Example</summary>
+
+We can also use tree domain in estimation output columns:
+
+```{r}
+## First, we can save our table options for the next few examples
+tab_opts <- table_options(
+      row.FIAname = TRUE,          # est - row domain names
+      col.FIAname = TRUE,          # est - column domain names
+      allin1 = TRUE                # out - return output with est(pse)
+      )
+
+## Number of live trees (at least 1 inch diameter) by forest type and species
+tree2.1 <- modGBtree(
+    GBpopdat = GBpopdat.bh,      # pop - population calculations
+    landarea = "FOREST",         # est - forest land filter
+    sumunits = TRUE,             # est - sum estimation units to population
+    estvar = "TPA_UNADJ",               # est - number of trees per acre 
+    estvar.filter = "STATUSCD == 1",    # est - live trees only
+    rowvar = "FORTYPCD",         # est - row domain
+    colvar = "SPCD",             # est - column domain
+    returntitle = TRUE,          # out - return title information
+    table_opts = tab_opts
+    )
+
+```
+
+And we can see our output:
+
+```{r}
+## Look at output list
+names(tree2.1)
+
+## Estimate and percent sampling error of estimate
+head(tree2.1$est)
+```
+
+</details>
+
+#### POP2: 2.2 Net cubic-foot volume of standing dead trees by species and cause of death on forest land, Bighorn National Forest
+<details>
+  <summary>View Example</summary>
+
+We can also examine dead trees with the filter `estvar.filter = "STATUSCD == 2 & STANDING_DEAD_CD == 1"`. 
+
+```{r}
+## Net cubic-foot volume of dead trees (at least 5 inches diameter) by species and cause of death, 
+##    Wyoming, 2011-2013
+tree2.2 <- modGBtree(
+    GBpopdat = GBpopdat.bh,      # pop - population calculations
+    landarea = "FOREST",         # est - forest land filter
+    sumunits = TRUE,             # est - sum estimation units to population
+    estvar = "VOLCFNET",         # est - number of trees per acre 
+    estvar.filter = "STATUSCD == 2 & STANDING_DEAD_CD == 1",    # est - standing dead trees only
+    rowvar = "SPCD",             # est - row domain
+    colvar = "AGENTCD",          # est - column domain
+    returntitle = TRUE,          # out - return title information
+    table_opts = tab_opts
+    )
+
+```
+
+And we can see our output of dead trees:
+
+```{r}
+## Look at output list
+names(tree2.2)
+
+## Estimate and percent sampling error of estimate
+head(tree2.2$est)
+
+```
+
+</details>
+
+#### Adding diameter classes to population tree data (for `modGBtree` and `modGBratio` examples 7-9)
+<details>
+  <summary>View Example</summary>
+
+```{r}
+## Look at tree data in GBpopdat.bh
+head(GBpopdat.bh$treex)
+
+## Use reference data frame stored as an R object in FIESTA
+head(FIESTAutils::ref_diacl2in)
+
+## Appends a new column to GBpopdat$treex classifying the DIA variable based on MIN and MAX columns in ref_diacl2in
+dat <- datLUTclass(x = GBpopdat.bh$treex, 
+                   xvar = "DIA", 
+                   LUT = FIESTAutils::ref_diacl2in, 
+                   LUTclassnm = "DIACL2IN")
+GBpopdat.bh$treex <- dat$xLUT
+
+## Look at tree data, with new column (DIACL2IN)  
+head(GBpopdat.bh$treex)
+
+## Look at table of new diameter classes (DIACL2IN)
+table(GBpopdat.bh$treex$DIACL2IN)
+
+
+
+## Another way to append diameter classes
+## First, create a new variable using cut function to define 4 diameter classes
+dat <- datLUTclass(x = GBpopdat.bh$treex, 
+                   xvar = "DIA", 
+                   cutbreaks = c(0, 5, 10, 20, 100))
+GBpopdat.bh$treex <- dat$xLUT
+
+## Look at tree data, with new column (DIACL2IN)  
+head(GBpopdat.bh$treex)
+
+## Look at table of new diameter classes (DIACL)
+table(GBpopdat.bh$treex$DIACL)
+
+```
+
+</details>
+
+#### POP2: 2.3 Number of Live Trees by Species Groups and Diameter Class on forest land, Bighorn National Forest
+<details>
+  <summary>View Example</summary>
+
+We can also look at the number of live trees by species group and diameter class (DIACL2IN):
+
+```{r}
+
+## Number of live trees by species group and diameter class (DIACL2IN)
+tree2.3 <- modGBtree(
+    GBpopdat = GBpopdat.bh,      # pop - population calculations
+    landarea = "FOREST",         # est - forest land filter
+    sumunits = TRUE,             # est - sum estimation units to population
+    estvar = "TPA_UNADJ",               # est - number of trees per acre 
+    estvar.filter = "STATUSCD == 1",    # est - live trees only
+    rowvar = "SPGRPCD",          # est - row domain
+    colvar = "DIACL2IN",         # est - column domain
+    returntitle = TRUE,          # out - return title information
+    table_opts = table_options(
+      row.FIAname = TRUE,          # est - row domain names
+      allin1 = TRUE                # out - return output with est(pse)
+      )
+    )
+
+```
+
+Outputs:
+
+```{r}
+## Look at output list
+names(tree2.3)
+
+## Estimate and percent sampling error of estimate
+head(tree2.3$est)
+
+```
+
+</details>
+
+#### POP2: 2.4 Number of Live Trees by Species Groups and a Different Diameter Class on forest land, Bighorn National Forest
+<details>
+  <summary>View Example</summary>
+
+Next, we can look at number of live trees by species group and diameter class (DIACL):
+
+```{r}
+
+## Number of live trees by species group and diameter class (DIACL)
+tree2.4 <- modGBtree(
+    GBpopdat = GBpopdat.bh,      # pop - population calculations
+    landarea = "FOREST",         # est - forest land filter
+    sumunits = TRUE,             # est - sum estimation units to population
+    estvar = "TPA_UNADJ",               # est - number of trees per acre 
+    estvar.filter = "STATUSCD == 1",    # est - live trees only
+    rowvar = "SPGRPCD",          # est - row domain
+    colvar = "DIACL",            # est - column domain
+    returntitle = TRUE,          # out - return title information
+    table_opts = table_options(
+      row.FIAname = TRUE,          # est - row domain names
+      allin1 = TRUE                # out - return output with est(pse)
+      )
+    )
+
+```
+
+Outputs:
+
+```{r}
+## Look at output list
+names(tree2.4)
+
+## Estimate and percent sampling error of estimate
+head(tree2.4$est)
+```
+
+</details>
+
+#### POP2: 2.5 Number of Live Trees (+ seedlings) by Species Groups and a Different Diameter Class on forest land, Bighorn National Forest
+<details>
+  <summary>View Example</summary>
+
+Finally, we add seedlings to Example 8:
+
+```{r}
+ 
+## Number of live trees by species group and diameter class (DIACL), add seedlings
+tree2.5 <- modGBtree(
+    GBpopdat = GBpopdat.bh,      # pop - population calculations
+    estseed = "add",             # est - add seedling data
+    landarea = "FOREST",         # est - forest land filter
+    sumunits = TRUE,             # est - sum estimation units to population
+    estvar = "TPA_UNADJ",               # est - number of trees per acre 
+    estvar.filter = "STATUSCD == 1",    # est - live trees only
+    rowvar = "SPGRPCD",          # est - row domain
+    colvar = "DIACL",            # est - column domain
+    returntitle = TRUE,          # out - return title information
+    table_opts = table_options(
+      row.FIAname = TRUE,          # est - row domain names
+      allin1 = TRUE                # out - return output with est(pse)
+      )
+    )
+
+```
+
+And look at the outputs:
+
+```{r}
+## Look at output list
+names(tree2.5)
+
+## Estimate and percent sampling error of estimate
+head(tree2.5$est)
+
+```
+
+
+</details>
+
+#### POP3: 3.1 Volume of Dead Trees by Forest Type Group and Primary Disturbance on forest land, Bighorn National Forest Districts
+<details>
+  <summary>View Example</summary>
+
+Next, we can look at number of live trees by species group and diameter class (DIACL):
+
+```{r}
+
+## Number of dead trees by forest type group and primary disturbance
+tree3.1 <- modGBtree(
+    GBpopdat = GBpopdat.bhdist,  # pop - population calculations
+    landarea = "FOREST",         # est - forest land filter
+    sumunits = FALSE,            # est - sum estimation units to population
+    estvar = "VOLCFNET",         # est - number of trees per acre 
+    estvar.filter = "STATUSCD == 2 & STANDING_DEAD_CD == 1",    # est - live trees only
+    rowvar = "FORTYPGRPCD",      # est - row domain
+    returntitle = TRUE,          # out - return title information
+    table_opts = table_options(
+      row.FIAname = TRUE,          # est - row domain names
+      allin1 = TRUE                # out - return output with est(pse)
+      )
+    )
+
+```
+
+Outputs:
+
+```{r}
+## Look at output list
+names(tree3.1)
+
+## Estimate and percent sampling error of estimate
+tree3.1$est
+
+## Estimate and percent sampling error by district
+tree3.1$raw$unit_rowest
+
+
+```
+
+</details>
+
+<a name="modGBratio"></a>
+
+### modGBratio
+
+`FIESTA`'s `modGBratio` function generates per-acre and per-tree estimates by domain and/or tree domain by domain (e.g., Forest type) and/or tree domain (e.g., Species). Calculations are based on Scott et al. 2005 ('the green-book') for mapped forest inventory plots. The ratio estimator for estimating per-acre or per-tree by stratum and domain is used, referred to as Ratio of Means (ROM). 
+
+If there are more than one estimation unit (i.e., subpopulation) within the population, estimates are generated by estimation unit. If sumunits = TRUE, the estimates and percent standard errors returned are a sum combination of all estimation units. If rawdata = TRUE, the raw data returned will include estimates by estimation unit.  
+
+Parameters defined in the following examples are organized by category: population data (pop); estimation information (est); and output details (out).
+
+#### POP1: 1.1 Net cubic-foot volume per acre of live trees on timberland, Wyoming, 2011-2013
+<details>
+  <summary>View Example</summary>
+
+We generate estimates by estimation unit (i.e., ESTN_UNIT) and sum to population (i.e., WY):
+
+```{r}
+## Return raw data and titles
+## Total net cubic-foot volume of live trees (at least 5 inches diameter), Wyoming, 2011-2013 
+ratio1.1 <- modGBratio(
+    GBpopdat = GBpopdat,         # pop - population calculations
+    landarea = "TIMBERLAND",     # est - forest land filter
+    sumunits = TRUE,             # est - sum estimation units to population
+    estvarn = "VOLCFNET",               # est - net cubic-foot volume, numerator
+    estvarn.filter = "STATUSCD == 1",   # est - live trees only, numerator
+    returntitle = TRUE           # out - return title information
+    )
+
+```
+
+And we can look at our output:
+
+```{r}
+## Look at output list
+names(ratio1.1)
+
+## Estimate and percent sampling error of estimate
+head(ratio1.1$est)
+
+
+## Raw data (list object) for estimate
+raw1.1 <- ratio1.1$raw      # extract raw data list object from output
+names(raw1.1)
+head(raw1.1$unit_totest) # estimates by estimation unit (i.e., ESTN_UNIT)
+head(raw1.1$totest)      # estimates for population (i.e., WY)
+
+
+## Titles (list object) for estimate
+titlelst <- ratio1.1$titlelst
+names(titlelst)
+titlelst
+
+```
+
+</details>
+
+#### POP1: 1.2 Net cubic-foot volume per acre of live trees by forest type on timberland, Wyoming, 2011-2013
+<details>
+  <summary>View Example</summary>
+
+We can also add rows to the output:
+
+```{r}
+## Net cubic-foot volume of live trees (at least 5 inches diameter) by forest type, Wyoming, 2011-2013
+## Return raw data and titles
+ratio1.2 <- modGBratio(
+    GBpopdat = GBpopdat,         # pop - population calculations
+    landarea = "TIMBERLAND",     # est - forest land filter
+    sumunits = TRUE,             # est - sum estimation units to population
+    estvarn = "VOLCFNET",               # est - net cubic-foot volume
+    estvarn.filter = "STATUSCD == 1",   # est - live trees only
+    rowvar = "FORTYPCD",         # est - row domain 
+    returntitle = TRUE           # out - return title information
+    )
+
+```
+
+And of course view our outputs:
+
+```{r}
+## Look at output list
+names(ratio1.2)
+
+## Estimate and percent sampling error of estimate
+head(ratio1.2$est)
+
+
+## Raw data (list object) for estimate
+raw1.2 <- ratio1.2$raw      # extract raw data list object from output
+names(raw1.2)
+head(raw1.2$unit_totest)    # estimates by estimation unit (i.e., ESTN_UNIT)
+head(raw1.2$totest)         # estimates for population (i.e., WY)
+head(raw1.2$unit_rowest)    # estimates by row, by estimation unit (i.e., ESTN_UNIT)
+head(raw1.2$rowest)         # estimates by row for population (i.e., WY)
+
+
+## Titles (list object) for estimate
+titlelst <- ratio1.2$titlelst
+names(titlelst)
+titlelst
+
+```
+
+</details>
+
+#### POP1: 1.3 Net cubic-foot volume per acre of live trees by forest type and stand-size class on timberland, Wyoming, 2011-2013
+<details>
+  <summary>View Example</summary>
+
+We can also add row and columns to output, including FIA names:
+
+```{r}
+## Return output with estimates (est) and percent standard error (pse) in same cell - est(pse)
+## Save data to outfolder:
+## Net cubic-foot volume of live trees (at least 5 inches diameter) by forest type and stand-size class, 
+##    Wyoming, 2011-2013
+ratio1.3 <- modGBratio(
+    GBpopdat = GBpopdat,         # pop - population calculations
+    landarea = "TIMBERLAND",     # est - forest land filter
+    sumunits = TRUE,             # est - sum estimation units to population
+    estvarn = "VOLCFNET",               # est - net cubic-foot volume, numerator
+    estvarn.filter = "STATUSCD == 1",   # est - live trees only, numerator
+    rowvar = "FORTYPCD",         # est - row domain
+    colvar = "STDSZCD",          # est - column domain
+    returntitle = TRUE,          # out - return title information
+    savedata = TRUE,             # out - save data to outfolder
+    table_opts = list(
+      row.FIAname = TRUE,          # est - row domain names
+      col.FIAname = TRUE,          # est - column domain names
+      allin1 = TRUE                # out - return output with est(pse)
+      ),
+    savedata_opts = list(
+      outfolder = outfolder,       # out - outfolder for saving data
+      outfn.pre = "WY"             # out - prefix for output files
+      )
+    )
+
+```
+
+And look at our output again:
+
+```{r}
+## Look at output list from modGBarea()
+names(ratio1.3)
+
+## Estimate and percent sampling error of estimate
+head(ratio1.3$est)
+
+
+## Raw data (list object) for estimate
+raw1.3 <- ratio1.3$raw      # extract raw data list object from output
+names(raw1.3)
+head(raw1.3$unit_totest) # estimates by estimation unit (i.e., ESTN_UNIT)
+head(raw1.3$totest)      # estimates for population (i.e., WY)
+head(raw1.3$unit_rowest) # estimates by row, by estimation unit (i.e., ESTN_UNIT)
+head(raw1.3$rowest)      # estimates by row for population (i.e., WY)
+head(raw1.3$unit_colest) # estimates by column, by estimation unit (i.e., ESTN_UNIT)
+head(raw1.3$colest)      # estimates by column for population (i.e., WY)
+head(raw1.3$unit_grpest) # estimates by row and column, by estimation unit (i.e., ESTN_UNIT)
+head(raw1.3$grpest)      # estimates by row and column for population (i.e., WY)
+
+
+## Titles (list object) for estimate
+titlelst <- ratio1.3$titlelst
+names(titlelst)
+titlelst
+
+
+## List output files in outfolder
+list.files(outfolder, pattern = "WY_ratio")
+list.files(paste0(outfolder, "/rawdata"), pattern = "WY_ratio")
+
+```
+
+</details>
+
+#### POP2: 2.1 Number of live trees per acre by species, Bighorn National Forest
+<details>
+  <summary>View Example</summary>
+
+We can also use tree domain in estimation output rows:
+
+```{r}
+
+## Number of live trees (at least 1 inch diameter) by species
+ratio2.1 <- modGBratio(
+    GBpopdat = GBpopdat.bh,      # pop - population calculations
+    landarea = "FOREST",         # est - forest land filter
+    sumunits = TRUE,             # est - sum estimation units to population
+    estvarn = "TPA_UNADJ",               # est - number of trees per acre, numerator 
+    estvarn.filter = "STATUSCD == 1",    # est - live trees only, numerator
+    rowvar = "SPCD",             # est - row domain
+    returntitle = TRUE,          # out - return title information
+    table_opts = table_options(
+      row.FIAname = TRUE,          # est - row domain names
+      allin1 = FALSE,              # out - return output with est and pse
+      ),
+    title_opts = title_options(
+      title.ref = "Bighorn National Forest")
+    )
+
+```
+
+And we can look at our output:
+
+```{r}
+## Look at output list
+names(ratio2.1)
+
+## Estimate and percent sampling error of estimate
+head(ratio2.1$est)
+
+```
+
+</details>
+
+#### POP2: 2.2 Number of live trees (plus seedlings) per acre by species, Bighorn National Forest
+<details>
+  <summary>View Example</summary>
+
+Now, we can add seedlings. 
+
+Note: seedling data are only available for number of trees (`estvarn = TPA_UNADJ`).
+
+Note: must include seedling data in population data calculations.
+
+```{r}
+
+## Number of live trees by species, including seedlings
+ratio2.2 <- modGBratio(
+    GBpopdat = GBpopdat.bh,        # pop - population calculations
+    estseed = "add",               # est - add seedling data
+    landarea = "FOREST",           # est - forest land filter
+    sumunits = TRUE,               # est - sum estimation units to population
+    estvarn = "TPA_UNADJ",               # est - number of trees per acre, numerator 
+    estvarn.filter = "STATUSCD == 1",    # est - live trees only, numerator
+    rowvar = "SPCD",               # est - row domain
+    returntitle = TRUE,            # out - return title information
+    table_opts = table_options(
+      row.FIAname = TRUE,          # est - row domain names
+      allin1 = FALSE               # out - return output with est and pse
+      ),
+    title_opts = title_options(
+      title.ref = "Bighorn National Forest")
+    )
+ratio2.2$titlelst
+
+```
+
+Output and comparison:
+
+```{r}
+## Look at output list
+names(ratio2.2)
+
+## Estimate and percent sampling error of estimate
+head(ratio2.2$est)
+
+## Compare estimates with and without seedlings
+head(ratio2.1$est)
+head(ratio2.2$est)
+
+```
+
+</details>
+
+#### POP2: 2.3 Number of live seedlings per acre by species, Bighorn National Forest
+<details>
+  <summary>View Example</summary>
+
+We could also consider only seedlings.
+
+Note: seedling data are only available for number of trees (`estvarn = TPA_UNADJ`).
+
+Note: must include seedling data in population data calculations.
+
+```{r}
+## Number of live seedlings by species
+ratio2.3 <- modGBratio(
+    GBpopdat = GBpopdat.bh,         # pop - population calculations
+    estseed = "only",               # est - add seedling data
+    landarea = "FOREST",            # est - forest land filter
+    sumunits = TRUE,                # est - sum estimation units to population
+    estvarn = "TPA_UNADJ",          # est - number of trees per acre, numerator 
+    rowvar = "SPCD",                # est - row domain
+    returntitle = TRUE,             # out - return title information
+    table_opts = table_options(
+      row.FIAname = TRUE,           # est - row domain names
+      allin1 = FALSE                # out - return output with est and pse
+      )
+    )
+
+```
+
+Output and comparisons:
+
+```{r}
+## Look at output list
+names(ratio2.3)
+
+## Estimate and percent sampling error of estimate
+head(ratio2.3$est)
+
+## Compare estimates with, without, and only seedlings
+head(ratio2.1$est)
+head(ratio2.2$est)
+head(ratio2.3$est)
+
+```
+
+</details>
+
+#### POP2: 2.4 Number of live trees by forest type and species, Bighorn National Forest
+<details>
+  <summary>View Example</summary>
+
+We can also use tree domain in estimation output columns:
+
+```{r}
+## Number of live trees (at least 1 inch diameter) by forest type and species
+ratio2.4 <- modGBratio(
+    GBpopdat = GBpopdat.bh,         # pop - population calculations
+    landarea = "FOREST",            # est - forest land filter
+    sumunits = TRUE,                # est - sum estimation units to population
+    estvarn = "TPA_UNADJ",               # est - number of trees per acre, numerator 
+    estvarn.filter = "STATUSCD == 1",    # est - live trees only, numerator
+    rowvar = "FORTYPCD",            # est - row domain
+    colvar = "SPCD",                # est - column domain
+    returntitle = TRUE,             # out - return title information
+    table_opts = table_options(
+      row.FIAname = TRUE,           # est - row domain names
+      col.FIAname = TRUE,           # est - column domain names
+      allin1 = TRUE                 # out - return output with est(pse)
+      )
+    )
+
+```
+
+And view our output:
+
+```{r}
+## Look at output list
+names(ratio2.4)
+
+## Estimate and percent sampling error of estimate
+head(ratio2.4$est)
+
+```
+
+</details>
+
+#### POP2: 2.5 Number of standing dead trees by species and cause of death, Bighorn National Forest
+<details>
+  <summary>View Example</summary>
+
+Next, we look at dead trees: 
+
+```{r}
+## Net cubic-foot volume of dead trees (at least 5 inches diameter) by species and cause of death
+ratio2.5 <- modGBratio(
+    GBpopdat = GBpopdat.bh,        # pop - population calculations
+    landarea = "FOREST",           # est - forest land filter
+    sumunits = TRUE,               # est - sum estimation units to population
+    estvarn = "VOLCFNET",          # est - number of trees per acre, numerator 
+    estvarn.filter = "STATUSCD == 2 & STANDING_DEAD_CD == 1",    # est - standing dead trees only, numerator
+    rowvar = "SPCD",               # est - row domain
+    colvar = "AGENTCD",            # est - column domain
+    returntitle = TRUE,            # out - return title information
+    table_opts = table_options(
+      row.FIAname = TRUE,          # est - row domain names
+      col.FIAname = TRUE,          # est - column domain names
+      allin1 = TRUE                # out - return output with est(pse)
+      )
+    )
+
+```
+
+And we can see our output:
+
+```{r}
+## Look at output list
+names(ratio2.5)
+
+## Estimate and percent sampling error of estimate
+head(ratio2.5$est)
+
+```
+
+
+</details>
+
+#### POP3.1: 3.1 Number of live trees by species group and diameter class (DIACL2IN), Bighorn National Forest 
+<details>
+  <summary>View Example</summary>
+
+We can also use tree domain in estimation output rows and columns:
+
+```{r}
+## Number of live trees by species group and diameter class (DIACL2IN)
+ratio2.6 <- modGBratio(
+    GBpopdat = GBpopdat.bh,          # pop - population calculations
+    landarea = "FOREST",         # est - forest land filter
+    sumunits = TRUE,             # est - sum estimation units to population
+    estvarn = "TPA_UNADJ",               # est - number of trees per acre, numerator 
+    estvarn.filter = "STATUSCD == 1",    # est - live trees only, numerator
+    rowvar = "SPGRPCD",          # est - row domain
+    colvar = "DIACL2IN",         # est - column domain
+    returntitle = TRUE,          # out - return title information
+    table_opts = list(
+      row.FIAname = TRUE,          # est - row domain names
+      allin1 = TRUE               # out - return output with est(pse)
+      ),
+    title_opts = list(
+      title.ref = "Bighorn National Forest"
+      )
+    )
+
+```
+
+And examine our output:
+
+```{r}
+## Look at output list
+names(ratio2.6)
+
+## Estimate and percent sampling error of estimate
+head(ratio2.6$est)
+
+```
+
+</details>
+
+#### POP3: 3.2 Number of Live Trees per acre by Species Group and Diameter Class, Bighorn National Forest Districts
+<details>
+  <summary>View Example</summary>
+
+Next, we can look at the number of live trees by species group and diameter class (`DIACL`):
+
+```{r}
+ratio3.2 <- modGBratio(
+    GBpopdat = GBpopdat.bhdist,          # pop - population calculations
+    landarea = "FOREST",                 # est - forest land filter
+    sumunits = TRUE,                     # est - sum estimation units to population
+    estvarn = "TPA_UNADJ",               # est - number of trees per acre, numerator 
+    estvarn.filter = "STATUSCD == 1",    # est - live trees only, numerator
+    rowvar = "SPGRPCD",                  # est - row domain
+    returntitle = TRUE,                  # out - return title information
+    table_opts = table_options(
+      row.FIAname = TRUE,                # est - row domain names
+      allin1 = TRUE,                     # out - return output with est(pse)
+      ),
+    title_opts = title_options(
+      title.ref="Bighorn National Forest Districts"
+      )
+    )
+
+```
+
+And of course examine our output:
+
+```{r}
+## Look at output list
+names(ratio3.2)
+
+## Estimate and percent sampling error of estimate
+head(ratio3.2$est)
+
+```
+
+
+</details>
+
+#### POP1: 1.4 Net cubic-foot volume of live trees (at least 5 inches diameter) divided by net cubic-foot volume of all trees by forest type, Wyoming, 2011-2013
+<details>
+  <summary>View Example</summary>
+
+Next, we look at tree ratios:
+
+```{r}
+## Net cubic-foot volume of live trees (at least 5 inches diameter) divided by net cubic-foot volume of all trees 
+##    by forest type, Wyoming, 2011-2013
+ratio1.4 <- modGBratio(
+    GBpopdat = GBpopdat,         # pop - population calculations for WY, post-stratification
+    estseed = "add",             # est - add seedling data
+    landarea = "FOREST",         # est - forest land filter
+    sumunits = TRUE,             # est - sum estimation units to population
+    estvarn = "VOLCFNET",                # est - net cubic-foot volume, numerator
+    estvarn.filter = "STATUSCD == 1",    # est - live trees only
+    estvard = "VOLCFNET",                # est - net cubic-foot volume, numerator
+    rowvar = "FORTYPCD",         # est - row domain
+    returntitle = TRUE,          # out - return title information
+    table_opts = table_options(
+      row.FIAname = TRUE,          # est - row domain names
+      allin1 = TRUE,               # out - return output with est(pse)
+      )
+    )
+
+```
+
+And examine the output:
+
+```{r}
+## Look at output list
+names(ratio1.4)
+
+## Estimate and percent sampling error of estimate
+head(ratio1.4$est)
+
+```
+
+</details>
+
+### No strata
+
+If you want to exclude post-stratification (i.e., simple random sample, Horvitz-Thompson), you must generate a new population dataset using the `modGBpop` function by setting `strata = FALSE`.
+
+<details>
+  <summary>View Code</summary>
+
+```{r}
+## Get population data for Wyoming estimates, with no post-stratification
+GBpopdat.strat <- modGBpop(
+  popTabs = popTables(
+    cond = WYcond,               # FIA plot/condition data
+    tree = WYtree,               # FIA tree data
+    seed = WYseed),              # FIA seedling data
+    pltassgn = WYpltassgn,       # plot assignments
+    pltassgnid = "CN",           # uniqueid of plots
+    unitarea = WYunitarea,       # area by estimation units
+    unitvar = "ESTN_UNIT",       # name of estimation unit
+    strata = TRUE,               # if using post-stratification
+    stratalut = WYstratalut,     # strata classes and pixels counts
+    strata_opts = list(
+      getwt=TRUE,                # calculate strata weights
+      getwtvar="P1POINTCNT")     # use P1POINTCNT in stratalut to calculate weights
+    )
+
+
+## Get population data for Wyoming estimates, with no post-stratification
+GBpopdat.nostrat <- modGBpop(
+    popTabs = popTables(
+    cond = WYcond,               # FIA plot/condition data
+    tree = WYtree,               # FIA tree data
+    seed = WYseed),              # FIA seedling data
+    pltassgn = WYpltassgn,       # plot assignments
+    pltassgnid = "CN",           # uniqueid of plots
+    unitarea = WYunitarea,       # area by estimation units
+    unitvar = "ESTN_UNIT",       # name of estimation unit
+    strata = FALSE               # if using post-stratification
+    )
+```
+
+```{r}
+## Area of forest land by forest type and stand-size class, Wyoming, 2011-2013, with post-stratification
+area.strat <- modGBarea( 
+    GBpopdat = GBpopdat.strat,      # pop - population calculations for WY, post-stratification
+    landarea = "FOREST",            # est - forest land filter
+    sumunits = TRUE,                # est - sum estimation units to population
+    rowvar = "FORTYPCD",            # est - row domain
+    table_opts = table_options(
+      row.FIAname = TRUE,           # est - row domain names
+      allin1 = FALSE                # out - return output with est(pse)
+      )
+    )   
+
+## Area of forest land by forest type and stand-size class, Wyoming, 2011-2013, no post-stratification
+area.nostrat <- modGBarea( 
+    GBpopdat = GBpopdat.nostrat,    # pop - population calculations for WY, no post-stratification
+    landarea = "FOREST",            # est - forest land filter
+    sumunits = TRUE,                # est - sum estimation units to population
+    rowvar = "FORTYPCD",            # est - row domain
+    table_opts = table_options(
+      row.FIAname = TRUE,           # est - row domain names
+      allin1 = FALSE                # out - return output with est(pse)
+      )
+    )   
+```
+
+```{r}
+## Compare estimates and percent standard errors with and without post-stratification
+head(area.strat$est)
+head(area.nostrat$est)
+```
+
+```{r}
+## Number of live trees by species, Wyoming, 2011-2013, with post-stratification
+tree.strat <- modGBtree( 
+    GBpopdat = GBpopdat.strat,      # pop - population calculations for WY, post-stratification
+    landarea = "FOREST",         # est - forest land filter
+    sumunits = TRUE,             # est - sum estimation units to population
+    estvar = "TPA_UNADJ",               # est - number of trees per acre, numerator 
+    estvar.filter = "STATUSCD == 1",    # est - live trees only, numerator
+    rowvar = "FORTYPCD",         # est - row domain
+    table_opts = table_options(
+      row.FIAname = TRUE,          # est - row domain names
+      allin1 = FALSE                # out - return output with est(pse)
+      )
+    )   
+
+## Number of live trees by species, Wyoming, 2011-2013, no post-stratification
+tree.nostrat <- modGBtree( 
+    GBpopdat = GBpopdat.nostrat, # pop - population calculations for WY, no post-stratification
+    landarea = "FOREST",         # est - forest land filter
+    sumunits = TRUE,             # est - sum estimation units to population
+    estvar = "TPA_UNADJ",               # est - number of trees per acre, numerator 
+    estvar.filter = "STATUSCD == 1",    # est - live trees only, numerator
+    rowvar = "FORTYPCD",         # est - row domain
+    table_opts = table_options(
+      row.FIAname = TRUE,          # est - row domain names
+      allin1 = FALSE                # out - return output with est(pse)
+      )
+    )   
+```
+
+```{r}
+## Compare estimates and percent standard errors with and without post-stratification
+head(tree.strat$est)
+head(tree.nostrat$est)
+```
+
+```{r}
+## Number of live trees per acre by species, Wyoming, 2011-2013, with post-stratification
+ratio.strat <- modGBratio( 
+    GBpopdat = GBpopdat.strat,   # pop - population calculations for WY, post-stratification
+    landarea = "FOREST",         # est - forest land filter
+    sumunits = TRUE,             # est - sum estimation units to population
+    estvarn = "TPA_UNADJ",               # est - number of trees per acre, numerator 
+    estvarn.filter = "STATUSCD == 1",    # est - live trees only, numerator
+    rowvar = "FORTYPCD",         # est - row domain
+    table_opts = table_options(
+      row.FIAname = TRUE,          # est - row domain names
+      allin1 = FALSE                # out - return output with est(pse)
+      )
+    )   
+
+## Number of live trees per acre by species, Wyoming, 2011-2013, no post-stratification
+ratio.nostrat <- modGBratio( 
+    GBpopdat = GBpopdat.nostrat, # pop - population calculations for WY, no post-stratification
+    landarea = "FOREST",         # est - forest land filter
+    sumunits = TRUE,             # est - sum estimation units to population
+    estvarn = "TPA_UNADJ",               # est - number of trees per acre, numerator 
+    estvarn.filter = "STATUSCD == 1",    # est - live trees only, numerator
+    rowvar = "FORTYPCD",         # est - row domain
+    table_opts = table_options(
+      row.FIAname = TRUE,          # est - row domain names
+      allin1 = FALSE                # out - return output with est(pse)
+      )
+    )  
+```
+
+```{r}
+## Compare estimates and percent standard errors with and without post-stratification
+head(ratio.strat$est)
+head(ratio.nostrat$est)
+```
+
+</details>
+
+### By estimation unit (`sumunits = FALSE`)
+
+If you just wanted estimates by estimation unit and did not want to sum them, set `sumunits = FALSE`. If `sumunits = FALSE`, the estimates and percent standard errors returned are by estimation unit, with an attribute, named 'unit' appended to data frame, with the unit value. The raw data returned will look the same as if `sumunits = TRUE`. 
+
+<details>
+  <summary>View Code</summary>
+
+```{r}
+## By estimation unit
+## Area of forest land by forest type and stand-size class and Estimation Unit,
+##    Wyoming, 2011-2013
+##################################################################################
+area.unit <- modGBarea(
+    GBpopdat = GBpopdat,         # pop - population calculations for WY, post-stratification
+    landarea = "FOREST",         # est - forest land filter
+    sumunits = FALSE,            # est - sum estimation units to population
+    rowvar = "FORTYPCD",         # est - row domain
+    colvar = "STDSZCD",          # est - column domain
+    returntitle = TRUE,          # out - return title information
+    table_opts = list(
+      allin1 = TRUE)             # out - return output with est(pse)
+    )
+
+## Estimate and percent sampling error of estimate (first 6 rows)
+head(area.unit$est)
+
+## Unique estimation units
+unique(area.unit$est$unit)
+```
+
+</details>
+
+<!-- ### Population data included in estimation module -->
+
+<!-- If you were only interested in a couple estimates for a population, you could calculate population data within a module by including all information directly into the estimation module. The `modGBpop` function is called if the GBpopdat list object is not included as a parameter. -->
+
+<!-- <details> -->
+<!--   <summary>View Code</summary> -->
+
+<!-- ```{r} -->
+<!-- ## Get population data for Wyoming, with post-stratification -->
+<!-- ## Area of forest land by forest type and stand-size class, Wyoming, 2011-2013 -->
+<!-- area.strat <- modGBarea(  -->
+<!--     cond = WYcond,               # pop - FIA plot/condition data -->
+<!--     tree = WYtree,               # pop - FIA tree data -->
+<!--     pltassgn = WYpltassgn,       # pop - plot assignments -->
+<!--     pltassgnid = "CN",           # pop - uniqueid of plots -->
+<!--     unitarea = WYunitarea,       # pop - area by estimation units -->
+<!--     unitvar = "ESTN_UNIT",       # pop - name of estimation unit -->
+<!--     strata = TRUE,               # pop - if using post-stratification -->
+<!--     stratalut = WYstratalut,     # strata classes and pixels counts -->
+<!--     landarea = "FOREST",         # est - forest land filter -->
+<!--     sumunits = TRUE,             # est - sum estimation units to population -->
+<!--     rowvar = "FORTYPCD",         # est - row domain -->
+<!--     colvar = "STDSZCD",          # est - column domain -->
+<!--     table_opts = table_options(allin1 = TRUE)               # out - return output with est(pse) -->
+<!--     )    -->
+
+
+<!-- ## Get population data for Wyoming, with no post-stratification -->
+<!-- ## Area of forest land by forest type and stand-size class, Wyoming, 2011-2013 -->
+<!-- area.nostrat <- modGBarea(  -->
+<!--     cond = WYcond,               # pop - FIA plot/condition data -->
+<!--     tree = WYtree,               # pop - FIA tree data -->
+<!--     pltassgn = WYpltassgn,       # pop - plot assignments -->
+<!--     pltassgnid = "CN",           # pop - uniqueid of plots -->
+<!--     unitarea = WYunitarea,       # pop - area by estimation units -->
+<!--     unitvar = "ESTN_UNIT",       # pop - name of estimation unit -->
+<!--     strata = FALSE,              # pop - if using post-stratification -->
+<!--     landarea = "FOREST",         # est - forest land filter -->
+<!--     sumunits = TRUE,             # est - sum estimation units to population -->
+<!--     rowvar = "FORTYPCD",         # est - row domain -->
+<!--     colvar = "STDSZCD",          # est - column domain -->
+<!--     rawdata = TRUE,              # out - return raw data  -->
+<!--     allin1 = TRUE                # out - return output with est(pse) -->
+<!--     )    -->
+
+
+<!-- ## Compare estimates and percent standard errors with and without post-stratification -->
+<!-- head(area.strat$est) -->
+<!-- head(area.nostrat$est) -->
+<!-- ``` -->
+
+</details>
+
+## References
+
+Bechtold, William A.; Patterson, Paul L., Editors. 2005. The enhanced Forest Inventory and Analysis program national sampling design and estimation procedures. Gen. Tech. Rep. SRS-80. Asheville, NC: U.S. Department of Agriculture, Forest Service, Southern Research Station. 85 p.
+
+Patterson, Paul L. 2012. Photo-based estimators for the Nevada photo-based inventory. Res. Pap. RMRS-RP-92. Fort Collins, CO: U.S. Department of Agriculture, Forest Service, Rocky Mountain Research Station. 14 p.
+
+Westfall, James A.; Patterson, Paul L.; Coulston, John W. 2011. Post-stratified estimation: with-in strata and total sample size recommendations. Canadian Journal of Forest Research. 41: 1130-1139.
+
