@@ -244,6 +244,32 @@ head(GBpopdat.bhdist$seedx)
 GBpopdat.bhdist$stratalut
 
 
+## ---- results = FALSE, message = F--------------------------------------------
+
+SQLitefn <- system.file("extdata", "FIA_data/RIdat_eval2019.db", package="FIESTA")
+
+conn <- DBI::dbConnect(RSQLite::SQLite(), SQLitefn)
+DBI::dbListTables(conn)
+DBI::dbDisconnect(conn)
+
+
+## ---- results = FALSE, message = F--------------------------------------------
+
+GBpopdat.RI <- modGBpop(popTabs = list(plot="plot", cond="cond", tree="tree", seed="seed"),
+                  dsn = SQLitefn,
+                  pltassgn = "pop_plot_stratum_assgn",
+                  stratalut = "pop_stratum",
+                  unitarea = "pop_estn_unit",
+                  unitvar = "ESTN_UNIT",
+                  areavar = "AREA_USED",
+                  strata_opts = list(getwt=TRUE, getwtvar="P1POINTCNT")
+                  )
+names(GBpopdat.RI)
+
+# Strata-level population data, including number of plots and adjustment factors
+GBpopdat.RI$stratalut  
+
+
 ## -----------------------------------------------------------------------------
 area1.1 <- modGBarea(
     GBpopdat = GBpopdat,      # pop - population calculations for WY, post-stratification
@@ -469,6 +495,41 @@ raw3.1$colest              # estimates for population for column domains
 titlelst3.1 <- area3.1$titlelst
 names(titlelst3.1)
 titlelst3.1
+
+
+## -----------------------------------------------------------------------------
+
+area4.1 <- modGBarea(
+    GBpopdat = GBpopdat.RI,        # pop - population calculations for Bighorn NF, post-stratification
+    landarea = "FOREST",           # est - forest land filter
+    sumunits = TRUE,               # est - sum estimation units to population
+    rowvar = "FORTYPGRPCD",        # est - row domain
+    colvar = "STDSZCD",            # est - column domain
+    returntitle = TRUE,            # out - return title information
+    table_opts = list(   
+      row.FIAname = TRUE,          # table - return FIA row names
+      col.FIAname = TRUE           # table - return FIA column names
+      )
+    )
+
+
+## ---- results = T-------------------------------------------------------------
+names(area4.1)
+
+## ---- results = T-------------------------------------------------------------
+area4.1$est
+
+## ---- results = TRUE----------------------------------------------------------
+## Raw data (list object) for estimate
+raw4.1 <- area4.1$raw      # extract raw data list object from output
+names(raw4.1)
+head(raw4.1$unit_grpest)  # estimates by row and group domains
+
+
+## Titles (list object) for estimate
+titlelst4.1 <- area4.1$titlelst
+names(titlelst4.1)
+titlelst4.1
 
 
 ## -----------------------------------------------------------------------------
@@ -901,6 +962,34 @@ tree3.1$est
 ## Estimate and percent sampling error by district
 tree3.1$raw$unit_rowest
 
+
+
+## -----------------------------------------------------------------------------
+
+## Net cubic-foot volume of live trees by forest type and stand-size class
+tree4.1 <- modGBtree(
+    GBpopdat = GBpopdat.RI,      # pop - population calculations
+    landarea = "FOREST",         # est - forest land filter
+    sumunits = TRUE,             # est - sum estimation units to population
+    estvar = "VOLCFNET",         # est - net cubic-foot volume estimate
+    estvar.filter = "STATUSCD == 1",    # est - live trees only
+    rowvar = "FORTYPCD",         # est - row domain
+    colvar = "STDSZCD",          # est - column domain
+    returntitle = TRUE,          # out - return title information
+    table_opts = table_options(
+      row.FIAname = TRUE,          # est - row domain names
+      col.FIAname = TRUE,          # est - column domain names
+      allin1 = TRUE                # out - return output with est(pse)
+      )
+    )
+
+
+## -----------------------------------------------------------------------------
+## Look at output list
+names(tree4.1)
+
+## Estimate and percent sampling error of estimate
+head(tree4.1$est)
 
 
 ## -----------------------------------------------------------------------------

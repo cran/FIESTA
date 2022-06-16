@@ -691,9 +691,9 @@ list includes we can use the <code>str</code> function:</p>
 output
 </summary>
 <pre><code>## List of 24
-##  $ smallbnd       : chr &quot;/private/var/folders/c6/3mlbrgp57ls3_xf43cjzfp0c0000gn/T/Rtmpo1YDZ4/Rinst91fa3133a48a/FIESTA/extdata/sp_data/WY&quot;| __truncated__
+##  $ smallbnd       : chr &quot;/private/var/folders/c6/3mlbrgp57ls3_xf43cjzfp0c0000gn/T/RtmprEMIP7/Rinst8e8710311457/FIESTA/extdata/sp_data/WY&quot;| __truncated__
 ##  $ smallbnd.domain: chr &quot;DISTRICTNA&quot;
-##  $ condx          :&#39;data.frame&#39;: 66 obs. of  16 variables:
+##  $ condx          :&#39;data.frame&#39;: 66 obs. of  13 variables:
 ##  $ pltcondx       :&#39;data.frame&#39;: 66 obs. of  43 variables:
 ##  $ cuniqueid      : chr &quot;PLT_CN&quot;
 ##  $ condid         : chr &quot;CONDID&quot;
@@ -785,14 +785,13 @@ output
 </summary>
 <pre><code>## List of 12
 ##  $ dunit_totest   :&#39;data.frame&#39;: 3 obs. of  18 variables:
-##  $ domdat         :&#39;data.frame&#39;: 66 obs. of  20 variables:
+##  $ domdat         :&#39;data.frame&#39;: 66 obs. of  17 variables:
 ##  $ module         : chr &quot;SA&quot;
 ##  $ esttype        : chr &quot;AREA&quot;
 ##  $ SApackage      : chr &quot;JoSAE&quot;
 ##  $ SAmethod       : chr &quot;unit&quot;
 ##  $ estnm          : chr &quot;est&quot;
-##  $ predselect.unit:Classes &#39;data.table&#39; and &#39;data.frame&#39;:    1 obs. of  7 variables:
-##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
+##  $ predselect.unit:&#39;data.frame&#39;: 1 obs. of  8 variables:
 ##  $ SAobjlst       :List of 1
 ##  $ estvar         : chr &quot;AREA_ADJ&quot;
 ##  $ areaunits      : chr &quot;acres&quot;
@@ -996,8 +995,10 @@ output
 <summary>
 output
 </summary>
-<pre><code>##    LARGEBND TOTAL         slp           dem    asp_cos     asp_sin     fornf2
-## 1:        1     1 0.004745915 -0.0001050103 0.03462268 -0.06178897 -0.3936355</code></pre>
+<pre><code>##   LARGEBND LARGEBND TOTAL         slp           dem    asp_cos     asp_sin
+## 1 SApopdat        1     1 0.004745915 -0.0001050103 0.03462268 -0.06178897
+##       fornf2
+## 1 -0.3936355</code></pre>
 </details>
 </details>
 </div>
@@ -1045,7 +1046,7 @@ output
 <pre><code>##                            DOMAIN  Estimate Percent Sampling Error
 ## 1: Medicine Wheel Ranger District 416183748                  24.30
 ## 2:   Powder River Ranger District 378634745                  36.45
-## 3:         Tongue Ranger District 511295195                  24.79</code></pre>
+## 3:         Tongue Ranger District 511295196                  24.79</code></pre>
 </details>
 <div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>tree1<span class="sc">$</span>multest</span></code></pre></div>
 <details>
@@ -1086,8 +1087,8 @@ variable selection before fitting the model.</p>
 <summary>
 output
 </summary>
-<pre><code>##    LARGEBND TOTAL       slp       dem asp_cos   asp_sin    fornf2
-## 1:        1     1 -75.98846 0.7412908       0 -685.1538 -1506.606</code></pre>
+<pre><code>##   LARGEBND LARGEBND TOTAL       slp       dem asp_cos   asp_sin    fornf2
+## 1 SApopdat        1     1 -75.98846 0.7412908       0 -685.1538 -1506.606</code></pre>
 </details>
 <div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>tree2<span class="sc">$</span>est</span></code></pre></div>
 <details>
@@ -1095,7 +1096,7 @@ output
 output
 </summary>
 <pre><code>##                            DOMAIN  Estimate Percent Sampling Error
-## 1: Medicine Wheel Ranger District 416320589                  24.12
+## 1: Medicine Wheel Ranger District 416320590                  24.12
 ## 2:   Powder River Ranger District 377234199                  36.11
 ## 3:         Tongue Ranger District 512279660                  24.44</code></pre>
 </details>
@@ -1129,7 +1130,7 @@ output
 </summary>
 <pre><code>##                            DOMAIN Estimate Percent Sampling Error
 ## 1: Medicine Wheel Ranger District 22043124                  21.61
-## 2:   Powder River Ranger District 18865169                  32.06
+## 2:   Powder River Ranger District 18865170                  32.06
 ## 3:         Tongue Ranger District 29693976                  19.54</code></pre>
 </details>
 <p>and see our title list since we set <code>returntitle</code> to
@@ -1290,7 +1291,7 @@ output
 </summary>
 <pre><code>##                            DOMAIN Estimate Percent Sampling Error
 ## 1: Medicine Wheel Ranger District 22549224                  21.66
-## 2:   Powder River Ranger District 17699100                  26.52
+## 2:   Powder River Ranger District 17699101                  26.52
 ## 3:         Tongue Ranger District 30499650                  17.10</code></pre>
 </details>
 </details>

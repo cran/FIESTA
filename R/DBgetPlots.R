@@ -631,9 +631,9 @@ DBgetPlots <- function (states = NULL,
   datsourcelst <- c("datamart", "sqlite")
   datsource <- pcheck.varchar(var2check=datsource, varnm="datsource", 
 		checklst=datsourcelst, gui=gui, caption="Data source?") 
-  if (datsource %in% c("sqlite", "gdb")) {
-    data_dsn <- DBtestSQLite(data_dsn)
-  }
+  #if (datsource %in% c("sqlite", "gdb")) {
+  #  data_dsn <- DBtestSQLite(data_dsn)
+  #}
   if (!is.null(data_dsn)) {
     if (getext(data_dsn) %in% c("sqlite", "db", "db3")) {
       dbconn <- DBtestSQLite(data_dsn, dbconnopen=TRUE, showlist=FALSE)
@@ -1823,9 +1823,11 @@ DBgetPlots <- function (states = NULL,
     ## Tree data
     ##############################################################
     if ((istree || !is.null(alltFilter)) && !is.null(pltx)) {
-      ## TREE table
-      if (istree || !is.null(alltFilter)) {
-        TREE <- DBgetCSV("TREE", stabbr, returnDT=TRUE, stopifnull=FALSE)
+      if (datsource == "datamart") {
+        ## TREE table
+        if (istree || !is.null(alltFilter)) {
+          TREE <- DBgetCSV("TREE", stabbr, returnDT=TRUE, stopifnull=FALSE)
+        }
       }
 
       message("\n",

@@ -106,6 +106,8 @@
 #' @param savesteps Logical. If TRUE, save steps spatial intermediate layers
 #' and JPG images. All spatial layers are output as *.shp format in a separate
 #' folder (SAdoms_steps).
+#' @param saveobj Logical. If TRUE, save SAdomdat object to outfolder.
+#' @param objnm String. Name of *.rds object.
 #' @param maxbnd.addtext Logical. If TRUE, adds text to intermediate step plots
 #' for maxbnd displays.
 #' @param largebnd.addtext Logical. If TRUE, adds text to intermediate step
@@ -113,6 +115,7 @@
 #' @param savedata_opts List. See help(savedata_options()) for a list
 #' of options. Only used when savedata = TRUE.  
 #' @param addstate Logical. If TRUE, appends state attribute to SAdoms.
+#' @param byeach Logical. If TRUE, creates an SAdom for each smallbnd polygon.
 #' @param dissolve Logical. If TRUE, aggregates polygons to smallbnd.domain or
 #' smallbnd.unique.
 #' @return \item{SAdomslst}{ List object. Set(s) of model domain units. If
@@ -167,11 +170,14 @@ spGetSAdoms <- function(smallbnd,
                         showsteps = TRUE, 
                         savedata = FALSE, 
                         savesteps = FALSE, 
+                        saveobj = FALSE,
+                        objnm = "SAdomdat",
                         maxbnd.addtext = TRUE, 
                         largebnd.addtext = FALSE, 
                         savedata_opts = NULL, 
                         addstate = FALSE, 
-                        dissolve = FALSE) {
+                        dissolve = FALSE,
+                        byeach = FALSE) {
   ##############################################################################
   ## DESCRIPTION
   ## Generates small area domains for input to Small Area Module (modSA*).
@@ -272,6 +278,18 @@ spGetSAdoms <- function(smallbnd,
   maxislarge <- FALSE
   #smallishelper <- FALSE
 
+  ## Check multiSAdoms
+  #############################################################################
+  multiSAdoms <- pcheck.logical(multiSAdoms, varnm="multiSAdoms", 
+		title="More than 1 SAdom?", first="YES", gui=gui) 
+
+  ## Check byeach
+  #############################################################################
+  byeach <- pcheck.logical(byeach, varnm="byeach", 
+		title="By each smallbnd poly?", first="YES", gui=gui) 
+  if (byeach && !multiSAdoms) {
+    multiSAdoms <- TRUE
+  }
 
   ## Check savedata
   #############################################################################
@@ -288,9 +306,14 @@ spGetSAdoms <- function(smallbnd,
   savesteps <- pcheck.logical(savesteps, varnm="savesteps", 
 		title="Save step data?", first="YES", gui=gui)  
 
+  ## Check saveobj
+  saveobj <- pcheck.logical(saveobj, varnm="saveobj",
+		title="Save SApopdat object?", first="YES", gui=gui, stopifnull=TRUE)
+
+
   ## Check overwrite, outfn.date, outfolder, outfn 
   ########################################################
-  if (savedata || savesteps) {
+  if (savedata) {
     outlst <- pcheck.output(outfolder=outfolder, out_dsn=out_dsn, 
             out_fmt=out_fmt, outfn.pre=outfn.pre, outfn.date=outfn.date, 
             overwrite_dsn=overwrite_dsn, overwrite_layer=overwrite_layer,
@@ -302,13 +325,22 @@ spGetSAdoms <- function(smallbnd,
     append_layer <- outlst$append_layer
     outfn.date <- outlst$outfn.date
     outfn.pre <- outlst$outfn.pre
-    
-    if (savesteps) {
-      stepfolder <- file.path(outfolder, "SAdoms_steps")
-      if (!dir.exists(stepfolder)) dir.create(stepfolder)
-      step_dsn <- NULL
-      step_fmt <- "shp"
+
+  } else if (savesteps || saveobj) {
+    outfolder <- pcheck.outfolder(outfolder)
+    if (is.null(out_layer)) {
+      out_layer <- "SAdoms"
     }
+    if (!is.null(outfn.pre)) {
+      out_layer <- paste0(outfn.pre, "_", out_layer)
+    }
+  }
+    
+  if (savesteps) {
+    stepfolder <- file.path(outfolder, "SAdoms_steps")
+    if (!dir.exists(stepfolder)) dir.create(stepfolder)
+    step_dsn <- NULL
+    step_fmt <- "shp"
   }
 
   #############################################################################
@@ -615,7 +647,7 @@ spGetSAdoms <- function(smallbnd,
 		      polyunion=polyunion, 
 		      showsteps=showsteps, savesteps=savesteps, 
 		      stepfolder=stepfolder, step_dsn=step_dsn, 
-		      out_fmt=step_fmt, multiSAdoms=multiSAdoms,
+		      out_fmt=step_fmt, multiSAdoms=multiSAdoms, byeach=byeach,
 		      maxbnd.threshold=maxbnd.threshold, largebnd.threshold=largebnd.threshold, 
 		      maxbnd.addtext=maxbnd.addtext, largebnd.addtext=largebnd.addtext, 
 		      overwrite=overwrite_layer)
@@ -657,16 +689,18 @@ spGetSAdoms <- function(smallbnd,
     ## Merge other attributes (smallbnd.domain) to SAdoms
     smallbndvars <- unique(c(smallbnd.domain, 
 		names(smallbndxlst[[i]])[!names(smallbndxlst[[i]]) %in% names(SAdomslst[[i]])]))
-    SAdomslst[[i]] <- merge(SAdomslst[[i]], 
+    if (length(smallbndvars) > 1) {
+      SAdomslst[[i]] <- merge(SAdomslst[[i]], 
 		sf::st_drop_geometry(smallbndxlst[[i]][, smallbndvars]), 
 		by.x="DOMAIN", by.y=smallbnd.domain, all.x=TRUE)
+    }
 
 #    SAdomslst[[i]] <- merge(SAdomslst[[i]], 
 #		sf::st_drop_geometry(smallbndx[, c(smallbnd.unique, smallbnd.domain)]), 
 #		by.x="DOMAIN", by.y=smallbnd.unique, all.x=TRUE)
 
     ## Join maxbndx and largebndx attributes (using largest overlap)
-    if (!maxislarge && !is.null(maxbndx) && !maxbnd.unique %in% names(SAdomslst[[i]])) {
+    if (maxislarge && !is.null(maxbndx) && !maxbnd.unique %in% names(SAdomslst[[i]])) {
       SAdomslst[[i]] <- suppressWarnings(sf::st_join(SAdomslst[[i]], 
 					maxbndx[, maxbnd.unique], largest=TRUE))
     }
@@ -750,10 +784,19 @@ spGetSAdoms <- function(smallbnd,
   #  smallbnd <- SAdomdat$smallbndlst[[1]]
   #} 
 
+
+  if (saveobj) {
+    objfn <- getoutfn(outfn=objnm, ext="rda", outfolder=outfolder, 
+                      overwrite=overwrite_layer, outfn.pre=outfn.pre, outfn.date=TRUE)
+    saveRDS(returnlst, file=objfn)
+    message("saving object to: ", objfn)
+  }
+
   
   message("Number of model domains generated: ", length(SAdomslst), "\n") 
 
   returnlst <- list(SAdomlst=SAdomslst, smallbndlst=smallbndxlst, 
-		smallbnd.unique=smallbnd.unique, smallbnd.domain=smallbnd.domain)
+		smallbnd.unique=smallbnd.unique, smallbnd.domain=smallbnd.domain, 
+           largebnd.unique=largebnd.unique)
   return(returnlst)
 }

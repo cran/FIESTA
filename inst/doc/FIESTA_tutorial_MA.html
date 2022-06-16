@@ -620,7 +620,7 @@ output
 </summary>
 <pre><code>## List of 26
 ##  $ popType    : chr &quot;VOL&quot;
-##  $ condx      :Classes &#39;data.table&#39; and &#39;data.frame&#39;:    66 obs. of  16 variables:
+##  $ condx      :Classes &#39;data.table&#39; and &#39;data.frame&#39;:    66 obs. of  13 variables:
 ##   ..- attr(*, &quot;sorted&quot;)= chr [1:2] &quot;PLT_CN&quot; &quot;CONDID&quot;
 ##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
 ##  $ pltcondx   :Classes &#39;data.table&#39; and &#39;data.frame&#39;:    66 obs. of  40 variables:
@@ -705,7 +705,7 @@ output
 ##   ..- attr(*, &quot;sorted&quot;)= chr &quot;ONEUNIT&quot;
 ##  $ raw    :List of 9
 ##   ..$ unit_totest  :&#39;data.frame&#39;:    1 obs. of  18 variables:
-##   ..$ domdat       :&#39;data.frame&#39;:    66 obs. of  18 variables:
+##   ..$ domdat       :&#39;data.frame&#39;:    66 obs. of  15 variables:
 ##   ..$ module       : chr &quot;MA&quot;
 ##   ..$ esttype      : chr &quot;AREA&quot;
 ##   ..$ MAmethod     : chr &quot;greg&quot;
@@ -753,13 +753,13 @@ output
 <pre><code>## List of 4
 ##  $ est    :Classes &#39;data.table&#39; and &#39;data.frame&#39;:    1 obs. of  3 variables:
 ##   ..$ ONEUNIT               : num 1
-##   ..$ Estimate              : num 666948
-##   ..$ Percent Sampling Error: num 10.2
+##   ..$ Estimate              : num 655114
+##   ..$ Percent Sampling Error: num 9.47
 ##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
 ##   ..- attr(*, &quot;sorted&quot;)= chr &quot;ONEUNIT&quot;
 ##  $ raw    :List of 9
 ##   ..$ unit_totest  :&#39;data.frame&#39;:    1 obs. of  18 variables:
-##   ..$ domdat       :&#39;data.frame&#39;:    66 obs. of  18 variables:
+##   ..$ domdat       :&#39;data.frame&#39;:    66 obs. of  15 variables:
 ##   ..$ module       : chr &quot;MA&quot;
 ##   ..$ esttype      : chr &quot;AREA&quot;
 ##   ..$ MAmethod     : chr &quot;gregEN&quot;
@@ -777,8 +777,8 @@ output
 <summary>
 output
 </summary>
-<pre><code>##    ONEUNIT TOTAL           dem slp asp_cos asp_sin fornf2
-## 1:       1     1 -0.0002780168   0       0       0      0</code></pre>
+<pre><code>##    ONEUNIT TOTAL           dem        slp    asp_cos     asp_sin    fornf2
+## 1:       1     1 -9.845071e-05 0.00444926 0.03179286 -0.06609898 -0.414029</code></pre>
 </details>
 <p>Notably, we can see that <code>dem</code>, <code>slp</code>,
 <code>asp_cos</code>, and <code>asp_sin</code> were removed from the
@@ -1299,11 +1299,11 @@ output
 output
 </summary>
 <pre><code>##   ONEUNIT     nhat nhat.var NBRPLT NBRPLT.gt0 ACRES_GIS AREAUSED        est
-## 1       1 1170.147 29677.11     56         34   1112412  1112412 1301686384
+## 1       1 1170.147 29677.11     56         34   1112412  1112412 1301686385
 ##        est.var    est.se    est.cv      pse  CI99left  CI99right  CI95left
-## 1 3.672428e+16 191635798 0.1472212 14.72212 808065281 1795307487 926087122
+## 1 3.672428e+16 191635798 0.1472212 14.72212 808065281 1795307488 926087123
 ##    CI95right   CI68left  CI68right
-## 1 1677285646 1111112654 1492260114</code></pre>
+## 1 1677285647 1111112655 1492260115</code></pre>
 </details>
 </details>
 </div>
@@ -1356,7 +1356,7 @@ output
 ##   ..$ title.unitsn : chr &quot;cubic feet&quot;
 ##  $ raw     :List of 13
 ##   ..$ unit_totest  :&#39;data.frame&#39;:    1 obs. of  18 variables:
-##   ..$ domdat       :&#39;data.frame&#39;:    66 obs. of  18 variables:
+##   ..$ domdat       :&#39;data.frame&#39;:    66 obs. of  15 variables:
 ##   ..$ plotweights  :List of 1
 ##   ..$ estvar       : chr &quot;VOLCFNET&quot;
 ##   ..$ estvar.filter: chr &quot;STATUSCD == 1&quot;
@@ -1379,8 +1379,8 @@ output
 output
 </summary>
 <pre><code>## $totest
-##    ONEUNIT TOTAL     dem       slp asp_cos   asp_sin   fornf2
-## 1:       1     1 0.71174 -73.37278       0 -644.4341 -1445.03</code></pre>
+##    ONEUNIT TOTAL       dem       slp asp_cos   asp_sin    fornf2
+## 1:       1     1 0.7197991 -73.91003       0 -653.0746 -1462.707</code></pre>
 </details>
 <p>Notably, we can see that [INSERT CORRECT PREDS] <code>dem</code>,
 <code>slp</code>, <code>asp_cos</code>, and <code>asp_sin</code> were
@@ -1422,15 +1422,15 @@ output
 <summary>
 output
 </summary>
-<pre><code>##   Forest type    Estimate Percent Sampling Error
-## 1         201  14128503.6                  69.62
-## 2         265 189616779.4                  70.65
-## 3         266 135785846.3                  65.68
-## 4         268  50176218.6                  71.94
-## 5         281 911979036.1                  19.59
-## 6         901          --                     --
-## 7         999          --                     --
-## 8       Total  1301686384                  14.72</code></pre>
+<pre><code>##   Forest type     Estimate Percent Sampling Error
+## 1         201   14128503.8                  69.62
+## 2         265  189616779.5                  70.65
+## 3         266  135785846.2                  65.68
+## 4         268   50176218.7                  71.94
+## 5         281  911979036.5                  19.59
+## 6         901           --                     --
+## 7         999           --                     --
+## 8       Total 1301686384.8                  14.72</code></pre>
 </details>
 <div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Raw data (list object) for estimate</span></span>
 <span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a>raw3 <span class="ot">&lt;-</span> tree3<span class="sc">$</span>raw      <span class="co"># extract raw data list object from output</span></span>
@@ -1450,11 +1450,11 @@ output
 output
 </summary>
 <pre><code>##   ONEUNIT     nhat nhat.var NBRPLT NBRPLT.gt0 ACRES_GIS AREAUSED        est
-## 1       1 1170.147 29677.11     56         34   1112412  1112412 1301686384
+## 1       1 1170.147 29677.11     56         34   1112412  1112412 1301686385
 ##        est.var    est.se    est.cv      pse  CI99left  CI99right  CI95left
-## 1 3.672428e+16 191635798 0.1472212 14.72212 808065281 1795307487 926087122
+## 1 3.672428e+16 191635798 0.1472212 14.72212 808065281 1795307488 926087123
 ##    CI95right   CI68left  CI68right
-## 1 1677285646 1111112654 1492260114</code></pre>
+## 1 1677285647 1111112655 1492260115</code></pre>
 </details>
 <div class="sourceCode" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw3<span class="sc">$</span>totest)        <span class="co"># estimates for population (i.e., WY)</span></span></code></pre></div>
 <details>
@@ -1470,24 +1470,24 @@ output
 </summary>
 <pre><code>##   ONEUNIT Forest type      nhat    nhat.var NBRPLT NBRPLT.gt0 ACRES_GIS
 ## 1       1         201  12.70078    78.19439     56          2   1112412
-## 2       1         265 170.45548 14503.95279     56          4   1112412
-## 3       1         266 122.06431  6427.30074     56          5   1112412
+## 2       1         265 170.45548 14503.95281     56          4   1112412
+## 3       1         266 122.06431  6427.30073     56          5   1112412
 ## 4       1         268  45.10577  1052.94973     56          2   1112412
-## 5       1         281 819.82103 25803.85564     56         23   1112412
+## 5       1         281 819.82103 25803.85567     56         23   1112412
 ## 6       1         901   0.00000     0.00000     56          0   1112412
 ##   AREAUSED       est      est.var    est.se    est.cv      pse  CI99left
-## 1  1112412  14128504 9.676252e+13   9836794 0.6962375 69.62375         0
-## 2  1112412 189616779 1.794808e+16 133970442 0.7065326 70.65326         0
+## 1  1112412  14128504 9.676253e+13   9836795 0.6962375 69.62375         0
+## 2  1112412 189616780 1.794808e+16 133970443 0.7065326 70.65326         0
 ## 3  1112412 135785846 7.953536e+15  89182597 0.6567886 65.67886         0
 ## 4  1112412  50176219 1.302984e+15  36096876 0.7194021 71.94021         0
-## 5  1112412 911979036 3.193127e+16 178693232 0.1959401 19.59401 451695772
+## 5  1112412 911979037 3.193127e+16 178693232 0.1959401 19.59401 451695772
 ## 6  1112412         0 0.000000e+00         0       NaN      NaN         0
 ##    CI99right  CI95left  CI95right  CI68left  CI68right
-## 1   39466407         0   33408266   4346226   23910781
+## 1   39466407         0   33408267   4346226   23910782
 ## 2  534701771         0  452194022  56388817  322844742
 ## 3  365504992         0  310580524  47097510  224474183
-## 4  143155610         0  120924796  14279395   86073042
-## 5 1372262300 561746736 1262211336 734276143 1089681930
+## 4  143155611         0  120924796  14279396   86073042
+## 5 1372262301 561746737 1262211336 734276143 1089681930
 ## 6          0         0          0         0          0</code></pre>
 </details>
 <div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw3<span class="sc">$</span>rowest)        <span class="co"># estimates by row for population (i.e., WY)</span></span></code></pre></div>
@@ -1629,32 +1629,32 @@ output
 output
 </summary>
 <pre><code>##                         Forest type         Large diameter
-## 1:                      Douglas-fir  10,588,987.9 ( 88.90)
-## 2:                 Engelmann spruce 145,816,510.2 ( 80.87)
-## 3: Engelmann spruce / subalpine fir 115,503,288.5 ( 76.91)
-## 4:                    Subalpine fir  50,176,218.6 ( 71.94)
-## 5:                   Lodgepole pine 472,090,874.0 ( 33.78)
+## 1:                      Douglas-fir  10,588,988.0 ( 88.90)
+## 2:                 Engelmann spruce 145,816,510.3 ( 80.87)
+## 3: Engelmann spruce / subalpine fir 115,503,288.6 ( 76.91)
+## 4:                    Subalpine fir  50,176,218.7 ( 71.94)
+## 5:                   Lodgepole pine 472,090,874.5 ( 33.78)
 ## 6:                            Aspen            -- (    --)
 ## 7:                       Nonstocked            -- (    --)
-## 8:                            Total 794,175,879.4 ( 23.26)
+## 8:                            Total 794,175,880.1 ( 23.26)
 ##           Medium diameter        Small diameter  Nonstocked
 ## 1:            -- (    --)  3,539,515.7 ( 97.00) -- (    --)
 ## 2:  43,800,269.2 (166.87)           -- (    --) -- (    --)
-## 3:  15,317,971.9 ( 71.15)  4,964,585.9 ( 74.24) -- (    --)
+## 3:  15,317,971.8 ( 71.15)  4,964,585.8 ( 74.24) -- (    --)
 ## 4:            -- (    --)           -- (    --) -- (    --)
-## 5: 434,307,202.1 ( 22.81)  5,580,959.9 ( 77.79) -- (    --)
+## 5: 434,307,202.2 ( 22.81)  5,580,959.9 ( 77.79) -- (    --)
 ## 6:            -- (    --)           -- (    --) -- (    --)
 ## 7:            -- (    --)           -- (    --) -- (    --)
-## 8: 493,425,443.2 ( 24.11) 14,085,061.4 ( 43.49) -- (    --)
+## 8: 493,425,443.2 ( 24.11) 14,085,061.5 ( 43.49) -- (    --)
 ##                       Total
-## 1:    14,128,503.6 ( 69.62)
-## 2:   189,616,779.4 ( 70.65)
-## 3:   135,785,846.3 ( 65.68)
-## 4:    50,176,218.6 ( 71.94)
-## 5:   911,979,036.1 ( 19.59)
+## 1:    14,128,503.8 ( 69.62)
+## 2:   189,616,779.5 ( 70.65)
+## 3:   135,785,846.2 ( 65.68)
+## 4:    50,176,218.7 ( 71.94)
+## 5:   911,979,036.5 ( 19.59)
 ## 6:              -- (    --)
 ## 7:              -- (    --)
-## 8: 1,301,686,384.0 ( 14.72)</code></pre>
+## 8: 1,301,686,384.8 ( 14.72)</code></pre>
 </details>
 <div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Raw data (list object) for estimate</span></span>
 <span id="cb108-2"><a href="#cb108-2" aria-hidden="true" tabindex="-1"></a>raw4 <span class="ot">&lt;-</span> tree4<span class="sc">$</span>raw      <span class="co"># extract raw data list object from output</span></span>
@@ -1674,11 +1674,11 @@ output
 output
 </summary>
 <pre><code>##   ONEUNIT     nhat nhat.var NBRPLT NBRPLT.gt0 ACRES_GIS AREAUSED        est
-## 1       1 1170.147 29677.11     56         34   1112412  1112412 1301686384
+## 1       1 1170.147 29677.11     56         34   1112412  1112412 1301686385
 ##        est.var    est.se    est.cv      pse  CI99left  CI99right  CI95left
-## 1 3.672428e+16 191635798 0.1472212 14.72212 808065281 1795307487 926087122
+## 1 3.672428e+16 191635798 0.1472212 14.72212 808065281 1795307488 926087123
 ##    CI95right   CI68left  CI68right
-## 1 1677285646 1111112654 1492260114</code></pre>
+## 1 1677285647 1111112655 1492260115</code></pre>
 </details>
 <div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>totest)        <span class="co"># estimates for population (i.e., WY)</span></span></code></pre></div>
 <details>
@@ -1694,27 +1694,27 @@ output
 </summary>
 <pre><code>##   ONEUNIT                      Forest type      nhat    nhat.var NBRPLT
 ## 1       1                      Douglas-fir  12.70078    78.19439     56
-## 2       1                 Engelmann spruce 170.45548 14503.95279     56
-## 3       1 Engelmann spruce / subalpine fir 122.06431  6427.30074     56
+## 2       1                 Engelmann spruce 170.45548 14503.95281     56
+## 3       1 Engelmann spruce / subalpine fir 122.06431  6427.30073     56
 ## 4       1                    Subalpine fir  45.10577  1052.94973     56
-## 5       1                   Lodgepole pine 819.82103 25803.85564     56
+## 5       1                   Lodgepole pine 819.82103 25803.85567     56
 ## 6       1                            Aspen   0.00000     0.00000     56
 ##   NBRPLT.gt0 FORTYPCD ACRES_GIS AREAUSED       est      est.var    est.se
-## 1          2      201   1112412  1112412  14128504 9.676252e+13   9836794
-## 2          4      265   1112412  1112412 189616779 1.794808e+16 133970442
+## 1          2      201   1112412  1112412  14128504 9.676253e+13   9836795
+## 2          4      265   1112412  1112412 189616780 1.794808e+16 133970443
 ## 3          5      266   1112412  1112412 135785846 7.953536e+15  89182597
 ## 4          2      268   1112412  1112412  50176219 1.302984e+15  36096876
-## 5         23      281   1112412  1112412 911979036 3.193127e+16 178693232
+## 5         23      281   1112412  1112412 911979037 3.193127e+16 178693232
 ## 6          0      901   1112412  1112412         0 0.000000e+00         0
 ##      est.cv      pse  CI99left  CI99right  CI95left  CI95right  CI68left
-## 1 0.6962375 69.62375         0   39466407         0   33408266   4346226
+## 1 0.6962375 69.62375         0   39466407         0   33408267   4346226
 ## 2 0.7065326 70.65326         0  534701771         0  452194022  56388817
 ## 3 0.6567886 65.67886         0  365504992         0  310580524  47097510
-## 4 0.7194021 71.94021         0  143155610         0  120924796  14279395
-## 5 0.1959401 19.59401 451695772 1372262300 561746736 1262211336 734276143
+## 4 0.7194021 71.94021         0  143155611         0  120924796  14279396
+## 5 0.1959401 19.59401 451695772 1372262301 561746737 1262211336 734276143
 ## 6       NaN      NaN         0          0         0          0         0
 ##    CI68right
-## 1   23910781
+## 1   23910782
 ## 2  322844742
 ## 3  224474183
 ## 4   86073042
@@ -1734,17 +1734,17 @@ output
 output
 </summary>
 <pre><code>##   ONEUNIT Stand-size class      nhat    nhat.var NBRPLT NBRPLT.gt0 STDSZCD
-## 1       1   Large diameter 713.92220 27578.97718     56         18       1
-## 2       1  Medium diameter 443.56343 11435.49631     56         14       2
+## 1       1   Large diameter 713.92221 27578.97721     56         18       1
+## 2       1  Medium diameter 443.56343 11435.49632     56         14       2
 ## 3       1   Small diameter  12.66173    30.31923     56          4       3
 ## 4       1       Nonstocked   0.00000     0.00000     56          0       5
 ##   ACRES_GIS AREAUSED       est      est.var    est.se    est.cv      pse
-## 1   1112412  1112412 794175879 3.412792e+16 184737423 0.2326153 23.26153
+## 1   1112412  1112412 794175880 3.412792e+16 184737423 0.2326153 23.26153
 ## 2   1112412  1112412 493425443 1.415098e+16 118957906 0.2410859 24.10859
 ## 3   1112412  1112412  14085061 3.751888e+13   6125265 0.4348767 43.48767
 ## 4   1112412  1112412         0 0.000000e+00         0       NaN      NaN
 ##    CI99left  CI99right  CI95left  CI95right  CI68left CI68right
-## 1 318323812 1270027946 432097184 1156254575 610462293 977889466
+## 1 318323813 1270027947 432097185 1156254576 610462294 977889467
 ## 2 187010182  799840704 260272231  726578655 375126815 611724071
 ## 3         0   29862700   2079762   26090361   7993743  20176380
 ## 4         0          0         0          0         0         0</code></pre>
@@ -1769,11 +1769,11 @@ output
 ## 5       1  Engelmann spruce / subalpine fir#Large diameter 103.831361
 ## 6       1 Engelmann spruce / subalpine fir#Medium diameter  13.770048
 ##       nhat.var NBRPLT NBRPLT.gt0                      Forest type
-## 1    71.616861     56          1                      Douglas-fir
-## 2     9.526693     56          1                      Douglas-fir
-## 3 11237.915551     56          3                 Engelmann spruce
-## 4  4317.089797     56          1                 Engelmann spruce
-## 5  6377.416002     56          3 Engelmann spruce / subalpine fir
+## 1    71.616862     56          1                      Douglas-fir
+## 2     9.526694     56          1                      Douglas-fir
+## 3 11237.915562     56          3                 Engelmann spruce
+## 4  4317.089804     56          1                 Engelmann spruce
+## 5  6377.415995     56          3 Engelmann spruce / subalpine fir
 ## 6    95.989450     56          1 Engelmann spruce / subalpine fir
 ##   Stand-size class STDSZCD FORTYPCD ACRES_GIS AREAUSED       est      est.var
 ## 1   Large diameter       1      201   1112412  1112412  10588988 8.862309e+13
@@ -1784,17 +1784,17 @@ output
 ## 6  Medium diameter       2      266   1112412  1112412  15317972 1.187832e+14
 ##      est.se    est.cv       pse CI99left CI99right CI95left CI95right
 ## 1   9413984 0.8890353  88.90353        0  34837803        0  29040057
-## 2   3433499 0.9700476  97.00476        0  12383622        0  10269050
-## 3 117925760 0.8087271  80.87271        0 449573139        0 376946753
-## 4  73090569 1.6687242 166.87242        0 232069099        0 187055152
+## 2   3433499 0.9700476  97.00476        0  12383623        0  10269050
+## 3 117925760 0.8087271  80.87271        0 449573140        0 376946753
+## 4  73090569 1.6687242 166.87242        0 232069099        0 187055153
 ## 5  88835832 0.7691195  76.91195        0 344329229        0 289618321
 ## 6  10898772 0.7115023  71.15023        0  43391347        0  36679172
 ##     CI68left CI68right
 ## 1  1227177.6  19950798
 ## 2   125045.8   6953986
-## 3 28544308.3 263088712
+## 3 28544308.2 263088712
 ## 4        0.0 116485762
-## 5 27159794.6 203846782
+## 5 27159794.7 203846782
 ## 6  4479602.4  26156341</code></pre>
 </details>
 <div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb124-1"><a href="#cb124-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>grpest)        <span class="co"># estimates by row and column for population (i.e., WY)</span></span></code></pre></div>

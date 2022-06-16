@@ -1,3 +1,22 @@
+FIESTA_3.4.1 
+==============
+ 
+- added function to change class of columns if integer64 or IDate
+    if integer64 and columns in(CN,PLT_CN,PREV_PLT_CN) - change to character
+    	else, change to numeric
+    if IDate, change to character
+- fixed bug in DBgetPlots - when using strata from SQLite databases
+- added functionality to DBgetStrata to get data from SQLite database
+- allow spGetAuxiliary to output unitarea with no input rasters
+- added database inputs to datSum* functions.
+- spGetPlots - added returndata=FALSE, if exporting to database
+- spGetXY - fixed bug when getting INTENSITY=1 plots using CSV files
+- datSumTree/datSumTreeDom - changed default rounding from 16 to 5
+- spGetSAdoms - added new parameter (byeach) to create SAdoms for each smallbnd
+- spGetSAdoms - added new parameter (saveobj) to save object
+- added SQLite database for Rhode Island to external data, with example in GB vignette
+
+
 FIESTA_3.0.30 (Release date: 2021-09-27)
 ==============
 created anGetData(), to deprecate (anSAdata, anGBdata, anMAdata)

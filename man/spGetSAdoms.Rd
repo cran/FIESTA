@@ -32,11 +32,14 @@ spGetSAdoms(
   showsteps = TRUE,
   savedata = FALSE,
   savesteps = FALSE,
+  saveobj = FALSE,
+  objnm = "SAdomdat",
   maxbnd.addtext = TRUE,
   largebnd.addtext = FALSE,
   savedata_opts = NULL,
   addstate = FALSE,
-  dissolve = FALSE
+  dissolve = FALSE,
+  byeach = FALSE
 )
 }
 \arguments{
@@ -135,6 +138,10 @@ are displayed.}
 and JPG images. All spatial layers are output as *.shp format in a separate
 folder (SAdoms_steps).}
 
+\item{saveobj}{Logical. If TRUE, save SAdomdat object to outfolder.}
+
+\item{objnm}{String. Name of *.rds object.}
+
 \item{maxbnd.addtext}{Logical. If TRUE, adds text to intermediate step plots
 for maxbnd displays.}
 
@@ -148,6 +155,8 @@ of options. Only used when savedata = TRUE.}
 
 \item{dissolve}{Logical. If TRUE, aggregates polygons to smallbnd.domain or
 smallbnd.unique.}
+
+\item{byeach}{Logical. If TRUE, creates an SAdom for each smallbnd polygon.}
 }
 \value{
 \item{SAdomslst}{ List object. Set(s) of model domain units. If

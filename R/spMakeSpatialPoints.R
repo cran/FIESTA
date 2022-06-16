@@ -147,9 +147,11 @@ spMakeSpatialPoints <- function(xyplt,
 
   ## check for NA values
   if (any(is.na(xypltx[[x]])) || any(is.na(xypltx[[y]]))) {
-    missCN <- xypltx[list(NA,NA), on=c(x,y), "CN", nomatch=0]
+    xypltx <- setDT(xypltx)
+    missCN <- xypltx[list(NA,NA), on=c(x,y), xy.uniqueid, nomatch=0, with = FALSE][[1]]
+    xypltx <- as.data.frame(xypltx)
     rowp <- ifelse(length(missCN) == 1, "row", "rows")
-    message(paste("removing", length(missCN), rowp, "with NA values:", 
+    message(paste("removing", length(missCN), rowp, "with", xy.uniqueid, "values = NA:", 
 		paste(missCN, collapse=", ")))
     xypltx <- xypltx[!list(NA,NA), on=c(x,y)]
   }

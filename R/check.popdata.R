@@ -78,7 +78,8 @@ check.popdata <- function(module="GB", popType="VOL", tabs, tabIDs, strata=FALSE
 	NF_PLOT_STATUS_CD=NF_COND_STATUS_CD=TPA_UNADJ=methodlst=nonresplut=
 	plotqry=condqry=treeqry=pfromqry=pltassgnqry=cfromqry=tfromqry=
 	vsubpsppqry=subplotqry=subp_condqry=unitareaqry=stratalutqry=NF_SUBP_STATUS_CD=
-	SUBPCOND_PROP=MACRCOND_PROP=tpropvars=vcondsppf=vcondstrf <- NULL
+	SUBPCOND_PROP=MACRCOND_PROP=tpropvars=vcondsppf=vcondstrf=
+  Nsampmeth=Nstrata=strat <- NULL
 
   ###################################################################################
   ## Define necessary plot and condition level variables
@@ -172,7 +173,7 @@ check.popdata <- function(module="GB", popType="VOL", tabs, tabIDs, strata=FALSE
     nonresp <- pcheck.logical(nonresp, varnm="nonresp",
 		title="Post stratify?", first="YES", gui=gui)
     if (nonresp) {
-      pvars2keep <- c(pvars2keep, substrvar)
+      pvars2keep <- c(pvars2keep, "SAMP_METHOD_CD")
     } else {
       substrvar <- NULL
     }
@@ -219,39 +220,63 @@ check.popdata <- function(module="GB", popType="VOL", tabs, tabIDs, strata=FALSE
       if (!pltassgnid %in% DBI::dbListFields(dbconn, ppsanm)) {
         stop("pltassgnid is invalid")
       }
-      pfromqry <- getpfromqry(evalid, dsn=dsn, ppsanm=ppsanm, ppsaid=pltassgnid)
+      if (is.null(plt)) {
+        palias <- "ppsa"
+        pfromqry <- paste(ppsanm, "ppsa")
+        pjoinid <- pltassgnid
+      } else {
+        palias <- "p"
+        pfromqry <- getpfromqry(evalid, dsn=dsn, ppsanm=ppsanm, ppsaid=pltassgnid)
+      }
       whereqry <- paste0("where ppsa.EVALID in(", toString(evalid), ")")
       pltassgnqry <- paste("select distinct ppsa.* from", pfromqry, whereqry)
     } else if (measCur) {
+      palias <- "p"
       pfromqry <- getpfromqry(varCur="MEASYEAR", Endyr=measEndyr, dsn=dsn,
 		plotnm=plt)
       pltassgnqry <- paste("select p.* from", pfromqry)
     } else if (!is.null(invyrs)) {
+      palias <- "p"
       pfromqry <- getpfromqry(invyrs=invyrs, dsn=dsn, plotnm=plt)
       whereqry <- paste0("where invyrs in(", toString(invyrs), ")")
       pltassgnqry <- paste("select p.* from", pfromqry, whereqry)
     } else {
+      whereqry <- NULL
       if (!is.null(ppsanm)) {
+        palias <- "ppsa"
         pfromqry <- paste0("plot p INNER JOIN ", ppsanm,
 			" ON(p.", pjoinid, " = ", ppsanm, ".", pltassgnid, ")")
       } else {
-        pfromqry <- "plot p"
+        palias <- "p"
+        if (!is.null(plt) && is.character(plt) && plt %in% tablst) {
+          pfromqry <- "plot p"
+        } else {
+          pfromqry <- NULL
+        }
       }
-#      if (!is.null(pltassgn) && is.character(pltassgn) && pltassgn %in% tablst)
+#      if (!is.null(pltassgn) && is.character(pltassgn) && pltassgn %in% tablst) {
 #        pltassgnqry <- paste("select * from", ppsanm)
+#      }
     }
 
-    if (!is.null(plt) && is.character(plt) && plt %in% tablst)
-      plotqry <- paste("select distinct p.* from", pfromqry, whereqry)
+    if (!is.null(pfromqry)) {
+      plotqry <- paste("select distinct", paste0(palias, ".*"), "from", pfromqry, whereqry)
+    }
+ 
     if (!is.null(cond) && is.character(cond) && cond %in% tablst) {
-      cfromqry <- paste0(pfromqry, " JOIN ", SCHEMA., cond,
-				" c ON (c.PLT_CN = p.CN)")
+      if (is.null(plotqry)) {
+        cfromqry <- paste0(SCHEMA., cond, " c")
+      } else {
+        cfromqry <- paste0(pfromqry, " JOIN ", SCHEMA., cond,
+				" c ON (c.PLT_CN = ", palias, ".", pjoinid, ")")
+      }
       condqry <- paste("select distinct c.* from", cfromqry, whereqry)
     }
+
     if (!is.null(tree) && is.character(tree) && tree %in% tablst) {
       if (!is.null(pfromqry)) {
         tfromqry <- paste0(pfromqry, " JOIN ", SCHEMA., tree,
-				" t ON (t.PLT_CN = p.CN)")
+				" t ON (t.PLT_CN = ", palias, ".", pjoinid, ")")
       } else {
         tfromqry <- paste(tree, "t")
       }
@@ -260,7 +285,7 @@ check.popdata <- function(module="GB", popType="VOL", tabs, tabIDs, strata=FALSE
     if (!is.null(tree) && is.character(tree) && tree %in% tablst) {
       if (!is.null(pfromqry)) {
         sfromqry <- paste0(pfromqry, " JOIN ", SCHEMA., seed,
-				" s ON (s.PLT_CN = p.CN)")
+				" s ON (s.PLT_CN = ", palias, ".", pjoinid, ")")
       } else {
         sfromqry <- paste(seed, "s")
       }
@@ -269,7 +294,7 @@ check.popdata <- function(module="GB", popType="VOL", tabs, tabIDs, strata=FALSE
     if (!is.null(vsubpspp) && is.character(vsubpspp) && vsubpspp %in% tablst) {
       if (!is.null(pfromqry)) {
         vsubpspp.fromqry <- paste0(pfromqry, " JOIN ", SCHEMA., vsubpspp,
-				" vsubpspp ON (vsubpspp.PLT_CN = p.CN)")
+				" vsubpspp ON (vsubpspp.PLT_CN = ", palias, ".", pjoinid, ")")
       } else {
         vsubpspp.fromqry <- paste(vsubpspp, "vsubpspp")
       }
@@ -278,7 +303,7 @@ check.popdata <- function(module="GB", popType="VOL", tabs, tabIDs, strata=FALSE
     if (!is.null(vsubpstr) && is.character(vsubpstr) && vsubpstr %in% tablst) {
       if (!is.null(pfromqry)) {
         vsubpstr.fromqry <- paste0(pfromqry, " JOIN ", SCHEMA., vsubpstr,
-				" vsubpspp ON (vsubpstr.PLT_CN = p.CN)")
+				" vsubpspp ON (vsubpstr.PLT_CN = ", palias, ".", pjoinid, ")")
       } else {
         vsubpstr.fromqry <- paste(vsubpspp, "vsubpstr")
       }
@@ -286,19 +311,20 @@ check.popdata <- function(module="GB", popType="VOL", tabs, tabIDs, strata=FALSE
     }
     if (!is.null(subplot) && is.character(subplot) && subplot %in% tablst) {
       subpfromqry <- paste0(pfromqry, " JOIN ", SCHEMA., subplot,
-				" subp ON (subp.PLT_CN = p.CN)")
+				" subp ON (subp.PLT_CN = ", palias, ".", pjoinid, ")")
       subplotqry <- paste("select distinct subp.* from", subpfromqry, whereqry)
     }
     if (!is.null(subp_cond) && is.character(subp_cond) && subp_cond %in% tablst) {
       subpcfromqry <- paste0(pfromqry, " JOIN ", SCHEMA., subp_cond,
-				" subpc ON (subpc.PLT_CN = p.CN)")
+				" subpc ON (subpc.PLT_CN = ", palias, ".", pjoinid, ")")
       subp_condqry <- paste("select distinct subc.* from", subpcfromqry, whereqry)
     }
     if (!is.null(lulc) && is.character(lulc) && lulc %in% tablst) {
       lulcfromqry <- paste0(pfromqry, " JOIN ", SCHEMA., lulc,
-				" ON (lulc.PLT_CN = p.CN)")
+				" ON (lulc.PLT_CN = ", palias, ".", pjoinid, ")")
       lulcqry <- paste("select distinct lulc.* from", lulcfromqry, whereqry)
     }
+
     if (is.character(unitarea) && !is.null(chkdbtab(tablst, unitarea))) {
       unitindb <- TRUE
       unitarea_layer <- chkdbtab(tablst, unitarea)
@@ -306,10 +332,8 @@ check.popdata <- function(module="GB", popType="VOL", tabs, tabIDs, strata=FALSE
       if (!is.null(evalid)) {
         unitareaqry <- paste(unitareaqry, "where evalid in(", toString(evalid), ")")
       }
-
       unitarea <- pcheck.table(unitarea, tab_dsn=dsn, tabnm="unitarea", caption="unitarea?",
 		nullcheck=nullcheck, tabqry=unitareaqry, returnsf=FALSE)
-
     }
  
     if (strata && is.character(stratalut) && !is.null(chkdbtab(tablst, stratalut))) {
@@ -335,8 +359,8 @@ check.popdata <- function(module="GB", popType="VOL", tabs, tabIDs, strata=FALSE
   if (popType != "LULC" && (is.null(condx) && is.null(pltx) && is.null(pltassgnx))) {
     stop("must include plt or cond table")
   }
-  treex <- pcheck.table(tree, tab_dsn=dsn, tabnm="tree", caption="Tree table?",
-		nullcheck=nullcheck, gui=gui, tabqry=treeqry, returnsf=FALSE)
+  treex <- suppressMessages(pcheck.table(tree, tab_dsn=dsn, tabnm="tree", caption="Tree table?",
+		nullcheck=nullcheck, gui=gui, tabqry=treeqry, returnsf=FALSE))
   vsubpsppx <- pcheck.table(vsubpspp, tab_dsn=dsn, tabnm="vsubpspp",
 		caption="Veg Species table?", nullcheck=nullcheck, gui=gui,
 		tabqry=vsubpsppqry, returnsf=FALSE)
@@ -352,7 +376,6 @@ check.popdata <- function(module="GB", popType="VOL", tabs, tabIDs, strata=FALSE
   lulcx <- pcheck.table(lulc, tab_dsn=dsn, tabnm="lulc", caption="lulc table?",
 		nullcheck=nullcheck, tabqry=lulcqry, returnsf=FALSE)
  
-
   ## Define cdoms2keep
   cdoms2keep <- names(condx)
 
@@ -416,7 +439,7 @@ check.popdata <- function(module="GB", popType="VOL", tabs, tabIDs, strata=FALSE
       ## Set key
       setkeyv(pltassgnx, pltassgnid)
     }
- 
+
     ## Merge plot and pltassgn tables
     #########################################################
     if (!is.null(pltx) && !is.null(pltassgnx)) {
@@ -426,10 +449,6 @@ check.popdata <- function(module="GB", popType="VOL", tabs, tabIDs, strata=FALSE
       if (is.null(pjoinid)) pjoinid <- puniqueid
       setkeyv(pltx, pjoinid)
 
-      if (pjoinid %in% names(pltassgnx)) {
-        pltassgnid <- pjoinid
-        setkeyv(pltassgnx, pjoinid)
-      }
       pltassgnx <- pltassgnx[, unique(c(pltassgnid,
 		names(pltassgnx)[!names(pltassgnx) %in% names(pltx)])), with=FALSE]
       setkeyv(pltassgnx, pltassgnid)
@@ -438,6 +457,12 @@ check.popdata <- function(module="GB", popType="VOL", tabs, tabIDs, strata=FALSE
       tabchk <- check.matchclass(pltx, pltassgnx, pjoinid, pltassgnid)
       pltx <- tabchk$tab1
       pltassgnx <- tabchk$tab2
+
+      #if (pjoinid %in% names(pltassgnx)) {
+      #  pltassgnid <- pjoinid
+      #  setkeyv(pltassgnx, pjoinid)
+      #}
+
 
 #################
       ## Check for matching unique identifiers of pltx with pltassgnx
@@ -454,7 +479,7 @@ check.popdata <- function(module="GB", popType="VOL", tabs, tabIDs, strata=FALSE
       pltx <- pltassgnx
       puniqueid <- pltassgnid
     }
- 
+
     ##################################################################################
     ## Filter for population data
     ##################################################################################
@@ -533,6 +558,7 @@ check.popdata <- function(module="GB", popType="VOL", tabs, tabIDs, strata=FALSE
       ## Check if 1 plot-condition per record in cond
       ######################################################
       condid.dupid <- condx[duplicated(condx, by=c(cuniqueid, condid))][[cuniqueid]]
+
       if (length(condid.dupid) > 0) {
         msg <- paste("check cuniqueid/condid... duplicate records")
         if (length(condid.dupid) < 20) print(condid.dupid)
@@ -598,8 +624,14 @@ check.popdata <- function(module="GB", popType="VOL", tabs, tabIDs, strata=FALSE
         pltcols <- unique(c(puniqueid, names(pltx)[!names(pltx) %in% names(condx)]))
 #        pltcondx <- merge(condx, pltx[, pltcols, with=FALSE],
 #				by.x=cuniqueid, by.y=puniqueid)
-        pltcondx <- merge(pltx[, pltcols, with=FALSE], condx,
-				by.x=puniqueid, by.y=cuniqueid)
+
+        pltcondx <- tryCatch(merge(pltx[, pltcols, with=FALSE], condx,
+				by.x=puniqueid, by.y=cuniqueid),
+     	 	error=function(e) {
+			return(NULL) })
+        if (is.null(pltcondx)) {
+          stop("invalid dataset")
+        }
 
         if ("CN" %in% names(pltcondx) && !"PLT_CN" %in% names(pltcondx)) {
           setnames(pltcondx, "CN", cuniqueid)
@@ -648,7 +680,7 @@ check.popdata <- function(module="GB", popType="VOL", tabs, tabIDs, strata=FALSE
         message(abs(nrow.after - nrow.before), " plots were removed from population")
       }
     }
-
+ 
     if (is.null(condx)) {
       pltcondx <- pltx
       cuniqueid <- puniqueid
@@ -662,7 +694,7 @@ check.popdata <- function(module="GB", popType="VOL", tabs, tabIDs, strata=FALSE
   } else {
     pltcondx <- condx
   }
-
+ 
   ###################################################################################
   ###################################################################################
   ## Check plot data
@@ -841,24 +873,157 @@ check.popdata <- function(module="GB", popType="VOL", tabs, tabIDs, strata=FALSE
         }
       }
     }
+
+    ## Create table of number of plots by estimation unit and strata
+    P2POINTCNT <- pltcondx[, list(P2POINTCNT=uniqueN(get(cuniqueid))),
+		by=c(unitvars, strvar, substrvar)]
+    setkeyv(P2POINTCNT, c(unitvars, strvar))
+
     if (nonresp) {
+      ## Set minimum plot number of nonresp 
+      nonresp.minplotnum <- 5
+
       ## Generate table of nonsampled plots by strata (if nonresp=TRUE)
       if ("PLOT_STATUS_CD" %in% pltcondnmlst) {
-        if (!3 %in% unique(pltcondx[["PLOT_STATUS_CD"]]))
+        if (!3 %in% unique(pltcondx[["PLOT_STATUS_CD"]])) {
           stop("must include PLOT_STATUS_CD = 3 in dataset")
+        }
 
         ## Create table with number of nonsampled plots by strata, substrata
         nonresplut <- pltcondx[PLOT_STATUS_CD == 3, uniqueN(get(cuniqueid)),
-					by=c(unitvars, strvar, substrvar)]
+					by=c(unitvars, strvar, "SAMP_METHOD_CD")]
         setnames(nonresplut, "V1", "n.nonresp")
         setkeyv(nonresplut, c(unitvars, strvar, substrvar))
+      } else {
+        stop("must include PLOT_STATUS_CD")
       }
-    }
-    P2POINTCNT <- pltcondx[, list(P2POINTCNT=uniqueN(get(cuniqueid))),
-		by=c(unitvars, strvar, substrvar)]
-    setkeyv(P2POINTCNT, c(unitvars, strvar, substrvar))
-    if (nonresp)
-      P2POINTCNT <- P2POINTCNT[nonresplut]
+
+      P2POINTCNT <- setDF(merge(P2POINTCNT, nonresplut, all.x=TRUE))
+      P2POINTCNT[is.na(P2POINTCNT$n.nonresp), "n.nonresp"] <- 0
+
+      P2POINTCNT$n.resp <- P2POINTCNT$P2POINTCNT - P2POINTCNT$n.nonresp
+
+      ## Subset strata from FIADB that have number of plots less than nonresp.minplotnum
+      appendltmin <- FALSE
+      if (any(P2POINTCNT$n.resp <= nonresp.minplotnum)) {
+        appendltmin <- TRUE
+        unit.ltmin <- P2POINTCNT[P2POINTCNT$n.resp <= nonresp.minplotnum, unitvars]
+      } 
+
+#      ## Check - Get number of plots by estimation unit (maybe take out)
+      unit.N <- setDT(P2POINTCNT)[, list(Nstrata =.N), by=c(unitvars)]
+#      strata.N <- merge(P2POINTCNT[, c(unitvars, strvar, "P2POINTCNT"), with=FALSE],
+#		unit.N, by=unitvars)
+#      if (any(strata.N$P2POINTCNT < 10 & strata.N$n.strata > 1)) {
+#         message("there are estimation units with > 1 strata and has strata with less than 10 plots")
+#      }
+    
+      if ("SAMP_METHOD_CD" %in% pltcondnmlst) {
+        ## Create table with response homogeneity groups (RHGs) 
+        RHGlut <- pltcondx[pltcondx$PLOT_STATUS_CD < 3, uniqueN(get(cuniqueid)),
+					by=c(unitvars, strvar, "SAMP_METHOD_CD")]
+        setnames(RHGlut, "V1", "n.resp")
+        setkeyv(RHGlut, c(unitvars, strvar, "SAMP_METHOD_CD"))
+#RHGlut[RHGlut$ESTN_UNIT <= 15,]
+
+
+#######################
+        ## TESTING - to make sure no nonresp with office visits##
+#        RHGlut.test <- pltcondx[pltcondx$PLOT_STATUS_CD == 3, uniqueN(get(cuniqueid)),
+#					by=c(unitvars, strvar, "SAMP_METHOD_CD")]
+#        setnames(RHGlut.test, "V1", "n.nonresp")
+#        setkeyv(RHGlut.test, c(unitvars, strvar, "SAMP_METHOD_CD"))
+#RHGlut.test[RHGlut.test,]
+#######################
+
+        RHGlut <- merge(RHGlut, unit.N, by=unitvars)
+
+   
+        ## Get number of SAMP_METHOD_CD values by estimation unit, strata
+        RHGlut[, Nsampmeth := .N, by=c(unitvars, strvar)]
+
+        if (appendltmin) {
+          RHGlut.ltmin <- RHGlut[RHGlut[[unitvars]] %in% unit.ltmin, ]
+          RHGlut <- RHGlut[!RHGlut[[unitvars]] %in% unit.ltmin, ] 
+        }
+
+        ## Group SAMP_METHOD_CD with n.resp less than or equal to nonresp.minplotnum
+        if (!is.factor(RHGlut$SAMP_METHOD_CD)) {
+          RHGlut$strat <- factor(RHGlut$SAMP_METHOD_CD)
+        }
+        RHGlut$strat <- as.numeric(RHGlut$strat)
+        RHGlut$stratnew <- as.character(-1)
+        RHGgrp <- RHGlut[, groupStrata(.SD, minplotnum=nonresp.minplotnum, nvar="n.resp"), 
+			by=c(unitvar, strvar)]
+
+        if (appendltmin) {
+          ## Group strata with n.resp less than 2
+          if (!is.factor(RHGlut.ltmin$SAMP_METHOD_CD)) {
+            RHGlut.ltmin$strat <- factor(RHGlut.ltmin$SAMP_METHOD_CD)
+          }
+          RHGlut.ltmin$strat <- as.numeric(RHGlut.ltmin$strat)
+          RHGlut.ltmin$stratnew <- as.character(-1)
+
+          RHGgrp.ltmin <- RHGlut.ltmin[, groupStrata(.SD, minplotnum=2, nvar="n.resp"), 
+			by=c(unitvar, strvar)]
+
+          ## Append to RHGgrp
+          RHGgrp <- rbind(RHGgrp, RHGgrp.ltmin)
+          setorderv(RHGgrp, c(unitvars, strvar))
+        }
+
+        RHGgrp[, strat := NULL]
+        setnames(RHGgrp, "stratnew", "RHGtmp")
+
+
+        ## Create RHGgrp column based on specific criteria...
+        ## First, if the number of Nsampmeth = 2 and on of RHG <= nonresp.minplotnum, then RHGtmp = '1-2'
+        ## 1) If there were both field and office plots within a stratum and one of the 
+        ##    categories (field/office) had less than 5 plots, no RHG was created (A)
+        ## 2) If there is only one stratum in EU and only office or only field plots, no RHG was created (A)
+        ## 3/4) If there was only one strata in EU and both field and office plots within a stratum, 
+        ##    if field, RHG = F; if office, RHG = O
+        ## 5/6) If there was more than one strata in EU and both field and office plots within a stratum, 
+        ##    if field, RHG = F; if office, RHG = O
+        ## 7/8) If there was more than one strata in EU and only field or only office plots within a stratum, 
+        ##    and >= 5 plots: if field, RHG=F; if office, RHG = O
+
+
+#        RHGgrp$RHG <- with(RHGgrp, 
+#		ifelse(RHGtmp == "1-2", "A",  ## 1
+#		   #ifelse(Nstrata == 1 & Nsampmeth == 1, "A",  ## 2   (added by paul)
+#			ifelse(Nsampmeth == 2 & RHGtmp == 1, "F",  ## 3
+#				ifelse(Nsampmeth == 2 & RHGtmp == 2, "O",  ## 4
+#							ifelse(Nsampmeth == 1 & RHGtmp == 1, "F",  ## 7
+#								ifelse(Nsampmeth == 1 & RHGtmp == 2, "O",  ## 8 
+#									"Z"))))))
+
+        RHGgrp$RHG <- with(RHGgrp, 
+		ifelse(RHGtmp == "1-2", "A",  ## 1
+		   ifelse(Nstrata == 1 & Nsampmeth == 1, "A",  ## 2   (added by paul)
+			ifelse(Nstrata == 1 & Nsampmeth == 2 & RHGtmp == 1, "F",  ## 3
+				ifelse(Nstrata == 1 & Nsampmeth == 2 & RHGtmp == 2, "O",  ## 4
+					ifelse(Nstrata > 1 & Nsampmeth == 2 & RHGtmp == 1, "F",  ## 5 
+						ifelse(Nstrata > 1 & Nsampmeth == 2 & RHGtmp == 2, "O", ## 6
+							ifelse(Nstrata > 1 & Nsampmeth == 1 & RHGtmp == 1, "F",  ## 7
+								ifelse(Nstrata > 1 & Nsampmeth == 1 & RHGtmp == 2, "O",  ## 8 
+									"Z")))))))))
+
+        ## Sum n.resp to new strata groups
+        RHGgrp <- RHGgrp[, lapply(.SD, sum, na.rm=TRUE), 
+				by=c(unitvars, strvar, "RHG"), .SDcols=c("n.resp")]
+
+        ## TESTING
+        #Nsampmeth <- RHGlut[, .N, by=c(unitvars, strvar)]
+        #RHGgrp <- merge(RHGgrp, unit.N, by=unitvars)
+        #RHGgrp <- merge(RHGgrp, Nsampmeth, by=c(unitvars, strvar))
+        #setnames(RHGgrp, "N", "Nsampmeth")
+        #RHGgrp
+
+      } else {
+        stop("must include SAMP_METHOD_CD")
+      }
+    }   ## End nonresp
 
   } else {
     P2POINTCNT <- pltcondx[, uniqueN(get(cuniqueid)), unitvars]
@@ -1182,7 +1347,7 @@ check.popdata <- function(module="GB", popType="VOL", tabs, tabIDs, strata=FALSE
   pltcondx[, (pvars2keep) := NULL]
   condx <- unique(pltcondx[, c(cuniqueid, condid, cvars2keep), with=FALSE])
   pltcondx[, (cvars2keep) := NULL]
-
+ 
   ###################################################################################
   ###################################################################################
   ## Check subplot and sub_cond data
@@ -1416,7 +1581,7 @@ check.popdata <- function(module="GB", popType="VOL", tabs, tabIDs, strata=FALSE
   #cdoms2keep <- cdoms2keep[!cdoms2keep %in% c(pvars2keep, cvars2keep)]
   #pltcondx <- pltcondx[, unique(c(cuniqueid, condid, pdoms2keep, cdoms2keep)), with=FALSE]
 
-
+ 
   ## Set up list of variables to return
   ######################################################################################
   returnlst <- list(condx=condx, pltcondx=pltcondx, pltassgnx=pltassgnx,
@@ -1465,6 +1630,7 @@ check.popdata <- function(module="GB", popType="VOL", tabs, tabIDs, strata=FALSE
   if (nonresp) {
     returnlst$substrvar <- substrvar
     returnlst$nonresplut <- nonresplut
+    returnlst$RHGgrp <- RHGgrp
   }
   if (adj != "none") {
     returnlst$tpropvars <- tpropvars

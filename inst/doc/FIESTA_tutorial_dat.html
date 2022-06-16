@@ -1794,20 +1794,20 @@ output
 ## 4:                NA      1          1         0         0 Sampled-Nonforest
 ## 5:                NA      1          1         0         0 Sampled-Nonforest
 ## 6:                NA      1          1         0         0 Sampled-Nonforest
-##           PLOT_ID    BA VOLCFNET
-## 1: ID560200186688    NA       NA
-## 2: ID560200184596  2.37    17.03
-## 3: ID560200188993 19.33   284.46
-## 4: ID560200182340    NA       NA
-## 5: ID560200182869    NA       NA
-## 6: ID560200183304    NA       NA</code></pre>
+##           PLOT_ID BA_live VOLCFNET_live
+## 1: ID560200186688      NA            NA
+## 2: ID560200184596    2.37         17.03
+## 3: ID560200188993   19.33        284.46
+## 4: ID560200182340      NA            NA
+## 5: ID560200182869      NA            NA
+## 6: ID560200183304      NA            NA</code></pre>
 </details>
 <div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1" aria-hidden="true" tabindex="-1"></a>treesumdat1<span class="sc">$</span>sumvars</span></code></pre></div>
 <details>
 <summary>
 output
 </summary>
-<pre><code>## [1] &quot;BA&quot;       &quot;VOLCFNET&quot;</code></pre>
+<pre><code>## [1] &quot;BA_live&quot;       &quot;VOLCFNET_live&quot;</code></pre>
 </details>
 </details>
 </div>
@@ -1862,13 +1862,13 @@ output
 ## 4:                NA      1          1         0         0 Sampled-Nonforest
 ## 5:                NA      1          1         0         0 Sampled-Nonforest
 ## 6:                NA      1          1         0         0 Sampled-Nonforest
-##           PLOT_ID BA_TPA VOLCFNET_TPA
-## 1: ID560200186688     NA           NA
-## 2: ID560200184596  14.27       102.46
-## 3: ID560200188993 119.74      1711.92
-## 4: ID560200182340     NA           NA
-## 5: ID560200182869     NA           NA
-## 6: ID560200183304     NA           NA</code></pre>
+##           PLOT_ID BA_TPA_live VOLCFNET_TPA_live
+## 1: ID560200186688          NA                NA
+## 2: ID560200184596       14.27            102.46
+## 3: ID560200188993      119.74           1711.92
+## 4: ID560200182340          NA                NA
+## 5: ID560200182869          NA                NA
+## 6: ID560200183304          NA                NA</code></pre>
 </details>
 </div>
 </div>
@@ -1936,8 +1936,8 @@ output
 ## 1:   42.05634     2011        2                     0              1
 ##    NF_PLOT_STATUS_CD NBRCND NBRCNDSAMP NBRCNDFOR CCLIVEPLT     FORNONSAMP
 ## 1:                NA      1          1         1        18 Sampled-Forest
-##           PLOT_ID   BA VOLCFNET
-## 1: ID560200187404 4.26    41.82</code></pre>
+##           PLOT_ID BA_live VOLCFNET_live
+## 1: ID560200187404    4.26         41.82</code></pre>
 </details>
 <div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb120-1"><a href="#cb120-1" aria-hidden="true" tabindex="-1"></a>treesum2[treesum2<span class="sc">$</span>CN <span class="sc">==</span> <span class="dv">40404758010690</span>,]</span></code></pre></div>
 <details>
@@ -1950,8 +1950,8 @@ output
 ## 1:   42.05634     2011        2                     0              1
 ##    NF_PLOT_STATUS_CD NBRCND NBRCNDSAMP NBRCNDFOR CCLIVEPLT     FORNONSAMP
 ## 1:                NA      1          1         1        18 Sampled-Forest
-##           PLOT_ID BA_TPA VOLCFNET_TPA
-## 1: ID560200187404  25.65       251.67</code></pre>
+##           PLOT_ID BA_TPA_live VOLCFNET_TPA_live
+## 1: ID560200187404       25.65            251.67</code></pre>
 </details>
 </details>
 </div>
@@ -2006,13 +2006,13 @@ output
 ## 4:                NA      1          1         0         0 Sampled-Nonforest
 ## 5:                NA      1          1         0         0 Sampled-Nonforest
 ## 6:                NA      1          1         0         0 Sampled-Nonforest
-##           PLOT_ID DIA_MEAN HT_MEAN
-## 1: ID560200186688       NA      NA
-## 2: ID560200184596     9.06   20.00
-## 3: ID560200188993     8.68   33.07
-## 4: ID560200182340       NA      NA
-## 5: ID560200182869       NA      NA
-## 6: ID560200183304       NA      NA</code></pre>
+##           PLOT_ID DIA_NA_MEAN HT_NA_MEAN
+## 1: ID560200186688          NA         NA
+## 2: ID560200184596        9.06      20.00
+## 3: ID560200188993        8.68      33.07
+## 4: ID560200182340          NA         NA
+## 5: ID560200182869          NA         NA
+## 6: ID560200183304          NA         NA</code></pre>
 </details>
 <div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="#cb126-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Test DIA and HT results for 1 plot</span></span>
 <span id="cb126-2"><a href="#cb126-2" aria-hidden="true" tabindex="-1"></a>testplt</span></code></pre></div>
@@ -2070,8 +2070,8 @@ output
 ## 1:   42.05634     2011        2                     0              1
 ##    NF_PLOT_STATUS_CD NBRCND NBRCNDSAMP NBRCNDFOR CCLIVEPLT     FORNONSAMP
 ## 1:                NA      1          1         1        18 Sampled-Forest
-##           PLOT_ID DIA_MEAN HT_MEAN
-## 1: ID560200187404     8.89   24.44</code></pre>
+##           PLOT_ID DIA_NA_MEAN HT_NA_MEAN
+## 1: ID560200187404        8.89      24.44</code></pre>
 </details>
 </details>
 <div id="example-4a-number-of-live-trees-by-plot-tpatrue" class="section level4">
@@ -2125,13 +2125,13 @@ output
 ## 4:                NA      1          1         0         0 Sampled-Nonforest
 ## 5:                NA      1          1         0         0 Sampled-Nonforest
 ## 6:                NA      1          1         0         0 Sampled-Nonforest
-##           PLOT_ID COUNT_TPA
-## 1: ID560200186688        NA
-## 2: ID560200184596     30.09
-## 3: ID560200188993    315.69
-## 4: ID560200182340        NA
-## 5: ID560200182869        NA
-## 6: ID560200183304        NA</code></pre>
+##           PLOT_ID COUNT_TPA_live
+## 1: ID560200186688             NA
+## 2: ID560200184596          30.09
+## 3: ID560200188993         315.69
+## 4: ID560200182340             NA
+## 5: ID560200182869             NA
+## 6: ID560200183304             NA</code></pre>
 </details>
 </details>
 </div>
@@ -2188,13 +2188,13 @@ output
 ## 4:                NA      1          1         0         0 Sampled-Nonforest
 ## 5:                NA      1          1         0         0 Sampled-Nonforest
 ## 6:                NA      1          1         0         0 Sampled-Nonforest
-##           PLOT_ID VOLCFNET_TPA_ADJ
-## 1: ID560200186688               NA
-## 2: ID560200184596         102.4599
-## 3: ID560200188993        1711.9177
-## 4: ID560200182340               NA
-## 5: ID560200182869               NA
-## 6: ID560200183304               NA</code></pre>
+##           PLOT_ID VOLCFNET_TPA_live_ADJ
+## 1: ID560200186688                    NA
+## 2: ID560200184596              102.4599
+## 3: ID560200188993             1711.9177
+## 4: ID560200182340                    NA
+## 5: ID560200182869                    NA
+## 6: ID560200183304                    NA</code></pre>
 </details>
 </details>
 </div>
@@ -2251,8 +2251,8 @@ output
 ## 1:   43.97663     2011        2                     0              1
 ##    NF_PLOT_STATUS_CD NBRCND NBRCNDSAMP NBRCNDFOR CCLIVEPLT     FORNONSAMP
 ## 1:                NA      2          1         1        38 Sampled-Forest
-##           PLOT_ID VOLCFNET_TPA_ADJ
-## 1: ID560304588008         465.2634</code></pre>
+##           PLOT_ID VOLCFNET_TPA_live_ADJ
+## 1: ID560304588008              465.2634</code></pre>
 </details>
 <div class="sourceCode" id="cb146"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb146-1"><a href="#cb146-1" aria-hidden="true" tabindex="-1"></a>treesum4c[treesum4c<span class="sc">$</span>CN <span class="sc">==</span> cn, ]</span></code></pre></div>
 <details>
@@ -2265,8 +2265,8 @@ output
 ## 1:   43.97663     2011        2                     0              1
 ##    NF_PLOT_STATUS_CD NBRCND NBRCNDSAMP NBRCNDFOR CCLIVEPLT     FORNONSAMP
 ## 1:                NA      2          1         1        38 Sampled-Forest
-##           PLOT_ID VOLCFNET_TPA
-## 1: ID560304588008     232.6317</code></pre>
+##           PLOT_ID VOLCFNET_TPA_live
+## 1: ID560304588008          232.6317</code></pre>
 </details>
 </details>
 </div>
@@ -2323,13 +2323,13 @@ output
 ## 4:                NA      1          1         0         0 Sampled-Nonforest
 ## 5:                NA      1          1         0         0 Sampled-Nonforest
 ## 6:                NA      1          1         0         0 Sampled-Nonforest
-##           PLOT_ID COUNT_TPA SEED_COUNT_TPA TREE_COUNT_TPA
-## 1: ID560200186688        NA             NA             NA
-## 2: ID560200184596    105.06          74.97          30.09
-## 3: ID560200188993    540.59         224.90         315.69
-## 4: ID560200182340        NA             NA             NA
-## 5: ID560200182869        NA             NA             NA
-## 6: ID560200183304        NA             NA             NA</code></pre>
+##           PLOT_ID COUNT_TPA_live SEED_COUNT_TPA_live TREE_COUNT_TPA_live
+## 1: ID560200186688             NA                  NA                  NA
+## 2: ID560200184596         105.06               74.97               30.09
+## 3: ID560200188993         540.59              224.90              315.69
+## 4: ID560200182340             NA                  NA                  NA
+## 5: ID560200182869             NA                  NA                  NA
+## 6: ID560200183304             NA                  NA                  NA</code></pre>
 </details>
 <div class="sourceCode" id="cb152"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb152-1"><a href="#cb152-1" aria-hidden="true" tabindex="-1"></a>treesum5a[treesum5a<span class="sc">$</span>CN <span class="sc">%in%</span> cn,]</span></code></pre></div>
 <details>
@@ -2342,8 +2342,8 @@ output
 ## 1:   43.97663     2011        2                     0              1
 ##    NF_PLOT_STATUS_CD NBRCND NBRCNDSAMP NBRCNDFOR CCLIVEPLT     FORNONSAMP
 ## 1:                NA      2          1         1        38 Sampled-Forest
-##           PLOT_ID COUNT_TPA SEED_COUNT_TPA TREE_COUNT_TPA
-## 1: ID560304588008    273.04          224.9          48.14</code></pre>
+##           PLOT_ID COUNT_TPA_live SEED_COUNT_TPA_live TREE_COUNT_TPA_live
+## 1: ID560304588008         273.04               224.9               48.14</code></pre>
 </details>
 <div class="sourceCode" id="cb154"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb154-1"><a href="#cb154-1" aria-hidden="true" tabindex="-1"></a>WYseed[WYseed<span class="sc">$</span>PLT_CN <span class="sc">==</span> cn,]</span></code></pre></div>
 <details>
@@ -2412,13 +2412,20 @@ output
 ## 4:                NA      1          1         0         0 Sampled-Nonforest
 ## 5:                NA      1          1         0         0 Sampled-Nonforest
 ## 6:                NA      1          1         0         0 Sampled-Nonforest
-##           PLOT_ID COUNT_TPA_ADJ SEED_COUNT_TPA_ADJ TREE_COUNT_TPA_ADJ
-## 1: ID560200186688            NA                 NA                 NA
-## 2: ID560200184596        105.06              74.97              30.09
-## 3: ID560200188993        540.59             224.90             315.69
-## 4: ID560200182340            NA                 NA                 NA
-## 5: ID560200182869            NA                 NA                 NA
-## 6: ID560200183304            NA                 NA                 NA</code></pre>
+##           PLOT_ID COUNT_TPA_live_ADJ SEED_COUNT_TPA_live_ADJ
+## 1: ID560200186688                 NA                      NA
+## 2: ID560200184596             105.06                   74.97
+## 3: ID560200188993             540.59                  224.90
+## 4: ID560200182340                 NA                      NA
+## 5: ID560200182869                 NA                      NA
+## 6: ID560200183304                 NA                      NA
+##    TREE_COUNT_TPA_live_ADJ
+## 1:                      NA
+## 2:                   30.09
+## 3:                  315.69
+## 4:                      NA
+## 5:                      NA
+## 6:                      NA</code></pre>
 </details>
 <div class="sourceCode" id="cb160"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb160-1"><a href="#cb160-1" aria-hidden="true" tabindex="-1"></a>treesum5a[treesum5a<span class="sc">$</span>CN <span class="sc">%in%</span> cn,]</span></code></pre></div>
 <details>
@@ -2431,8 +2438,8 @@ output
 ## 1:   43.97663     2011        2                     0              1
 ##    NF_PLOT_STATUS_CD NBRCND NBRCNDSAMP NBRCNDFOR CCLIVEPLT     FORNONSAMP
 ## 1:                NA      2          1         1        38 Sampled-Forest
-##           PLOT_ID COUNT_TPA SEED_COUNT_TPA TREE_COUNT_TPA
-## 1: ID560304588008    273.04          224.9          48.14</code></pre>
+##           PLOT_ID COUNT_TPA_live SEED_COUNT_TPA_live TREE_COUNT_TPA_live
+## 1: ID560304588008         273.04               224.9               48.14</code></pre>
 </details>
 <div class="sourceCode" id="cb162"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb162-1"><a href="#cb162-1" aria-hidden="true" tabindex="-1"></a>treesum5b[treesum5b<span class="sc">$</span>CN <span class="sc">%in%</span> cn,]</span></code></pre></div>
 <details>
@@ -2445,8 +2452,10 @@ output
 ## 1:   43.97663     2011        2                     0              1
 ##    NF_PLOT_STATUS_CD NBRCND NBRCNDSAMP NBRCNDFOR CCLIVEPLT     FORNONSAMP
 ## 1:                NA      2          1         1        38 Sampled-Forest
-##           PLOT_ID COUNT_TPA_ADJ SEED_COUNT_TPA_ADJ TREE_COUNT_TPA_ADJ
-## 1: ID560304588008        546.08             449.79              96.29</code></pre>
+##           PLOT_ID COUNT_TPA_live_ADJ SEED_COUNT_TPA_live_ADJ
+## 1: ID560304588008             546.08                  449.79
+##    TREE_COUNT_TPA_live_ADJ
+## 1:                   96.29</code></pre>
 </details>
 <div class="sourceCode" id="cb164"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb164-1"><a href="#cb164-1" aria-hidden="true" tabindex="-1"></a>WYcond[WYcond<span class="sc">$</span>PLT_CN <span class="sc">%in%</span> cn,]</span></code></pre></div>
 <details>
