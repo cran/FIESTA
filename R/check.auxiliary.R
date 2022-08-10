@@ -49,6 +49,7 @@ check.auxiliary <- function(pltx, puniqueid, module="GB", strata=FALSE,
 #				TRUE, FALSE)
   auxlut <- pcheck.table(auxlut, gui=gui, tabnm="auxlut",
  		caption="Strata table?", nullcheck=TRUE)
+  P2POINTCNT <- pcheck.table(P2POINTCNT)
 
   #######################################################################
   ## Check strata
@@ -58,6 +59,7 @@ check.auxiliary <- function(pltx, puniqueid, module="GB", strata=FALSE,
     strvar <- pcheck.varchar(var2check=strvar, varnm="strvar",
 		gui=gui, checklst=c("NONE", names(auxlut)), caption="Strata variable?",
 		warn="strata variable not in stratalut", stopifnull=TRUE)
+    strvars <- strvar
 
     ## Check for a total value in the last row of table..  If exists, exclude.
     lastrow <- auxlut[nrow(auxlut),]
@@ -80,6 +82,9 @@ check.auxiliary <- function(pltx, puniqueid, module="GB", strata=FALSE,
       }
     }
 
+    ## Define sumvars to aggregate
+    sumvars <- c(getwtvar, strwtvar, npixelvar)
+
     ## Check substrvar (if nonresp)
     #############################################################
     if (module =="GB" && nonresp) {
@@ -90,24 +95,24 @@ check.auxiliary <- function(pltx, puniqueid, module="GB", strata=FALSE,
       substrvar <- pcheck.varchar(var2check=substrvar, varnm="substrvar",
 		gui=gui, checklst=auxnmlst, caption="Substrata variable?",
 		warn="substrata variable not in strata table", stopifnull=TRUE)
-      #strvars <- c(strvars, substrvar)
+      strvars <- unique(c(strvars, substrvar))
 
-      ## Concatenate to 1 variable
-      auxlut[, STRATASUB := paste(get(strvar), get(substrvar), sep="-")]
-      pltx[, STRATASUB := paste(get(strvar), get(substrvar), sep="-")]
-      if (!is.null(P2POINTCNT)) {
-        P2POINTCNT[, STRATASUB := paste(get(strvar), get(substrvar), sep="-")][
-			, c(strvar, substrvar) := NULL]
-      }
-      strvar <- "STRATASUB"
+#      ## Concatenate to 1 variable
+#      auxlut[, STRATASUB := paste(get(strvar), get(substrvar), sep="-")]
+#      pltx[, STRATASUB := paste(get(strvar), get(substrvar), sep="-")]
+
+#      if (!is.null(P2POINTCNT)) {
+#        P2POINTCNT[, STRATASUB := paste(get(strvar), get(substrvar), sep="-")][
+#			, c(strvar, substrvar) := NULL]
+#      }
+#      strvar <- "STRATASUB"
+      sumvars <- unique(c(sumvars, "n.nonresp"))
     }
-    strvars <- c(strvars, strvar)
 
     ## Aggregate strata by estimation unit to make sure no duplicate values exist
-    sumvars <- c(getwtvar, strwtvar, npixelvar)
     sumvars <- unique(sumvars[sumvars %in% names(auxlut)])
-    auxlut[, (sumvars) := lapply(.SD, as.numeric), .SDcols=sumvars]
     if (length(sumvars) > 0) {
+      auxlut[, (sumvars) := lapply(.SD, as.numeric), .SDcols=sumvars]
       auxlut <- auxlut[, lapply(.SD, sum, na.rm=TRUE),
 				by=c(unitvars, strvars), .SDcols=sumvars]
       setnames(auxlut, c(unitvars, strvars, sumvars))
@@ -128,7 +133,12 @@ check.auxiliary <- function(pltx, puniqueid, module="GB", strata=FALSE,
 
     ## Check that the strunitvars in pltx are all in auxlut
     pltx <- check.matchval(tab1=pltx, tab2=auxlut, var1=c(unitvars, strvars),
-		tab1txt="plt", tab2txt=auxtext, stopifmiss=TRUE)
+		tab1txt="plt", tab2txt=auxtext, stopifmiss=FALSE, subsetrows=TRUE)
+
+    ## Check that the strunitvars in pltx are all in auxlut
+    pltx <- check.matchval(tab1=pltx, tab2=auxlut, var1=c(unitvars, strvars),
+		tab1txt="plt", tab2txt=auxtext, stopifmiss=FALSE)
+
 
     ## Check that the strunitvars in auxlut are all in pltx
     auxlut <- check.matchval(tab1=auxlut, tab2=pltx, var1=c(unitvars, strvars),
@@ -211,7 +221,7 @@ check.auxiliary <- function(pltx, puniqueid, module="GB", strata=FALSE,
       for (mvar in missvars) {
         if (any(grepl(mvar, auxnmlst))) {
           mvarnm <- auxnmlst[grepl(mvar, auxnmlst)]
-          if (all(grepl("\\.", mvarnm) && mvar %in% names(pltx))) {
+          if (all(grepl("\\.", mvarnm)) && mvar %in% names(pltx)) {
             message(toString(mvarnm), " exists in auxlut... setting ", mvar, " to predfac")
             predfac <- c(predfac, mvar)
             predcon <- prednames[!prednames %in% predfac]
@@ -298,8 +308,12 @@ check.auxiliary <- function(pltx, puniqueid, module="GB", strata=FALSE,
     warning("minplotnum.unit should be at least 2")
     #minplotnum.unit <- 2
   }
-  if (minplotnum.strat > minplotnum.unit) {
-    minplotnum.strat <- minplotnum.unit
+  if (strata) {
+    if (minplotnum.strat > minplotnum.unit) {
+      minplotnum.strat <- minplotnum.unit
+    }
+  } else {
+    minplotnum.strat <- 0
   }
   pltcnts <- check.pltcnt(pltx=pltx, puniqueid=puniqueid,
 		unitlut=auxlut, unitvars=unitvar, strvars=strvar,
@@ -455,7 +469,7 @@ check.auxiliary <- function(pltx, puniqueid, module="GB", strata=FALSE,
   ##################################################################################
   #if (module %in% c("GB", "PB")) {
   if (strata) {
-    if (getwt) {
+    if (getwt) { 
       ## Caculate weight
       if (is.character(auxlut[[getwtvar]]) && sum(grepl(",", auxlut[[getwtvar]]) > 0)) {
         auxlut[[getwtvar]] <- as.numeric(gsub(",", "", auxlut[[getwtvar]]))

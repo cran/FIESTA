@@ -103,8 +103,6 @@ Now that we've loaded `FIESTA` and setup our outfolder, we can retrieve the data
 
 ```{r}
 # File names for external spatial data
-FIAplotsfn <- system.file("extdata", "FIApublic_M331B.db", package="FIESTA")
-FIAplotsfn <- "C:/_tsf/_GitHub/FIESTA/inst/extdata/FIA_data/FIApublic_M331B.db"
 
 WYbhfn <- system.file("extdata", "sp_data/WYbighorn_adminbnd.shp", package="FIESTA")
 WYbhdistfn <- system.file("extdata", "sp_data/WYbighorn_districtbnd.shp", package="FIESTA")
@@ -245,7 +243,7 @@ Now that we've created our population dataset, we can move on to estimation.
 First, we can set up our predictors as a vector:
 
 ```{r}
-all_preds <- c("slp", "dem", "asp_cos", "asp_sin", "fornf2")
+all_preds <- c("slp", "dem", "asp_cos", "asp_sin", "fornf")
 ```
 
 Next, we fit the unit-level EBLUP with the `JoSAE` R package. 

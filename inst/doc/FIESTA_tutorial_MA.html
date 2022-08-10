@@ -569,16 +569,16 @@ information on this function.</p>
 output
 </summary>
 <pre><code>## List of 12
-##  $ pltassgn      :&#39;data.frame&#39;:  56 obs. of  25 variables:
 ##  $ unitvar       : chr &quot;ONEUNIT&quot;
+##  $ pltassgn      :&#39;data.frame&#39;:  56 obs. of  25 variables:
 ##  $ pltassgnid    : chr &quot;CN&quot;
 ##  $ unitarea      :&#39;data.frame&#39;:  1 obs. of  2 variables:
 ##  $ areavar       : chr &quot;ACRES_GIS&quot;
 ##  $ unitzonal     :&#39;data.frame&#39;:  1 obs. of  8 variables:
-##  $ inputdf       :Classes &#39;data.table&#39; and &#39;data.frame&#39;: 4 obs. of  7 variables:
+##  $ inputdf       :Classes &#39;data.table&#39; and &#39;data.frame&#39;: 5 obs. of  7 variables:
 ##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
 ##  $ prednames     : chr [1:5] &quot;dem&quot; &quot;slp&quot; &quot;asp_cos&quot; &quot;asp_sin&quot; ...
-##  $ zonalnames    : chr [1:6] &quot;dem&quot; &quot;slp&quot; &quot;asp_cos&quot; &quot;asp_sin&quot; ...
+##  $ zonalnames    : chr [1:7] &quot;dem&quot; &quot;slp&quot; &quot;asp_cos&quot; &quot;asp_sin&quot; ...
 ##  $ predfac       : chr &quot;fornf&quot;
 ##  $ npixelvar     : chr &quot;npixels&quot;
 ##  $ predfac.levels:List of 1</code></pre>
@@ -644,18 +644,10 @@ output
 ##  $ npixelvar  : chr &quot;npixels&quot;
 ##  $ prednames  : chr [1:5] &quot;dem&quot; &quot;slp&quot; &quot;asp_cos&quot; &quot;asp_sin&quot; ...
 ##  $ expcondtab : NULL
-##  $ plotsampcnt:Classes &#39;data.table&#39; and &#39;data.frame&#39;:    2 obs. of  3 variables:
-##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
-##   ..- attr(*, &quot;sorted&quot;)= chr &quot;PLOT_STATUS_CD&quot;
-##  $ condsampcnt:Classes &#39;data.table&#39; and &#39;data.frame&#39;:    4 obs. of  3 variables:
-##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
-##   ..- attr(*, &quot;sorted&quot;)= chr &quot;COND_STATUS_CD&quot;
+##  $ plotsampcnt:&#39;data.frame&#39;: 2 obs. of  3 variables:
+##  $ condsampcnt:&#39;data.frame&#39;: 4 obs. of  3 variables:
 ##  $ states     : chr &quot;Wyoming&quot;
 ##  $ invyrs     :List of 1
-##   ..- attr(*, &quot;dim&quot;)= int 1
-##   ..- attr(*, &quot;dimnames&quot;)=List of 1
-##   ..- attr(*, &quot;call&quot;)= language by.default(data = invyrtab$INVYR, INDICES = invyrtab$STATECD, FUN = I)
-##   ..- attr(*, &quot;class&quot;)= chr &quot;by&quot;
 ##  $ estvar.area: chr &quot;CONDPROP_ADJ&quot;
 ##  $ adj        : chr &quot;plot&quot;
 ##  $ treex      :Classes &#39;data.table&#39; and &#39;data.frame&#39;:    1691 obs. of  21 variables:
@@ -1340,7 +1332,7 @@ output
 ##  $ est     :Classes &#39;data.table&#39; and &#39;data.frame&#39;:   1 obs. of  3 variables:
 ##   ..$ ONEUNIT               : num 1
 ##   ..$ Estimate              : num 1.32e+09
-##   ..$ Percent Sampling Error: num 14.6
+##   ..$ Percent Sampling Error: num 14.5
 ##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
 ##   ..- attr(*, &quot;sorted&quot;)= chr &quot;ONEUNIT&quot;
 ##  $ titlelst:List of 10
@@ -1380,7 +1372,7 @@ output
 </summary>
 <pre><code>## $totest
 ##    ONEUNIT TOTAL       dem       slp asp_cos   asp_sin    fornf2
-## 1:       1     1 0.7197991 -73.91003       0 -653.0746 -1462.707</code></pre>
+## 1:       1     1 0.6825344 -71.42578       0 -613.1215 -1380.969</code></pre>
 </details>
 <p>Notably, we can see that [INSERT CORRECT PREDS] <code>dem</code>,
 <code>slp</code>, <code>asp_cos</code>, and <code>asp_sin</code> were

@@ -15,6 +15,7 @@ popTables(
   subplot = NULL,
   subp_cond = NULL,
   lulc = NULL,
+  cond_dwm_calc = NULL,
   ...
 )
 }
@@ -59,6 +60,9 @@ dsn. Subplot condition-level data with one record for each species
 
 \item{lulc}{DF/DT, R object, comma-delimited file(*.csv), or layer in dsn.
 Land use/Land cover data with current and previous observations.}
+
+\item{cond_dwm_calc}{DF/DT, R object, comma-delimited file(*.csv), or layer 
+in dsn. Calculated down woody material.}
 
 \item{...}{For extendibility.}
 }

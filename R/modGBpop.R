@@ -61,8 +61,8 @@
 #' For available reference tables: sort(unique(FIESTAutils::ref_codes$VARIABLE)) \cr
 #' 
 #' @param popType String. Type of evaluation(s) to include in population data.
-#' Note: currently only c('CURR', 'VOL', 'LULC') are available. See details
-#' below for descriptions of each.
+#' Note: currently only c('CURR', 'VOL', 'LULC', 'DWM') 
+#' are available. See details below for descriptions of each.
 #' @param popTabs List of population tables the user would like returned.
 #'  See help(popTables) for a list of options.
 #' @param popTabIDs List of unique IDs corresponding to the population tables
@@ -291,13 +291,11 @@ modGBpop <- function(popType = "VOL",
   nonsamp.pfilter=nonsamp.cfilter <- NULL
   #nonsamp.vfilter.fixed <- FALSE
   returnlst <- list()
-  nonresp <- FALSE
-  substrvar <- NULL
   
   
   ## Set global variables
   ONEUNIT=n.total=n.strata=strwt=expcondtab=V1=SUBPCOND_PROP=SUBPCOND_PROP_UNADJ=
-    treef=seedf=vcondsppf=vcondstrf=bndx <- NULL
+    treef=seedf=vcondsppf=vcondstrf=cond_dwm_calcf=bndx <- NULL
   condid <- "CONDID"
   
   
@@ -445,14 +443,10 @@ modGBpop <- function(popType = "VOL",
   saveobj <- pcheck.logical(saveobj, varnm="saveobj", 
 		title="Save SApopdat object?", first="YES", gui=gui, stopifnull=TRUE)
   
-  ## Check objnm
-  if (saveobj && is.null(objnm)) {
-    objnm <- "GBpopdat"
-  }
  
   ## Check output
   ########################################################
-  if (savedata || saveobj) {
+  if (savedata) {
     outlst <- pcheck.output(outfolder=outfolder, out_dsn=out_dsn, 
                   out_fmt=out_fmt, outfn.pre=outfn.pre, outfn.date=outfn.date, 
                   overwrite_dsn=overwrite_dsn, overwrite_layer=overwrite_layer,
@@ -465,6 +459,21 @@ modGBpop <- function(popType = "VOL",
     outfn.date <- outlst$outfn.date
     outfn.pre <- outlst$outfn.pre
   }
+
+  if (saveobj) {
+    outobj_fmtlst <- c('rds', 'rda', 'llo')
+    outobj_fmt <- pcheck.varchar(var2check=outobj_fmt, varnm="outobj_fmt", gui=gui,
+		checklst=outobj_fmtlst, caption="outobj_fmt", multiple=FALSE, stopifnull=TRUE)
+
+    if (is.null(objnm)) {
+      objnm <- "GBpopdat"
+    }
+    #if (append_layer) overwrite_layer <- FALSE
+    if (append_layer) message("currently cannot append to object lists")
+    objfn <- getoutfn(outfn=objnm, ext=outobj_fmt, outfolder=outfolder, 
+		overwrite=overwrite_layer, outfn.pre=outfn.pre, outfn.date=outfn.date)
+  }
+
  
   ###################################################################################
   ## Load data
@@ -544,7 +553,7 @@ modGBpop <- function(popType = "VOL",
       auxdat <- pcheck.object(auxdat, "auxdat", list.items=list.items)
       pltassgn <- auxdat$pltassgn
       pltassgnid <- auxdat$pltassgnid
-      unitzonal <- auxdat$unitzonal
+      stratalut <- auxdat$unitzonal
       unitvar <- auxdat$unitvar
       unitvar2 <- auxdat$unitvar2
       unitarea <- auxdat$unitarea
@@ -559,13 +568,7 @@ modGBpop <- function(popType = "VOL",
             stop("must include strvar if strata=TRUE")
           }
         } 
-        strwtvar <- "strwt"
-        pivotvars <- c(unitvar, unitvar2)
-        unitvars <- pivotvars[pivotvars %in% names(unitzonal)]
-        if (is.null(stratalut)) {
-          stratalut <- strat.pivot(unitzonal, unitvars=unitvars, 
-                              strvar, strwtvar=strwtvar)
-        }
+        pivot <- TRUE
       }
     }
   } 
@@ -591,6 +594,9 @@ modGBpop <- function(popType = "VOL",
   }
   if (popType == "P2VEG") {
     list.items <- c(list.items, "vsubpstr", "subplot", "subp_cond")
+  }
+  if (popType == "DWM") {
+    list.items <- c(list.items, "cond_dwm_calc")
   }
 
   popTabs <- pcheck.object(popTabs, "popTabs", list.items=list.items)
@@ -625,15 +631,15 @@ modGBpop <- function(popType = "VOL",
                   nonsamp.vfilter.fixed=nonsamp.vfilter.fixed,
                   unitarea=unitarea, unitvar=unitvar, unitvar2=unitvar2, areavar=areavar, 
                   areaunits=areaunits, unit.action=unit.action, strata=strata, 
-                  stratalut=stratalut, strvar=strvar, nonresp=nonresp, 
-                  substrvar=substrvar, stratcombine=stratcombine)
+                  stratalut=stratalut, strvar=strvar, pivot=pivot, nonresp=nonresp, 
+                  stratcombine=stratcombine)
 
   if (is.null(popcheck)) return(NULL)
   condx <- popcheck$condx
   pltcondx <- popcheck$pltcondx
   treef <- popcheck$treef
   seedf <- popcheck$seedf
-  pltassgnx <- popcheck$pltassgnx
+  #pltassgnx <- popcheck$pltassgnx
   cuniqueid <- popcheck$cuniqueid
   condid <- popcheck$condid
   tuniqueid <- popcheck$tuniqueid
@@ -643,7 +649,7 @@ modGBpop <- function(popType = "VOL",
   adj <- popcheck$adj
   unitvar <- popcheck$unitvar
   unitvar2 <- popcheck$unitvar2
-  unitarea <- popcheck$unitarea
+  #unitarea <- popcheck$unitarea
   areavar <- popcheck$areavar
   areaunits <- popcheck$areaunits
   unit.action <- popcheck$unit.action
@@ -662,14 +668,25 @@ modGBpop <- function(popType = "VOL",
   pvars2keep <- popcheck$pvars2keep
   areawt <- popcheck$areawt
   tpropvars <- popcheck$tpropvars
-  if (nonresp) {
-    substrvar <- popcheck$substrvar
-  } 
-  #rm(popcheck)
+
   if (popType == "P2VEG") {
     vcondsppf <- popcheck$vcondsppf
     vcondstrf <- popcheck$vcondstrf
-    areawt <- "SUBP_CONDPROP_UNADJ"
+    areawt <- popcheck$areawt
+  }
+  if (popType == "DWM") {
+    cond_dwm_calcf <- popcheck$cond_dwm_calcf
+    dwmpropvars <- names(cond_dwm_calcf)[grepl("CONDPROP", names(cond_dwm_calcf), ignore.case=TRUE)]
+    #cwdcols <- names(cond_dwm_calcf)[grepl(dwmtype, names(cond_dwm_calcf), ignore.case=TRUE)]
+    #areawt <- names(condx)[grepl(dwmtype, names(condx), ignore.case=TRUE)]
+  }
+  if (nonresp) {
+    substrvar <- popcheck$substrvar
+    stratalut <- popcheck$RHGlut
+    getwt <- TRUE
+    getwtvar <- "n.resp"
+    nonresplut <- popcheck$nonresplut
+    P2POINTCNT <- NULL
   }
 
   ###################################################################################
@@ -682,9 +699,9 @@ modGBpop <- function(popType = "VOL",
   ## - if unit.action='combine', combines estimation units to reach minplotnum.unit.
   ## If unitvar and unitvar2, concatenates variables to 1 unitvar
   ###################################################################################
-  auxdat <- check.auxiliary(pltx=pltassgnx, puniqueid=pltassgnid, 
+  auxdat <- check.auxiliary(pltx=popcheck$pltassgnx, puniqueid=popcheck$pltassgnid, 
                     unitvar=unitvar, unitvar2=unitvar2, 
-                    unitarea=unitarea, areavar=areavar, 
+                    unitarea=popcheck$unitarea, areavar=areavar, 
                     minplotnum.unit=minplotnum.unit, unit.action=unit.action, 
                     strata=strata, auxlut=stratalut, strvar=strvar, 
                     nonresp=nonresp, substrvar=substrvar, 
@@ -704,6 +721,12 @@ modGBpop <- function(popType = "VOL",
   if (nonresp) nonsampplots <- auxdat$nonsampplots
   if (is.null(key(pltassgnx))) setkeyv(pltassgnx, pltassgnid) 
 
+  strunitvars <- c(unitvar, strvar)
+  if (nonresp) {
+    adj <- "none"
+    strunitvars <- c(unitvar, strvar, "RHG")    
+  }
+
   ###################################################################################
   ## GET ADJUSTMENT FACTORS BY STRATA AND/OR ESTIMATION UNIT FOR NONSAMPLED CONDITIONS
   ## Calculates adjustment factors for area and trees by strata (and estimation unit)
@@ -718,7 +741,7 @@ modGBpop <- function(popType = "VOL",
   ###################################################################################
   ## Merge plot strata info to condx
   if (is.null(key(condx))) setkeyv(condx, c(cuniqueid, condid))
-  condx <- condx[pltassgnx[,c(pltassgnid, unitvar, strvar), with=FALSE]]
+  condx <- condx[pltassgnx[,c(pltassgnid, strunitvars), with=FALSE]]
 
 
   ## If more than one unitvar, 
@@ -736,6 +759,7 @@ modGBpop <- function(popType = "VOL",
                                  vcondsppx=vcondsppf, 
                                  vcondstrx=vcondstrf, 
                                  vuniqueid=vuniqueid, 
+                                 cond_dwm_calcx=cond_dwm_calcf,
                                  unitlut=stratalut, 
                                  unitvars=unitvar, 
                                  strvars=strvar, 
@@ -783,7 +807,8 @@ modGBpop <- function(popType = "VOL",
 	      unitvar=unitvar, unitvars=unitvars, 
 	      strata=strata, stratalut=stratalut, strvar=strvar, strwtvar=strwtvar, 
 	      expcondtab=expcondtab, plotsampcnt=plotsampcnt, condsampcnt=condsampcnt, 
-	      states=states, invyrs=invyrs, estvar.area=estvar.area, adj=adj))
+	      states=states, invyrs=invyrs, estvar.area=estvar.area, 
+            adj=adj, areawt=areawt))
 
   if (!is.null(treef)) {
     returnlst$treex <- treef
@@ -806,7 +831,10 @@ modGBpop <- function(popType = "VOL",
     returnlst$vcondsppx <- vcondsppf
     returnlst$vcondstrx <- vcondstrf
   }
-
+  if (nonresp) {
+    returnlst$nonresplut <- nonresplut
+    returnlst$substrvar <- "RHG"
+  }
 
   ###################################################################################
   ## Save population data objects
@@ -864,6 +892,18 @@ modGBpop <- function(popType = "VOL",
 		                          append_layer=append_layer,
 		                          add_layer=TRUE))
     }
+    if (!is.null(vcondsppf)) {
+      datExportData(vcondsppf, 
+          savedata_opts=list(outfolder=outfolder, 
+                              out_fmt=out_fmt, 
+		                          out_dsn=out_dsn, 
+		                          out_layer="vcondsppx",
+		                          outfn.pre=outfn.pre, 
+		                          outfn.date=outfn.date, 
+		                          overwrite_layer=overwrite_layer,
+		                          append_layer=append_layer,
+		                          add_layer=TRUE))
+    }
     if (!is.null(vcondstrf)) {
       datExportData(vcondstrf, 
           savedata_opts=list(outfolder=outfolder, 
@@ -876,12 +916,12 @@ modGBpop <- function(popType = "VOL",
 		                          append_layer=append_layer,
 		                          add_layer=TRUE))
     }
-    if (!is.null(vcondsppf)) {
-      datExportData(vcondsppf, 
+    if (!is.null(cond_dwm_calcf)) {
+      datExportData(cond_dwm_calcf, 
           savedata_opts=list(outfolder=outfolder, 
                               out_fmt=out_fmt, 
 		                          out_dsn=out_dsn, 
-		                          out_layer="vcondsppx",
+		                          out_layer="cond_dwm_calcx",
 		                          outfn.pre=outfn.pre, 
 		                          outfn.date=outfn.date, 
 		                          overwrite_layer=overwrite_layer,

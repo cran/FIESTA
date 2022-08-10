@@ -26,13 +26,15 @@ spGetPlots(
   istree = FALSE,
   isseed = FALSE,
   isveg = FALSE,
+  isdwm = FALSE,
   plot_layer = "plot",
   cond_layer = "cond",
   tree_layer = "tree",
-  seed_layer = "seed",
-  vsubpspp_layer = "vsubpspp",
-  vsubpstr_layer = "vsubpstr",
-  invsubp_layer = "invsubp",
+  seed_layer = "seedling",
+  vsubpspp_layer = "p2veg_subplot_spp",
+  vsubpstr_layer = "p2veg_subp_structure",
+  invsubp_layer = "invasive_subplot_spp",
+  dwm_layer = "cond_dwm_calc",
   ppsa_layer = "pop_plot_stratum_assgn",
   other_layers = NULL,
   puniqueid = "CN",
@@ -126,6 +128,8 @@ names in *_layer arguments.}
 \item{isveg}{Logical. If TRUE, understory vegetation tables are extracted
 from FIA database (P2VEG_SUBPLOT_SPP, P2VEG_SUBP_STRUCTURE, INVASIVE_SUBPLOT_SPP).}
 
+\item{isdwm}{Logical. If TRUE, down woody material are extracted.}
+
 \item{plot_layer}{String. Name of layer in database of file name of FIA plot
 table.}
 
@@ -146,6 +150,9 @@ P2VEG_SUBP_STRUCTURE table if isveg=TRUE.}
 
 \item{invsubp_layer}{String. Name of layer in database of file name of FIA
 INVASIVE_SUBPLOT_SPP table if isveg=TRUE.}
+
+\item{dwm_layer}{String. Name of layer in database of file name of FIA
+COND_DWM_CALC table if isdwm=TRUE.}
 
 \item{ppsa_layer}{String. Name of layer in database of file name of FIA
 pop_plot_stratum_assgn table, if using evaluations.}

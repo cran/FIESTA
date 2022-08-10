@@ -505,37 +505,35 @@ some external data and predictor layers stored in <code>FIESTA</code>
 and derive new predictor layers using the <code>raster</code>
 package.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># File names for external spatial data</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>FIAplotsfn <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;FIApublic_M331B.db&quot;</span>, <span class="at">package=</span><span class="st">&quot;FIESTA&quot;</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>FIAplotsfn <span class="ot">&lt;-</span> <span class="st">&quot;C:/_tsf/_GitHub/FIESTA/inst/extdata/FIA_data/FIApublic_M331B.db&quot;</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>WYbhfn <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;sp_data/WYbighorn_adminbnd.shp&quot;</span>, <span class="at">package=</span><span class="st">&quot;FIESTA&quot;</span>)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>WYbhdistfn <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;sp_data/WYbighorn_districtbnd.shp&quot;</span>, <span class="at">package=</span><span class="st">&quot;FIESTA&quot;</span>)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>WYbhdist.att <span class="ot">&lt;-</span> <span class="st">&quot;DISTRICTNA&quot;</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>fornffn <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;sp_data/WYbighorn_forest_nonforest_250m.tif&quot;</span>, <span class="at">package=</span><span class="st">&quot;FIESTA&quot;</span>)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>demfn <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;sp_data/WYbighorn_dem_250m.img&quot;</span>, <span class="at">package=</span><span class="st">&quot;FIESTA&quot;</span>)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># # Derive new layers from dem</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co"># aspfn &lt;- file.path(outfolder, &quot;WYbh_asp.img&quot;)</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co"># gdalUtils::gdaldem(&quot;aspect&quot;, input_dem=demfn, output=aspfn, of=&quot;GTiff&quot;)</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co"># slpfn &lt;- file.path(outfolder, &quot;WYbh_slp.img&quot;)</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co"># gdalUtils::gdaldem(&quot;slope&quot;, input_dem=demfn, output=slpfn, of=&quot;GTiff&quot;)</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Derive new predictor layers from dem</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(raster)</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>dem <span class="ot">&lt;-</span> <span class="fu">raster</span>(demfn)</span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>slp <span class="ot">&lt;-</span> <span class="fu">terrain</span>(dem,</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>               <span class="at">opt =</span> <span class="st">&quot;slope&quot;</span>,</span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>               <span class="at">unit =</span> <span class="st">&quot;degrees&quot;</span>,</span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>               <span class="at">filename =</span> <span class="fu">paste0</span>(outfolder, <span class="st">&quot;/WYbh_slp.img&quot;</span>), </span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>               <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>asp <span class="ot">&lt;-</span> <span class="fu">terrain</span>(dem,</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>               <span class="at">opt =</span> <span class="st">&quot;aspect&quot;</span>,</span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>               <span class="at">unit =</span> <span class="st">&quot;degrees&quot;</span>, </span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>               <span class="at">filename =</span> <span class="fu">paste0</span>(outfolder, <span class="st">&quot;/WYbh_asp.img&quot;</span>),</span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>               <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>WYbhfn <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;sp_data/WYbighorn_adminbnd.shp&quot;</span>, <span class="at">package=</span><span class="st">&quot;FIESTA&quot;</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>WYbhdistfn <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;sp_data/WYbighorn_districtbnd.shp&quot;</span>, <span class="at">package=</span><span class="st">&quot;FIESTA&quot;</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>WYbhdist.att <span class="ot">&lt;-</span> <span class="st">&quot;DISTRICTNA&quot;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>fornffn <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;sp_data/WYbighorn_forest_nonforest_250m.tif&quot;</span>, <span class="at">package=</span><span class="st">&quot;FIESTA&quot;</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>demfn <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;sp_data/WYbighorn_dem_250m.img&quot;</span>, <span class="at">package=</span><span class="st">&quot;FIESTA&quot;</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># # Derive new layers from dem</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># aspfn &lt;- file.path(outfolder, &quot;WYbh_asp.img&quot;)</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># gdalUtils::gdaldem(&quot;aspect&quot;, input_dem=demfn, output=aspfn, of=&quot;GTiff&quot;)</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co"># slpfn &lt;- file.path(outfolder, &quot;WYbh_slp.img&quot;)</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co"># gdalUtils::gdaldem(&quot;slope&quot;, input_dem=demfn, output=slpfn, of=&quot;GTiff&quot;)</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Derive new predictor layers from dem</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(raster)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>dem <span class="ot">&lt;-</span> <span class="fu">raster</span>(demfn)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>slp <span class="ot">&lt;-</span> <span class="fu">terrain</span>(dem,</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>               <span class="at">opt =</span> <span class="st">&quot;slope&quot;</span>,</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>               <span class="at">unit =</span> <span class="st">&quot;degrees&quot;</span>,</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>               <span class="at">filename =</span> <span class="fu">paste0</span>(outfolder, <span class="st">&quot;/WYbh_slp.img&quot;</span>), </span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>               <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>asp <span class="ot">&lt;-</span> <span class="fu">terrain</span>(dem,</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>               <span class="at">opt =</span> <span class="st">&quot;aspect&quot;</span>,</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>               <span class="at">unit =</span> <span class="st">&quot;degrees&quot;</span>, </span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>               <span class="at">filename =</span> <span class="fu">paste0</span>(outfolder, <span class="st">&quot;/WYbh_asp.img&quot;</span>),</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>               <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <p>Next, we set up our small area domains with
 <code>FIESTA::spGetSAdoms</code>. For more information on how to use
 this function, please see the <code>sp</code> vignette included with
@@ -641,16 +639,16 @@ further information on this function.</p>
 output
 </summary>
 <pre><code>## List of 12
-##  $ pltassgn      :&#39;data.frame&#39;:  56 obs. of  26 variables:
 ##  $ unitvar       : chr &quot;DISTRICTNA&quot;
+##  $ pltassgn      :&#39;data.frame&#39;:  56 obs. of  26 variables:
 ##  $ pltassgnid    : chr &quot;CN&quot;
 ##  $ unitarea      :&#39;data.frame&#39;:  3 obs. of  2 variables:
 ##  $ areavar       : chr &quot;ACRES_GIS&quot;
 ##  $ unitzonal     :&#39;data.frame&#39;:  3 obs. of  8 variables:
-##  $ inputdf       :Classes &#39;data.table&#39; and &#39;data.frame&#39;: 4 obs. of  7 variables:
+##  $ inputdf       :Classes &#39;data.table&#39; and &#39;data.frame&#39;: 5 obs. of  7 variables:
 ##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
 ##  $ prednames     : chr [1:5] &quot;dem&quot; &quot;slp&quot; &quot;asp_cos&quot; &quot;asp_sin&quot; ...
-##  $ zonalnames    : chr [1:6] &quot;dem&quot; &quot;slp&quot; &quot;asp_cos&quot; &quot;asp_sin&quot; ...
+##  $ zonalnames    : chr [1:7] &quot;dem&quot; &quot;slp&quot; &quot;asp_cos&quot; &quot;asp_sin&quot; ...
 ##  $ predfac       : chr &quot;fornf&quot;
 ##  $ npixelvar     : chr &quot;npixels&quot;
 ##  $ predfac.levels:List of 1</code></pre>
@@ -691,7 +689,7 @@ list includes we can use the <code>str</code> function:</p>
 output
 </summary>
 <pre><code>## List of 24
-##  $ smallbnd       : chr &quot;/private/var/folders/c6/3mlbrgp57ls3_xf43cjzfp0c0000gn/T/RtmprEMIP7/Rinst8e8710311457/FIESTA/extdata/sp_data/WY&quot;| __truncated__
+##  $ smallbnd       : chr &quot;/private/var/folders/c6/3mlbrgp57ls3_xf43cjzfp0c0000gn/T/Rtmp1qFWoU/Rinst3f2b624fbf0f/FIESTA/extdata/sp_data/WY&quot;| __truncated__
 ##  $ smallbnd.domain: chr &quot;DISTRICTNA&quot;
 ##  $ condx          :&#39;data.frame&#39;: 66 obs. of  13 variables:
 ##  $ pltcondx       :&#39;data.frame&#39;: 66 obs. of  43 variables:
@@ -705,18 +703,10 @@ output
 ##  $ dunitlut       :&#39;data.frame&#39;: 3 obs. of  8 variables:
 ##  $ prednames      : chr [1:5] &quot;dem&quot; &quot;slp&quot; &quot;asp_cos&quot; &quot;asp_sin&quot; ...
 ##  $ predfac        : chr &quot;fornf&quot;
-##  $ plotsampcnt    :Classes &#39;data.table&#39; and &#39;data.frame&#39;:    2 obs. of  3 variables:
-##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
-##   ..- attr(*, &quot;sorted&quot;)= chr &quot;PLOT_STATUS_CD&quot;
-##  $ condsampcnt    :Classes &#39;data.table&#39; and &#39;data.frame&#39;:    4 obs. of  3 variables:
-##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
-##   ..- attr(*, &quot;sorted&quot;)= chr &quot;COND_STATUS_CD&quot;
+##  $ plotsampcnt    :&#39;data.frame&#39;: 2 obs. of  3 variables:
+##  $ condsampcnt    :&#39;data.frame&#39;: 4 obs. of  3 variables:
 ##  $ states         : chr &quot;Wyoming&quot;
 ##  $ invyrs         :List of 1
-##   ..- attr(*, &quot;dim&quot;)= int 1
-##   ..- attr(*, &quot;dimnames&quot;)=List of 1
-##   ..- attr(*, &quot;call&quot;)= language by.default(data = invyrtab$INVYR, INDICES = invyrtab$STATECD, FUN = I)
-##   ..- attr(*, &quot;class&quot;)= chr &quot;by&quot;
 ##  $ estvar.area    : chr &quot;CONDPROP_ADJ&quot;
 ##  $ adj            : chr &quot;plot&quot;
 ##  $ treex          :&#39;data.frame&#39;: 1691 obs. of  21 variables:
@@ -738,7 +728,7 @@ estimation.</p>
 View Example
 </summary>
 <p>First, we can set up our predictors as a vector:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>all_preds <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;slp&quot;</span>, <span class="st">&quot;dem&quot;</span>, <span class="st">&quot;asp_cos&quot;</span>, <span class="st">&quot;asp_sin&quot;</span>, <span class="st">&quot;fornf2&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>all_preds <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;slp&quot;</span>, <span class="st">&quot;dem&quot;</span>, <span class="st">&quot;asp_cos&quot;</span>, <span class="st">&quot;asp_sin&quot;</span>, <span class="st">&quot;fornf&quot;</span>)</span></code></pre></div>
 <p>Next, we fit the unit-level EBLUP with the <code>JoSAE</code> R
 package.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>area1 <span class="ot">&lt;-</span> <span class="fu">modSAarea</span>(</span>

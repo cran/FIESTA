@@ -14,6 +14,7 @@ popTableIDs(
   subplot = "PLT_CN",
   subp_cond = "PLT_CN",
   lulc = "PLT_CN",
+  cond_dwm_calc = "PLT_CN",
   ...
 )
 }
@@ -35,6 +36,8 @@ popTableIDs(
 \item{subp_cond}{String.}
 
 \item{lulc}{String.}
+
+\item{cond_dwm_calc}{String.}
 
 \item{...}{For extendibility.}
 }

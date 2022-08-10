@@ -76,7 +76,7 @@
 #' labels whether selected or not for both area- and unit-level models.
 #' @param multest Logical. If TRUE, returns a data frame of SA estimates using
 #' both unit-level and area-level estimates.
-#' @param addSAdomsdf Logical. If TRUE, sppends SAdomdf to unit.multest table
+#' @param addSAdomsdf Logical. If TRUE, appends SAdomdf to unit.multest table
 #' for output.
 #' @param SAdomvars String vector. List of attributes from SAdoms to include in
 #' multest output.
@@ -586,7 +586,14 @@ modSAtree <- function(SApopdatlst = NULL,
       prednames <- SApopdat$prednames
     } else {
       if (!all(prednames %in% SApopdat$prednames)) {
-        stop("invalid prednames... must be in: ", toString(SApopdat$prednames))
+        if (any(prednames %in% SApopdat$predfac)) {
+          predfacnames <- prednames[prednames %in% SApopdat$predfac]
+          for (nm in predfacnames) {           
+            prednames[prednames == nm] <- SApopdat$prednames[grepl(nm, SApopdat$prednames)]
+          }
+        } else {
+          stop("invalid prednames... must be in: ", toString(SApopdat$prednames))
+        }
       }
     }
 

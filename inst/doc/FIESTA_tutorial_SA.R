@@ -31,8 +31,6 @@ outfolder <- tempdir()
 
 ## -----------------------------------------------------------------------------
 # File names for external spatial data
-FIAplotsfn <- system.file("extdata", "FIApublic_M331B.db", package="FIESTA")
-FIAplotsfn <- "C:/_tsf/_GitHub/FIESTA/inst/extdata/FIA_data/FIApublic_M331B.db"
 
 WYbhfn <- system.file("extdata", "sp_data/WYbighorn_adminbnd.shp", package="FIESTA")
 WYbhdistfn <- system.file("extdata", "sp_data/WYbighorn_districtbnd.shp", package="FIESTA")
@@ -131,7 +129,7 @@ SApopdat <- modSApop(pltdat = SApltdat,
 str(SApopdat, max.level = 1)
 
 ## -----------------------------------------------------------------------------
-all_preds <- c("slp", "dem", "asp_cos", "asp_sin", "fornf2")
+all_preds <- c("slp", "dem", "asp_cos", "asp_sin", "fornf")
 
 ## -----------------------------------------------------------------------------
 area1 <- modSAarea(

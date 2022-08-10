@@ -487,6 +487,8 @@ spGetXY <- function(bnd,
             stop(xy, " not in ", xy_dsn) 
           }
         } 
+      } else if (!is.character(xy)) {
+        stop("invalid xy")
       } else {
         if (!xy %in% tablst) {
           stop(xy, " not in database")
@@ -597,6 +599,13 @@ spGetXY <- function(bnd,
           spxy <- pcheck.spatial(xy, dsn=xy_dsn)
         }
       } 
+      
+      # Do intensity 1?
+      if (intensity1) {
+        if ("INTENSITY" %in% names(spxy)) {
+          spxy <- spxy[spxy$INTENSITY == 1, ]
+        }
+      }
 
       if (!is.null(dbconn)) {
         DBI::dbDisconnect(dbconn)
