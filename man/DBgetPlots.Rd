@@ -6,30 +6,33 @@
 \usage{
 DBgetPlots(
   states = NULL,
+  RS = NULL,
   datsource = "datamart",
   data_dsn = NULL,
-  RS = NULL,
+  dbTabs = dbTables(),
+  eval = "FIA",
+  eval_opts = NULL,
+  puniqueid = "CN",
   invtype = "ANNUAL",
-  evalid = NULL,
-  evalCur = FALSE,
-  evalEndyr = NULL,
-  evalAll = FALSE,
-  evalType = "VOL",
-  measCur = FALSE,
-  measEndyr = NULL,
-  allyrs = FALSE,
-  invyrs = NULL,
-  measyrs = NULL,
-  getxy = TRUE,
-  xymeasCur = FALSE,
+  intensity1 = FALSE,
   istree = FALSE,
   isseed = FALSE,
   isveg = FALSE,
   issubp = FALSE,
-  islulc = FALSE,
+  ischng = FALSE,
   isdwm = FALSE,
+  biojenk = FALSE,
+  greenwt = FALSE,
   plotgeom = FALSE,
   othertables = NULL,
+  getxy = TRUE,
+  xy_datsource = NULL,
+  xy_dsn = NULL,
+  xy = "PLOT",
+  xy_opts = xy_options(),
+  xymeasCur = FALSE,
+  coordType = "PUBLIC",
+  pjoinid = NULL,
   issp = FALSE,
   spcond = FALSE,
   spcondid1 = FALSE,
@@ -38,7 +41,6 @@ DBgetPlots(
   regionVarsRS = "RMRS",
   ACI = FALSE,
   subcycle99 = FALSE,
-  intensity1 = FALSE,
   stateFilter = NULL,
   allFilter = NULL,
   alltFilter = NULL,
@@ -46,7 +48,10 @@ DBgetPlots(
   savedata = FALSE,
   saveqry = FALSE,
   savePOP = FALSE,
-  savedata_opts = NULL
+  savedata_opts = NULL,
+  dbconn = NULL,
+  dbconnopen = FALSE,
+  evalInfo = NULL
 )
 }
 \arguments{
@@ -55,67 +60,31 @@ or code (e.g., 4, 35) of state(s) for evalid. If all states in one or more
 FIA Research Station is desired, set states=NULL and use RS argument to
 define RS.}
 
+\item{RS}{String vector. Name of research station(s) to get public XY
+coordinates for ('RMRS','SRS','NCRS','NERS','PNWRS'). Do not use if states 
+is populated. See FIESTA::ref_statecd for reference to RS and states.}
+
 \item{datsource}{String. Source of data ('datamart', 'sqlite').}
 
 \item{data_dsn}{String. If datsource='sqlite', the name of SQLite database
 (*.sqlite).}
 
-\item{RS}{String vector. Name of research station(s) to get public XY
-coordinates for ('RMRS','SRS','NCRS','NERS','PNWRS'). Do not use if states 
-is populated. See FIESTA::ref_statecd for reference to RS and states.}
+\item{dbTabs}{List of database tables the user would like returned.
+See help(dbTables) for a list of options.}
+
+\item{eval}{String. Type of evaluation time frame for data extraction 
+('FIA', 'custom'). See eval_opts for more further options.}
+
+\item{eval_opts}{List of evaluation options for 'FIA' or 'custom'
+evaluations to determine the set of data returned. See help(eval_options)
+for a list of options.}
+
+\item{puniqueid}{String. Name of unique identifier in plot_layer in dbTabs.}
 
 \item{invtype}{String. Type of FIA inventory to extract ('PERIODIC',
 'ANNUAL').  Only one inventory type (PERIODIC/ANNUAL) at a time.}
 
-\item{evalid}{Integer. Inventory span defining variable. Extract data for a
-specific FIA Evaluation (See details for more information about FIA
-Evaluations).}
-
-\item{evalCur}{Logical. Inventory span defining variable. If TRUE, extract
-data for the most current FIA Evaluation for each state.}
-
-\item{evalEndyr}{YYYY. Inventory span defining variable. Extract data for
-the FIA Evaluation(s) ending in the specified evalEndyr(s). If more than one
-state and different Evaluations by state are desired, input a named list}
-
-\item{evalAll}{Logical. Inventory span defining variable. If TRUE, extract
-data for all FIA Evaluations for each state.}
-
-\item{evalType}{String vector. The type(s) of FIA Evaluation of interest 
-('ALL', 'CURR', 'VOL', 'GRM', 'P2VEG', 'DWM", 'INV', 'REGEN', 'CRWN'). 
-The evalType 'ALL' includes nonsampled plots; 'CURR' includes plots used 
-for area estimates; 'VOL' includes plots used for area and/or tree estimates;
-'GRM' includes plots used for growth, removals, mortality, and
-change estimates (evalType %in% c(GROW, MORT, REMV, CHNG)).  Multiple types
-are accepted. See details below and FIA database manual for regional
-availability and/or differences. Note: do not use if EVALID is specified.}
-
-\item{measCur}{Logical. Inventory span defining variable. If TRUE, extract
-plots with most current sampled measurement for state(s).}
-
-\item{measEndyr}{Logical. Inventory span defining variable. If TRUE, extract
-plots with most current sampled measurement for state(s) for years measured 
-in or before measEndyr.}
-
-\item{allyrs}{Logical. Inventory span defining variable. If TRUE, extract
-all annual inventory years in database for each state.}
-
-\item{invyrs}{YYYY vector. Inventory span defining variable. Extract data by
-state for the specified inventory year(s) (e.g., c(2000, 2001, 2002)). If
-more than one state and different inventory years are desired, input a named
-list object with years labeled by state (e.g., list(Utah=2000:2009,
-Colorado=c(2002,2003,2005)).}
-
-\item{measyrs}{YYYY vector. Measurement year span defining variable. Extract
-data by state for the specified measurement year(s) (e.g., c(2000, 2001,
-2002)). If more than one state and different measurement years are desired,
-input a named list object with years labeled by state (e.g.,
-list(Utah=2000:2009, Colorado=c(2002,2003,2005)).}
-
-\item{getxy}{Logical. If TRUE, gets separate XY table.}
-
-\item{xymeasCur}{Logical. If TRUE, include XY coordinates from the most 
-current sampled measurement of each plot.}
+\item{intensity1}{Logical. If TRUE, includes only plots where INTENSITY = 1.}
 
 \item{istree}{Logical. If TRUE, tree data are extracted from TREE table in
 database.}
@@ -129,17 +98,44 @@ from FIA database (P2VEG_SUBPLOT_SPP, P2VEG_SUBP_STRUCTURE, INVASIVE_SUBPLOT_SPP
 \item{issubp}{Logical. If TRUE, subplot tables are extracted from FIA
 database (SUBPLOT, SUBP_COND).}
 
-\item{islulc}{Logical. If TRUE, condition-level land use/land cover data are
-for current and previous years are extracted from FIA database.}
+\item{ischng}{Logical. If TRUE, sccm (SUBP_COND_CHNG_MTRX) table is returned 
+that includes current and previous conditions.}
 
 \item{isdwm}{Logical. If TRUE, summarized condition-level down woody debris
 data are extracted from FIA database (COND_DWM_CALC).}
+
+\item{biojenk}{Logical. If TRUE, Jenkins biomass is calculated.}
+
+\item{greenwt}{Logical. If TRUE, green weight biomass is calculated.}
 
 \item{plotgeom}{Logical. If TRUE, variables from the PLOTGEOM table are
 appended to the plot table.}
 
 \item{othertables}{String Vector. Name of other table(s) in FIADB to include
 in output. The table must have PLT_CN as unique identifier of a plot.}
+
+\item{getxy}{Logical. If TRUE, gets separate XY table.}
+
+\item{xy_datsource}{Source of XY data ('obj', 'csv', 'datamart', 'sqlite').}
+
+\item{xy_dsn}{If datsource='sqlite', the file name (data source name) of
+the sqlite database (*.sqlite) where XY data are.}
+
+\item{xy}{sf R object or String. Table with xy coordinates. Can be a spatial
+polygon object, data frame, full pathname to a shapefile, or name of a layer
+within a database.}
+
+\item{xy_opts}{List of xy data options to specify if xy is NOT NULL. 
+See xy_options (e.g., xy_opts = list(xvar='LON', yvar='LAT').}
+
+\item{xymeasCur}{Logical. If TRUE, include XY coordinates from the most 
+current sampled measurement of each plot.}
+
+\item{coordType}{String. Type of xy coordinates using ('PUBLIC', 'ACTUAL')}
+
+\item{pjoinid}{String. Variable in plt to join to XY data. Not necessary to
+be unique. If using most current XY coordinates, use identifier for a plot
+(e.g., PLOT_ID).}
 
 \item{issp}{Logical. If TRUE, an sf spatial object is generated from the
 public X/Y coordinates in the plot table.}
@@ -169,8 +165,6 @@ details.}
 plots are plots that are measured more than once and are not included in the
 estimation process.}
 
-\item{intensity1}{Logical. If TRUE, includes only plots where INTENSITY = 1.}
-
 \item{stateFilter}{Character string or Named list. Logical statement to use
 as plot and filter in sql query. Must include plot alias ('p.') and be sql
 syntax (e.g., 'p.COUNTYCD = 1'). If more than 1 state, stateFilter must be a
@@ -197,6 +191,13 @@ table.}
 
 \item{savedata_opts}{List. See help(savedata_options()) for a list
 of options. Only used when savedata = TRUE. If out_layer = NULL,}
+
+\item{dbconn}{Open database connection.}
+
+\item{dbconnopen}{Logical. If TRUE, the dbconn connection is not closed.}
+
+\item{evalInfo}{List. List object output from DBgetEvalid or DBgetXY 
+FIESTA functions.}
 }
 \value{
 if returndata=TRUE, a list of the following objects: 
@@ -237,7 +238,7 @@ evalTypes for the state evaluation are returned. }
 \tab invsubp \tab INVASIVE_SUBPLOT_SPP\cr 
 \tab subplot \tab SUBPLOT\cr 
 \tab subp_cond \tab SUBP_COND\cr 
-\tab dwm \tab COND_DWM_CALC\cr 
+\tab cond_dwm_calc \tab COND_DWM_CALC\cr 
 \tab grm \tab TREE_GRM_COMPONENT\cr 
 \tab issccm \tab SUBP_COND_CHNG_MTRX\cr }
 
@@ -511,7 +512,8 @@ Spatial Data Services
 \dontrun{
 # Extract the most current evaluation of data for Utah
 UTdat <- DBgetPlots(states = "Utah", 
-                    evalCur = TRUE)
+                    eval = "FIA",
+                    eval_opts = list(Cur = TRUE))
 names(UTdat)
 head(UTdat$plt)
 UTdat$pltcnt
@@ -525,15 +527,17 @@ table(UTdat$plt$INVYR)
 
 # Extract specified inventory years 2012:2014 and spatial information
 UTdat2 <- DBgetPlots(states = "Utah",
-                     invyrs = 2012:2014, 
+                     eval = "custom",
+                     eval_opts = list(invyrs = 2012:2014), 
                      issp = TRUE)
 names(UTdat2)
 UTdat2$pltcnt
-UTdat2$spxy_PUBLIC
+UTdat2$xy_PUBLIC
 
 # Extract and display plots with aspen forest type
 UTdat3 <- DBgetPlots(states = "Utah",
-                     invyrs = 2012:2014,
+                     eval = "custom",
+                     eval_opts = eval_options(invyrs = 2012:2014),
                      issp = TRUE,
                      allFilter = "FORTYPCD == 901")
 names(UTdat3)

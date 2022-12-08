@@ -1,7 +1,7 @@
 check.auxiliary <- function(pltx, puniqueid, module="GB", strata=FALSE,
 	unitvar=NULL, unitvar2=NULL, unitarea=NULL, areavar=NULL,
 	auxlut=NULL, prednames=NULL, strvar=NULL, predfac=NULL, makedummy=FALSE,
-	nonresp=FALSE, substrvar=NULL, getwt=FALSE, getwtvar=NULL,
+	nonresp=FALSE, RHGlut=NULL, getwt=FALSE, getwtvar=NULL,
 	strwtvar='strwt', P2POINTCNT=NULL, npixelvar=NULL, stratcombine=FALSE,
 	minplotnum.unit=10, unit.action="keep", minplotnum.strat=2, na.rm=TRUE,
  	removeifnostrata=FALSE, auxtext="auxlut", removetext="unitarea",
@@ -84,30 +84,6 @@ check.auxiliary <- function(pltx, puniqueid, module="GB", strata=FALSE,
 
     ## Define sumvars to aggregate
     sumvars <- c(getwtvar, strwtvar, npixelvar)
-
-    ## Check substrvar (if nonresp)
-    #############################################################
-    if (module =="GB" && nonresp) {
-      ## Check substrvar (if nonresp)
-      #############################################################
-      ## Remove strvar from strlutnmlst
-      auxnmlst <- auxnmlst[which(!auxnmlst %in% strvar)]
-      substrvar <- pcheck.varchar(var2check=substrvar, varnm="substrvar",
-		gui=gui, checklst=auxnmlst, caption="Substrata variable?",
-		warn="substrata variable not in strata table", stopifnull=TRUE)
-      strvars <- unique(c(strvars, substrvar))
-
-#      ## Concatenate to 1 variable
-#      auxlut[, STRATASUB := paste(get(strvar), get(substrvar), sep="-")]
-#      pltx[, STRATASUB := paste(get(strvar), get(substrvar), sep="-")]
-
-#      if (!is.null(P2POINTCNT)) {
-#        P2POINTCNT[, STRATASUB := paste(get(strvar), get(substrvar), sep="-")][
-#			, c(strvar, substrvar) := NULL]
-#      }
-#      strvar <- "STRATASUB"
-      sumvars <- unique(c(sumvars, "n.nonresp"))
-    }
 
     ## Aggregate strata by estimation unit to make sure no duplicate values exist
     sumvars <- unique(sumvars[sumvars %in% names(auxlut)])
@@ -287,6 +263,12 @@ check.auxiliary <- function(pltx, puniqueid, module="GB", strata=FALSE,
       unitarea[[unitvar12]] <- paste(unitarea[[unitvar2]], unitarea[[unitvar]], sep="-")
       unitarea[, c(unitvar, unitvar2) := NULL]
     }
+  
+    if (!is.null(RHGlut)) {
+      RHGlut[[unitvar12]] <- paste(RHGlut[[unitvar2]], RHGlut[[unitvar]], sep="-")
+      RHGlut[, c(unitvar, unitvar2) := NULL]
+    }
+ 
     strunitvars <- unique(replace(strunitvars, which(strunitvars %in% c(unitvar, unitvar2)), unitvar12))
     unitvar <- unitvar12
   }
@@ -350,7 +332,7 @@ check.auxiliary <- function(pltx, puniqueid, module="GB", strata=FALSE,
   ###################################################################################
   ## Collapse strata and/or estimation unit classes if errtab warnings
   ###################################################################################
-  if (any(errtab$errtyp == "warn")) {
+  if (!nonresp && any(errtab$errtyp == "warn")) {
     if (any(c(getwtvar, npixelvar, strwtvar) %in% names(auxlut))) {
       vars2combine <- unique(c(vars2combine, c(getwtvar, npixelvar, strwtvar)))
       vars2combine <- vars2combine[vars2combine %in% names(auxlut)]
@@ -492,6 +474,7 @@ check.auxiliary <- function(pltx, puniqueid, module="GB", strata=FALSE,
       }
       getwtvar <- NULL
     }
+
   } else {
     if ("n.strata" %in% auxlut) {
       auxlut[["n.strata"]] <- NULL
@@ -501,6 +484,14 @@ check.auxiliary <- function(pltx, puniqueid, module="GB", strata=FALSE,
   ## Set key to strlut and unitarea
   setkeyv(auxlut, strunitvars)
   setkeyv(pltx, puniqueid)
+
+  ## Set column order
+  if (length(unitvars) > 1) {
+    setcolorder(auxlut, c(unitvars, strunitvars, 
+			names(auxlut)[!names(auxlut) %in% c(unitvars, strunitvars)]))
+  } else {
+    setcolorder(auxlut, c(strunitvars, names(auxlut)[!names(auxlut) %in% strunitvars]))
+  }
 
   returnlst <- list(pltx=as.data.table(pltx),
 		auxlut=as.data.table(auxlut),
@@ -531,6 +522,20 @@ check.auxiliary <- function(pltx, puniqueid, module="GB", strata=FALSE,
       returnlst$unitNA <- unitlessthan
     }
     if (nonresp) {
+
+      ## Check that the class of c(unitvars, strvars) in RHGlut match auxlut
+      matchcl <- check.matchclass(tab1=auxlut, tab2=RHGlut, matchcol=c(unitvar, strvars),
+		tab1txt=auxtext, tab2txt="RHGlut")
+      auxlut <- matchcl$tab1
+      RHGlut <- matchcl$tab2
+
+      ## Check that th2 values of c(unitvars, strvars) in RHGlut match auxlut
+      RHGlut <- check.matchval(tab1=RHGlut, tab2=auxlut, var1=c(unitvar, strvars),
+		tab1txt="RHGlut", tab2txt=auxtext, stopifmiss=FALSE)
+      setcolorder(RHGlut, c(strunitvars, names(RHGlut)[!names(RHGlut) %in% strunitvars]))
+      setkeyv(RHGlut, strunitvars)
+
+      returnlst$RHGlut <- RHGlut
       returnlst$nonsampplots <- nonsampplots
     }
     if (!is.null(getwtvar)) {

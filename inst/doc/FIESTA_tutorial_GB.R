@@ -109,6 +109,7 @@ stratdat.bhdist$areavar        # Area variable
 ## ---- results = FALSE, message = F--------------------------------------------
 
 ## ---- results = FALSE, message = F--------------------------------------------
+
 GBpopdat <- modGBpop(
   popTabs = list(cond = FIESTA::WYcond,          # FIA plot/condition data
                  tree = FIESTA::WYtree,          # FIA tree data
@@ -146,12 +147,18 @@ GBpopdat$seedx
 #  qry <- "select estn_unit, stratumcd, p1pointcnt, p2pointcnt, expns,
 #            adj_factor_macr, adj_factor_subp, adj_factor_micr from pop_stratum
 #          where evalid = 561301 order by estn_unit, stratumcd"
-#  pop_stratum <- DBqryCSV(
+#  pop_stratum <- tryCatch(
+#          DBqryCSV(
 #                    qry,
 #                    states="Wyoming",
 #                    sqltables="pop_stratum"
-#                    )
-#  head(pop_stratum)
+#                    ),
+#       	 	error=function(e) {
+#  			return(NULL) })
+#  
+#  if (!is.null(pop_stratum)) {
+#    head(pop_stratum)
+#  }
 #  head(GBpopdat$stratalut)
 
 ## ---- results = FALSE, message = F--------------------------------------------
@@ -255,7 +262,7 @@ DBI::dbDisconnect(conn)
 
 ## ---- results = FALSE, message = F--------------------------------------------
 
-GBpopdat.RI <- modGBpop(popTabs = list(plot="plot", cond="cond", tree="tree", seed="seed"),
+GBpopdat.RI <- modGBpop(popTabs = list(plt="plot", cond="cond", tree="tree", seed="seed"),
                   dsn = SQLitefn,
                   pltassgn = "pop_plot_stratum_assgn",
                   stratalut = "pop_stratum",
@@ -503,7 +510,7 @@ area4.1 <- modGBarea(
     GBpopdat = GBpopdat.RI,        # pop - population calculations for Bighorn NF, post-stratification
     landarea = "FOREST",           # est - forest land filter
     sumunits = TRUE,               # est - sum estimation units to population
-    rowvar = "FORTYPGRPCD",        # est - row domain
+    rowvar = "FORTYPCD",        # est - row domain
     colvar = "STDSZCD",            # est - column domain
     returntitle = TRUE,            # out - return title information
     table_opts = list(   

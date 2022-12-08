@@ -18,7 +18,9 @@ DBgetEvalid(
   evalAll = FALSE,
   evalType = "VOL",
   invyrtab = NULL,
-  ppsanm = "pop_plot_stratum_assgn",
+  dbTabs = dbTables(),
+  dbconn = NULL,
+  dbconnopen = FALSE,
   gui = FALSE
 )
 }
@@ -64,7 +66,12 @@ availability and/or differences.}
 If NULL, it is generated from SURVEY table from FIA database based on states
 and invtype.}
 
-\item{ppsanm}{String. Name of pop_plot_assgn_layer in database.}
+\item{dbTabs}{List of database tables the user would like returned.
+See help(dbTables) for a list of options.}
+
+\item{dbconn}{Open database connection.}
+
+\item{dbconnopen}{Logical. If TRUE, the dbconn connection is not closed.}
 
 \item{gui}{Logical. If TRUE, gui windows pop up for parameter selection.}
 }

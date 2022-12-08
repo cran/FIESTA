@@ -2,28 +2,34 @@
 % Please edit documentation in R/DBgetXY.R
 \name{DBgetXY}
 \alias{DBgetXY}
-\title{Database - Extracts actual plot coordinates from the FIA Oracle database.}
+\title{Database - Extracts plot coordinates.}
 \usage{
 DBgetXY(
   states = NULL,
   RS = NULL,
+  xy_datsource = "datamart",
+  xy_dsn = NULL,
+  xy = "PLOT",
+  xy_opts = xy_options(),
+  datsource = NULL,
+  data_dsn = NULL,
+  dbTabs = dbTables(),
+  pjoinid = "CN",
+  eval = "FIA",
+  eval_opts = eval_options(),
   invtype = "ANNUAL",
-  evalid = NULL,
-  evalCur = FALSE,
-  evalEndyr = NULL,
-  evalAll = FALSE,
-  evalType = "ALL",
-  measCur = FALSE,
-  measEndyr = NULL,
-  allyrs = FALSE,
-  invyrs = NULL,
-  measyrs = NULL,
+  coordType = "PUBLIC",
   intensity1 = FALSE,
+  pvars2keep = NULL,
   issp = FALSE,
   returndata = TRUE,
   savedata = FALSE,
   exportsp = FALSE,
-  savedata_opts = NULL
+  savedata_opts = NULL,
+  POP_PLOT_STRATUM_ASSGN = NULL,
+  SURVEY = NULL,
+  dbconnopen = FALSE,
+  evalInfo = NULL
 )
 }
 \arguments{
@@ -36,58 +42,55 @@ define RS.}
 coordinates for ('RMRS','SRS','NCRS','NERS','PNWRS'). Do not use if states 
 is populated. See FIESTA::ref_statecd for reference to RS and states.}
 
+\item{xy_datsource}{Source of XY data ('datamart', 'sqlite', 'obj', 'csv').}
+
+\item{xy_dsn}{If datsource='sqlite', the file name (data source name) of
+the sqlite database (*.db) where XY data reside.}
+
+\item{xy}{sf R object or String. If xy_dsn = 'datamart', name of xy table 
+in FIA DataMart. If xy_dsn = 'sqlite', name of xy layer in database. If 
+datsource = 'csv', full pathname of xy CSV file(s). If datsource = 'obj', 
+name of xy R object. If datsource = 'shp', full pathname of shapefile.}
+
+\item{xy_opts}{List of xy data options for xy (e.g., xy_opts = list(xvar='LON', 
+yvar='LAT'). See xy_options() for more options and defaults.}
+
+\item{datsource}{String. Source of FIA data for defining FIA evalutions or 
+appending variables ('datamart', 'sqlite', 'obj', 'csv'). If datsource = NULL, 
+datsource = xy_datsource. If datsource = 'datamart', data are downloaded
+extracted from FIA DataMart (http://apps.fs.usda.gov/fia/datamart/datamart.html). 
+If datsource='sqlite', specify database name(s) in data_dsn and table name(s) 
+in dbTabs() argument. If datsource = ('obj','csv'), specify *.csv file name in 
+dbTabs argument.}
+
+\item{data_dsn}{String. Name of database with plot_layer and/or ppsa_layer.}
+
+\item{dbTabs}{String or R Object. If data_dsn = 'datamart', name of table(s) 
+in FIA DataMart. If data_dsn = 'sqlite', name of layer(s) in database. If 
+datsource = 'csv', name of CSV file(s). If datsource = 'obj', name of R object.}
+
+\item{pjoinid}{String. Variable in plot table to join to XY data, if 
+plot_layer is not NULL. Not necessary to be unique. If using most current 
+XY coordinates, use identifier for a plot (e.g., PLOT_ID).}
+
+\item{eval}{String. Type of evaluation time frame for data extraction 
+('FIA', 'custom'). See eval_opts for more further options.}
+
+\item{eval_opts}{List of evaluation options for 'FIA' or 'custom'
+evaluations to determine the set of data returned. See help(eval_options)
+for a list of options.}
+
 \item{invtype}{String. Type of FIA inventory to extract ('PERIODIC',
 'ANNUAL').  Only one inventory type (PERIODIC/ANNUAL) at a time.}
 
-\item{evalid}{Integer. Inventory span defining variable. Extract public 
-XY coordinates for a specific FIA Evaluation (See details for more 
-information about FIA Evaluations).}
-
-\item{evalCur}{Logical. Inventory span defining variable. If TRUE, extract
-public XY coordinates for the most current FIA Evaluation for each state.}
-
-\item{evalEndyr}{YYYY. Inventory span defining variable. Extract public XY 
-coordinates for the FIA Evaluation(s) ending in the specified evalEndyr(s). 
-If more than one state and different Evaluations by state are desired, 
-input a named list object with evalEndyr by state (e.g., list(Utah=2014, 
-Colorado=2013).}
-
-\item{evalAll}{Logical. Inventory span defining variable. If TRUE, extract
-public XY coordinates for all FIA Evaluations for each state.}
-
-\item{evalType}{String vector. The type(s) of FIA Evaluation of interest 
-('ALL', 'CURR', VOL', 'GRM', 'P2VEG', 'DWM", 'INV', 'REGEN', 'CRWN'). 
-The evalType 'ALL' includes nonsampled plot coordinates; 'CURR' includes 
-plot coordinates used for area estimates; 'VOL' includes plot coordinates 
-used for area and/or tree estimates; 'GRM' includes plot coordinates used 
-for growth, removals, mortality, and change estimates (evalType %in% 
-c(GROW, MORT, REMV, CHNG)). Multiple types are accepted. See details below 
-and FIA database manual for regional availability and/or differences.}
-
-\item{measCur}{Logical. Inventory span defining variable. If TRUE, extract
-public XY coordinates with most current sampled measurement for state(s).}
-
-\item{measEndyr}{Logical. Inventory span defining variable. If TRUE, extract
-XY public coordinates with most current sampled measurement for state(s) 
-for years measured in or before measEndyr.}
-
-\item{allyrs}{Logical. Inventory span defining variable. If TRUE, extract
-all annual inventory years in database for each state.}
-
-\item{invyrs}{YYYY vector. Inventory span defining variable. Extract public
-XY coordinates by state for the specified inventory year(s) (e.g., 
-c(2000, 2001, 2002)). If more than one state and different inventory years 
-are desired, input a named list object with years labeled by state 
-(e.g., list(Utah=2000:2009, Colorado=c(2002,2003,2005)).}
-
-\item{measyrs}{YYYY vector. Measurement year span defining variable. Extract
-public XY coordinates by state for the specified measurement year(s) 
-(e.g., c(2000, 2001, 2002)). If more than one state and different 
-measurement years are desired, input a named list object with years labeled 
-by state (e.g., list(Utah=2000:2009, Colorado=c(2002,2003,2005)).}
+\item{coordType}{String. c('PUBLIC', 'ACTUAL'). Defines type of coordinates and is
+used for the output name.}
 
 \item{intensity1}{Logical. If TRUE, includes only XY coordinates where 
 INTENSITY = 1 (FIA base grid).}
+
+\item{pvars2keep}{String vector. One or more variables in plot_layer to append 
+to output.}
 
 \item{issp}{Logical. If TRUE, returns spatial XY data as a list object with
 query.}
@@ -95,31 +98,46 @@ query.}
 \item{returndata}{Logical. If TRUE, returns XY data as a list object with
 query.}
 
-\item{savedata}{Logical. If TRUE, saves XY data to outfolder as comma-delimited
-file (*.csv).}
+\item{savedata}{Logical. If TRUE, saves XY data. Specify outfolder and 
+format using savedata_opts.}
 
 \item{exportsp}{Logical. If TRUE, exports data as spatial.}
 
 \item{savedata_opts}{List. See help(savedata_options()) for a list
-of options. Only used when savedata = TRUE.}
+of options. Only used when savedata = TRUE or exportsp = TRUE.}
+
+\item{POP_PLOT_STRATUM_ASSGN}{Data frame. The name of the 
+POP_PLOT_STRATUM_ASSGN data frame object if it is already downloaded 
+and stored in environment.}
+
+\item{SURVEY}{Data frame. The name of the SURVEY data frame object
+if it has been already downloaded and stored in environment.}
+
+\item{dbconnopen}{Logical. If TRUE, the dbconn connection is not closed.}
+
+\item{evalInfo}{List. List object output from DBgetEvalid or DBgetXY 
+FIESTA functions.}
 }
 \value{
 if returndata=TRUE, a list of the following objects: 
-\item{xy*_PUBLIC}{ Data frame. XY data from FIA's public database. If 
-measCur=TRUE, named xyCur_PUBLIC, else named xy_PUBLIC. The data frame 
-has 10 columns ('PLT_CN', 'LON_PUBLIC', 'LAT_PUBLIC', 'STATECD', 'UNITCD',
-'COUNTYCD', 'PLOT', 'INTENSITY', 'PLOT_ID' (ID+STATECD+UNTCD+COUNTYCD+PLOT), 
-'COUNTYFIPS'. If issp=TRUE, returns an sf object. }
+\item{xy}{ Data frame. XY data from database. The output name is based on
+coordType parameter (e.g., xy_PUBLIC). the data frame include xy.uniqueid,
+xvar, yvar and appended plot variables in pvars2keep if plot_layer is not 
+NULL. The default plot variables included are 'STATECD','UNITCD','COUNTYCD',
+'PLOT','PLOT_ID' (ID+STATECD+UNTCD+COUNTYCD+PLOT), 'COUNTYFIPS'. 
+If issp=TRUE, returns an sf object. }
 \item{xyqry}{ String. Query to extract coordinates. }
-\item{xvar}{ String. Name of X variable in xy*_PUBLIC. }
-\item{yvar}{ String. Name of Y variable in xy*_PUBLIC. }
+\item{xvar}{ String. Name of X variable in xy*. }
+\item{yvar}{ String. Name of Y variable in xy*. }
 
-If savedata=TRUE, outputs the xy*_PUBLIC as out_fmt to outfolder. 
-If exportsp=TRUE, the output xy data are saved as spatial layer.
+If savedata=TRUE, outputs the xy* based on savedata_opts. 
+If exportsp=TRUE, the output xy saved as spatial layer based on savedata_opts.
 }
 \description{
-Extracts actual plot coodinates for the most current measurement of each
-plot in the database.
+Extracts public plot coodinates for an FIA evaluation or a custom 
+evaluation. Plots are extracted from FIA's public Datamart 
+(https://apps.fs.usda.gov/fia/datamart/datamart.html) or other defined
+datasource.
 }
 \note{
 If no parameters are included, the user is prompted for input. If partial
@@ -129,10 +147,11 @@ parameters, the default parameter values are used for those not specified.
 \dontrun{
 # Most current evaluation and shapefile with public coordinates
 COxylst <- DBgetXY(states = "Colorado",
-                   measCur = TRUE)
+                   eval = "FIA",
+                   eval_opts=eval_options(Endyr = 2019))
 names(COxylst)
 
-head(COxylst$xyCur_ACTUAL)
+head(COxylst$xy_PUBLIC)
 COxylst$xyqry
 }
 }

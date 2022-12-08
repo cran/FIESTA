@@ -12,54 +12,41 @@ spGetPlots(
   RS = NULL,
   pltids = NULL,
   xy_datsource = NULL,
-  xy = NULL,
   xy_dsn = NULL,
-  xy.uniqueid = "PLT_CN",
-  xvar = NULL,
-  yvar = NULL,
-  xy.crs = 4269,
-  xyjoinid = NULL,
-  pjoinid = NULL,
-  clipxy = TRUE,
+  xy = "PLOT",
+  xy_opts = xy_options(),
   datsource = NULL,
   data_dsn = NULL,
+  dbTabs = dbTables(),
+  eval = "FIA",
+  eval_opts = NULL,
+  puniqueid = "CN",
+  invtype = "ANNUAL",
+  intensity1 = FALSE,
   istree = FALSE,
   isseed = FALSE,
   isveg = FALSE,
+  issubp = FALSE,
+  ischng = FALSE,
   isdwm = FALSE,
-  plot_layer = "plot",
-  cond_layer = "cond",
-  tree_layer = "tree",
-  seed_layer = "seedling",
-  vsubpspp_layer = "p2veg_subplot_spp",
-  vsubpstr_layer = "p2veg_subp_structure",
-  invsubp_layer = "invasive_subplot_spp",
-  dwm_layer = "cond_dwm_calc",
-  ppsa_layer = "pop_plot_stratum_assgn",
-  other_layers = NULL,
-  puniqueid = "CN",
-  pltassgnid = "PLT_CN",
-  savePOP = FALSE,
-  evalid = NULL,
-  evalCur = FALSE,
-  evalEndyr = NULL,
-  evalType = "VOL",
-  measCur = FALSE,
-  measEndyr = NULL,
-  measEndyr.filter = NULL,
-  invyrs = NULL,
-  measyrs = NULL,
-  allyrs = FALSE,
-  intensity1 = FALSE,
+  biojenk = FALSE,
+  greenwt = FALSE,
+  plotgeom = FALSE,
+  othertables = NULL,
+  ACI = FALSE,
+  clipxy = TRUE,
+  pjoinid = NULL,
   showsteps = FALSE,
   returndata = TRUE,
   savedata = FALSE,
+  savePOP = FALSE,
   savebnd = FALSE,
   returnxy = TRUE,
   exportsp = FALSE,
   savedata_opts = NULL,
   spXYdat = NULL,
-  gui = FALSE
+  gui = FALSE,
+  ...
 )
 }
 \arguments{
@@ -84,32 +71,17 @@ included.}
 "sqlite").  If datsource=NULL, checks extension of xy_dsn or xy to identify
 datsource.}
 
-\item{xy}{sf R object or String. Table with xy coordinates. Can be a spatial
-polygon object, data frame, full pathname to a shapefile, or name of a layer
-within a database.}
-
 \item{xy_dsn}{String. Data source name (dsn; i.e., pathname or database
 name) of xy. The dsn varies by driver. See gdal OGR vector formats
 (https://www.gdal.org/ogr_formats.html). Optional if bnd_layer is an R
 object.}
 
-\item{xy.uniqueid}{String. Unique identifier of xy.}
+\item{xy}{sf R object or String. Table with xy coordinates. Can be a spatial
+polygon object, data frame, full pathname to a shapefile, or name of a layer
+within a database.}
 
-\item{xvar}{String. Name of variable in xyplt defining x coordinate.}
-
-\item{yvar}{String. Name of variable in xyplt defining y coordinate.}
-
-\item{xy.crs}{PROJ.4 String or CRS object or Integer EPSG code defining
-Coordinate Reference System.}
-
-\item{xyjoinid}{String. Variable in xy to join to plot data. If NULL,
-xyjoinid=xy.uniqueid.}
-
-\item{pjoinid}{String. Variable in plt to join to XY data. Not necessary to
-be unique. If using most current XY coordinates, use identifier for a plot
-(e.g., PLOT_ID).}
-
-\item{clipxy}{Logical. If TRUE, clips xy data to bnd.}
+\item{xy_opts}{List of xy data options to specify if xy is NOT NULL. 
+See xy_options (e.g., xy_opts = list(xvar='LON', yvar='LAT').}
 
 \item{datsource}{String. Source of FIA data ("obj", "csv", "datamart",
 "sqlite").  If datsource="sqlite", specify database name in data_dsn and
@@ -121,96 +93,70 @@ names in *_layer arguments.}
 
 \item{data_dsn}{String. Name of database where *_layers reside.}
 
-\item{istree}{Logical. If TRUE, extract tree data from FIA database.}
+\item{dbTabs}{List of database tables the user would like returned.
+See help(dbTables) for a list of options.}
 
-\item{isseed}{Logical. If TRUE, extract seedling data from FIA database.}
+\item{eval}{String. Type of evaluation time frame for data extraction 
+('FIA', 'custom'). See eval_opts for more further options.}
+
+\item{eval_opts}{List of evaluation options for 'FIA' or 'custom'
+evaluations to determine the set of data returned. See help(eval_options)
+for a list of options.}
+
+\item{puniqueid}{String. Name of unique identifier of plt.}
+
+\item{invtype}{String. Type of FIA inventory to extract ('PERIODIC',
+'ANNUAL').  Only one inventory type (PERIODIC/ANNUAL) at a time.}
+
+\item{intensity1}{Logical. If TRUE, includes only XY coordinates where 
+INTENSITY = 1 (FIA base grid).}
+
+\item{istree}{Logical. If TRUE, tree data are extracted from TREE table in
+database.}
+
+\item{isseed}{Logical. If TRUE, seedling data are extracted from SEEDLING
+table in database.}
 
 \item{isveg}{Logical. If TRUE, understory vegetation tables are extracted
 from FIA database (P2VEG_SUBPLOT_SPP, P2VEG_SUBP_STRUCTURE, INVASIVE_SUBPLOT_SPP).}
 
-\item{isdwm}{Logical. If TRUE, down woody material are extracted.}
+\item{issubp}{Logical. If TRUE, subplot tables are extracted from FIA
+database (SUBPLOT, SUBP_COND).}
 
-\item{plot_layer}{String. Name of layer in database of file name of FIA plot
-table.}
+\item{ischng}{Logical. If TRUE, sccm (SUBP_COND_CHNG_MTRX) table is returned 
+that includes current and previous conditions.}
 
-\item{cond_layer}{String. Name of layer in database of file name of FIA cond
-table.}
+\item{isdwm}{Logical. If TRUE, summarized condition-level down woody debris
+data are extracted from FIA database (COND_DWM_CALC).}
 
-\item{tree_layer}{String. Name of layer in database of file name of FIA tree
-table if istree=TRUE.}
+\item{biojenk}{Logical. If TRUE, Jenkins biomass is calculated.}
 
-\item{seed_layer}{String. Name of layer in database of file name of FIA
-seedling table if isseed=TRUE.}
+\item{greenwt}{Logical. If TRUE, green weight biomass is calculated.}
 
-\item{vsubpspp_layer}{String. Name of layer in database of file name of FIA
-P2VEG_SUBPLOT_SPP table if isveg=TRUE.}
+\item{plotgeom}{Logical. If TRUE, variables from the PLOTGEOM table are
+appended to the plot table.}
 
-\item{vsubpstr_layer}{String. Name of layer in database of file name of FIA
-P2VEG_SUBP_STRUCTURE table if isveg=TRUE.}
+\item{othertables}{String Vector. Name of other table(s) in FIADB to include
+in output. The table must have PLT_CN as unique identifier of a plot.}
 
-\item{invsubp_layer}{String. Name of layer in database of file name of FIA
-INVASIVE_SUBPLOT_SPP table if isveg=TRUE.}
+\item{ACI}{Logical. If TRUE, the data from All Condition Inventories (ACI)
+are included in dataset (NF_SAMPLING_STATUS_CD = 1). See below for more
+details.}
 
-\item{dwm_layer}{String. Name of layer in database of file name of FIA
-COND_DWM_CALC table if isdwm=TRUE.}
+\item{clipxy}{Logical. If TRUE, clips xy data to bnd.}
 
-\item{ppsa_layer}{String. Name of layer in database of file name of FIA
-pop_plot_stratum_assgn table, if using evaluations.}
-
-\item{other_layers}{String. Other layer(s) in database to clip and/or
-extract from database (Note: must include PLT_CN variable as unique
-identifier).}
-
-\item{puniqueid}{String. Name of unique identifier of plt.}
-
-\item{pltassgnid}{String. Name of unique identifier of pop_plot_stratum_assgn.}
-
-\item{savePOP}{Logical. If TRUE, returns and/or saves POP_PLOT_STRATUM_ASSGN
-table.}
-
-\item{evalid}{Integer. To extract data for a specific evaluation period. See
-notes for more information about FIA Evaluations.}
-
-\item{evalCur}{Logical. If TRUE, extract plots with most current FIA
-Evalidation for state(s).}
-
-\item{evalEndyr}{Integer. Defining end year of Evaluation (yyyy).}
-
-\item{evalType}{String vector. The type(s) of evaluation of interest ('ALL',
-'AREAVOL', 'GRM', 'P2VEG', 'DWM', 'INV', 'REGEN', 'CRWN').  The evalType
-'ALL' includes nonsampled plots; 'AREAVOL' includes plots used for area or
-tree estimates (eval_typ %in% c(CURR, VOL)); The evalType 'GRM' includes
-plots used for growth, removals, mortality, and change estimates (eval_typ
-%in% c(GROW, MORT, REMV, CHNG)). Multiple types are accepted.  See FIA
-database manual for regional availability and/or differences.}
-
-\item{measCur}{Logical. If TRUE, extract plots with most current measurement
-for state(s).}
-
-\item{measEndyr}{Integer year (YYYY). If measCur=TRUE, extract plots with
-most current measurement for state(s) for years measured before measEndyr.}
-
-\item{measEndyr.filter}{Filter. If measCur=TRUE and measEndyr != NULL, a
-filter for bnd to identify and area to use measEndyr, such as disturbed
-areas where you want to exclude plots measured after disturbance.}
-
-\item{invyrs}{Integer vector. Defining specific inventory years of data
-(e.g., 2010:2015).}
-
-\item{measyrs}{Integer vector. Defining specific measurement years of data
-(e.g., 2010:2015).}
-
-\item{allyrs}{Logical. If TRUE, selects all years (annual inventory) in
-database.}
-
-\item{intensity1}{Logical. If TRUE, include only single intensity plots
-(i.e., INTENSITY = 1).}
+\item{pjoinid}{String. Variable in plt to join to XY data. Not necessary to
+be unique. If using most current XY coordinates, use identifier for a plot
+(e.g., PLOT_ID).}
 
 \item{showsteps}{Logical. If TRUE, display data in device window.}
 
 \item{returndata}{Logical. If TRUE, returns data objects.}
 
 \item{savedata}{Logical. If TRUE, saves data to outfolder.}
+
+\item{savePOP}{Logical. If TRUE, save and return the POP_PLOT_STRATUM_ASSGN
+table.}
 
 \item{savebnd}{Logical. If TRUE, saves bnd. If out_fmt='sqlite', saves to a
 SpatiaLite database.}
@@ -226,6 +172,8 @@ of options. Only used when savedata = TRUE.}
 \item{spXYdat}{R list object. Output from spGetXY().}
 
 \item{gui}{Logical. If TRUE, uses gui interface.}
+
+\item{...}{parameters passed to DBgetPlot().}
 }
 \value{
 \item{xypltx}{ sf object. Input xy data clipped to boundary. }
@@ -287,24 +235,26 @@ WYbhfn <- system.file("extdata",
 # Extract data from FIA datamart for measurement years 2013 thru 2015
 dat <- spGetPlots(bnd = WYbhfn,
                   datsource = "datamart",
-                  measyrs = 2013:2015)
+                  eval = "custom",
+                  eval_opts = list(measyrs = 2013:2015))
 names(dat)
 tabs <- dat$tabs
 names(tabs)
-head(tabs$pltx)
+head(tabs$plt)
 
-table(tabs$pltx$MEASYEAR)
+table(tabs$plt$MEASYEAR)
 
 # Extract data from FIA datamart for most current evaluation
 datCur <- spGetPlots(bnd = WYbhfn,
                      datsource = "datamart",
-                     evalCur = TRUE)
+                       eval = "FIA",
+                     eval_opts = list(Cur = TRUE))
 names(datCur)
 tabsCur <- datCur$tabs
 names(tabsCur)
-head(tabsCur$pltx)
+head(tabsCur$plt)
 
-table(tabsCur$pltx$MEASYEAR)
+table(tabsCur$plt$MEASYEAR)
 } 
 }
 \author{

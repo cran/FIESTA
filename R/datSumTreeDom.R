@@ -160,6 +160,7 @@
 #' @author Tracey S. Frescino
 #' @keywords data
 #' @examples 
+#' \donttest{
 #' # Sum of Live Basal Area Per Acre by Species
 #' datSumTreeDom(tree = FIESTA::WYtree, 
 #'               cond = FIESTA::WYcond, 
@@ -198,6 +199,7 @@
 #'               tdomtot = TRUE, 
 #'               tdomprefix = "CNT", 
 #'               tround = 0)
+#' }
 #' @export datSumTreeDom
 datSumTreeDom <- function(tree = NULL, 
                           seed = NULL, 
@@ -268,6 +270,7 @@ datSumTreeDom <- function(tree = NULL,
   seedclnm <- "<1"
   seedonly=parameters <- FALSE
   ref_estvar <- FIESTAutils::ref_estvar
+  subplot=subpcond <- NULL
 
   ## If gui.. set variables to NULL
   if (gui) bycond=tuniqueid=puniqueid=cuniqueid=ACI=TPA=tfun=tdomvar=tdomlst=
@@ -402,6 +405,16 @@ datSumTreeDom <- function(tree = NULL,
   ###################################################################################
   bysubp <- pcheck.logical(bysubp, varnm="bysubp", title="By subplot?", 
 		first="YES", gui=gui, stopifnull=TRUE)
+
+  if (bysubp) {
+    ## Check subplot
+    subplotx <- pcheck.table(subplot, tab_dsn=data_dsn, tabnm="subplot", gui=gui, 
+			caption="Subplot table?")
+
+    ## Check subplot
+    subpcondx <- pcheck.table(subpcond, tab_dsn=data_dsn, tabnm="subp_cond", gui=gui, 
+			caption="Subpcond table?")
+  }
 
   ## Check lbs2tons
   ###################################################################################
@@ -659,17 +672,32 @@ datSumTreeDom <- function(tree = NULL,
   ## Check getadjplot
   getadjplot <- pcheck.logical(getadjplot, varnm="getadjplot", 
 		title="Get plot adjustment?", first="NO", gui=gui)
-  if (getadjplot && is.null(condx)) 
-    stop("must include condx to adjust to plot")
 
   ## Check adjtree
-  adjtree <- pcheck.logical(adjtree, varnm="adjtree", title="Area adjustment", 
+  adjtree <- pcheck.logical(adjtree, varnm="adjtree", title="Adjust trees", 
 		first="NO", gui=gui)
   if (is.null(adjtree)) adjtree <- FALSE
   if (getadjplot && !adjtree) {
     message("getadjplot=TRUE, and adjtree=FALSE... setting adjtree=TRUE")
     adjtree <- TRUE
   }
+  if (adjtree && !getadjplot && !adjvar %in% names(treex)) {
+    message(adjvar, " variable not in tree table... setting getadjplot=TRUE")
+    getadjplot <- TRUE
+  }
+  if (getadjplot) {
+    if (bysubp) {
+      stop("not available yet")
+      if (is.null(subplotx) || is.null(subpcondx)) {
+        stop("must include subplotx and subpcondx to adjust to subplot")
+      }
+    } else {
+      if (is.null(condx)) {
+        stop("must include condx to adjust to plot")
+      }
+    }
+  }
+
 
   ###########################################################  
   ### Check tsumvar 
@@ -1168,8 +1196,8 @@ datSumTreeDom <- function(tree = NULL,
     condx <- datFilter(x=condx, xfilter=cond.nonsamp.filter, 
 		title.filter="cond.nonsamp.filter")$xf
 
-    adjfacdata <- getadjfactorPLOT(treex=treef, seedx=seedf, condx=condx, 
-		tuniqueid=tuniqueid, cuniqueid=cuniqueid)
+    adjfacdata <- getadjfactorVOL(treex=treef, seedx=seedf, condx=condx, 
+		tuniqueid=tuniqueid, cuniqueid=cuniqueid, adj=TRUE)
     condx <- adjfacdata$condx
     varadjlst <- c("ADJ_FACTOR_COND", "ADJ_FACTOR_SUBP", "ADJ_FACTOR_MICR", "ADJ_FACTOR_MACR")
     if (any(varadjlst %in% names(condx))) {

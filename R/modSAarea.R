@@ -380,8 +380,8 @@ modSAarea <- function(SApopdatlst = NULL,
     }  
 
     if (inherits(SApopdatlst, "list")) {
-      list.items <- c("condx", "pltcondx", "treex", "cuniqueid", "condid", 
-		"tuniqueid", "ACI.filter", "dunitarea", "dunitvar", "dunitlut",
+      list.items <- c("condx", "pltcondx", "cuniqueid", "condid", 
+		"ACI.filter", "dunitarea", "dunitvar", "dunitlut",
 		"prednames", "plotsampcnt", "condsampcnt")
       popchk <- tryCatch(pcheck.object(SApopdatlst, list.items=list.items),
      	 	error=function(e) {
@@ -480,8 +480,12 @@ modSAarea <- function(SApopdatlst = NULL,
 
   ## Define empty lists
   estlst <- list()
-  predselectlst.unit <- list()
-  predselectlst.area <- list()
+  if (multest || SAmethod == "unit") {
+    predselectlst.unit <- list()
+  }
+  if (multest || SAmethod == "area") {
+    predselectlst.area <- list()
+  }
   SAobjlst <- list()
   dunitareabind <- {}
   if (addSAdomsdf) {
@@ -494,7 +498,12 @@ modSAarea <- function(SApopdatlst = NULL,
 
   if (!is.null(rowvar)) {
     estlst_row <- list()
-    predselectlst_row <- list()
+    if (multest || SAmethod == "unit") {
+      predselectlst.unit_row <- list()
+    }
+    if (multest || SAmethod == "area") {
+      predselectlst.area_row <- list()
+    }
     SAobjlst_row <- list()
     if (save4testing) {
       pdomdatlst_row <- list()
@@ -502,7 +511,7 @@ modSAarea <- function(SApopdatlst = NULL,
     }
   }
     
- 
+  largebnd.unique2 <- largebnd.unique
   for (i in 1:length(SApopdatlst)) {
     SApopdatnm <- names(SApopdatlst)[i]
     if (is.null(SApopdatnm)) {
@@ -597,14 +606,12 @@ modSAarea <- function(SApopdatlst = NULL,
     ###################################################################################
     ## Check filter parameters and apply plot and condition filters
     ###################################################################################
-    estdat <- check.estfilters(esttype=esttype, 
-                               pltcondf=pltcondx, 
-                               cuniqueid=cuniqueid, 
-                               treex=treex, seedx=seedx, 
-                               estseed=estseed, 
-                               landarea=landarea, 
-                               ACI.filter=ACI.filter, 
-                               pcfilter=pcfilter)
+    estdat <- check.estfilters(esttype = esttype, 
+                               pltcondf = pltcondx, 
+                               cuniqueid = cuniqueid, 
+                               landarea = landarea, 
+                               ACI.filter = ACI.filter, 
+                               pcfilter = pcfilter)
     if (is.null(estdat)) return(NULL)
     pltcondf <- estdat$pltcondf
     landarea <- estdat$landarea
@@ -687,25 +694,23 @@ modSAarea <- function(SApopdatlst = NULL,
  
     ## check largebnd.unique
     ########################################################
-    if (!is.null(largebnd.unique) && !is.null(SAdomsdf)) {
+    if (!is.null(largebnd.unique2) && !is.null(SAdomsdf)) {
       cdomdat <- merge(cdomdat, 
 		        unique(setDT(SAdomsdf)[, c(smallbnd.dom, largebnd.unique), with=FALSE]),
  		        by=smallbnd.dom)
       #addSAdomsdf <- TRUE
       #SAdomvars <- unique(c(SAdomvars, largebnd.unique))
-      lunique <- largebnd.unique
+      largebnd.unique <- largebnd.unique2
     } else {
       cdomdat$LARGEBND <- 1
-      lunique <- "LARGEBND"
       largebnd.unique <- "LARGEBND"
+      cdomdat$LARGEBND <- 1
     }
-    cdomdat$LARGEBND <- 1
-    lunique <- "LARGEBND"
 
 
     ## get unique largebnd values
-    largebnd.vals <- sort(unique(cdomdat[[lunique]]))
-    largebnd.vals <- largebnd.vals[table(cdomdat[[lunique]]) > 30]
+    largebnd.vals <- sort(unique(cdomdat[[largebnd.unique]]))
+    largebnd.vals <- largebnd.vals[table(cdomdat[[largebnd.unique]]) > 30]
 
 
     ## Add AOI if not in data
@@ -719,7 +724,7 @@ modSAarea <- function(SApopdatlst = NULL,
     ######################################
     ## Sum estvar.name by dunitvar (DOMAIN), plot, domain
     tdomdattot <- setDT(cdomdat)[, lapply(.SD, sum, na.rm=TRUE), 
-                            by=c(lunique, dunitvar, "AOI", cuniqueid, "TOTAL", prednames), 
+                            by=c(largebnd.unique, dunitvar, "AOI", cuniqueid, "TOTAL", prednames), 
                             .SDcols=estvar.name]
 
     ## get estimate by domain, by largebnd value
@@ -729,7 +734,7 @@ modSAarea <- function(SApopdatlst = NULL,
 #dat=tdomdattot
 #largebnd.val=largebnd.vals
 #domain="TOTAL"
-#largebnd.unique=lunique
+#largebnd.unique=largebnd.unique
 
     if (!"DOMAIN" %in% names(tdomdattot)) {
       tdomdattot$DOMAIN <- tdomdattot[[dunitvar]]
@@ -746,7 +751,7 @@ modSAarea <- function(SApopdatlst = NULL,
 	tryCatch(
 		lapply(largebnd.vals, SAest.large, 
 			    dat=tdomdattot, 
-			    cuniqueid=cuniqueid, largebnd.unique=lunique, 
+			    cuniqueid=cuniqueid, largebnd.unique=largebnd.unique, 
 			    dunitlut=dunitlut, dunitvar="DOMAIN",
 			    prednames=prednames, domain="TOTAL", response=response, 
 			    showsteps=showsteps, savesteps=savesteps,
@@ -812,7 +817,7 @@ modSAarea <- function(SApopdatlst = NULL,
  
     if (rowcolinfo$rowvar != "TOTAL") {
       cdomdatsum <- setDT(cdomdat)[, lapply(.SD, sum, na.rm=TRUE), 
-                    by=c(lunique, dunitvar, cuniqueid, rowcolinfo$rowvar, prednames), 
+                    by=c(largebnd.unique, dunitvar, cuniqueid, rowcolinfo$rowvar, prednames), 
                     .SDcols=estvar.name]
       
       if (!"DOMAIN" %in% names(cdomdatsum)) {
@@ -827,13 +832,13 @@ modSAarea <- function(SApopdatlst = NULL,
 #dat=cdomdatsum 
 #largebnd.val=largebnd.vals
 #domain=rowcolinfo$rowvar
-#largebnd.unique=lunique
+#largebnd.unique=largebnd.unique
      
       dunit_estlst_row <- 
 		tryCatch(
 			lapply(largebnd.vals, SAest.large, 
 				    dat=cdomdatsum, 
-				    cuniqueid=cuniqueid, largebnd.unique=lunique, 
+				    cuniqueid=cuniqueid, largebnd.unique=largebnd.unique, 
 				    dunitlut=dunitlut, dunitvar="DOMAIN", 
 				    prednames=prednames, domain=rowcolinfo$rowvar, response=response, 
 				    showsteps=showsteps, savesteps=savesteps, 
@@ -871,7 +876,6 @@ modSAarea <- function(SApopdatlst = NULL,
         }
         SAobjlst_row[[SApopdatnm]] <- do.call(rbind, dunit_estlst_row)[,"SAobjlst.dom"]$SAobjlst.dom
       }
-
       if (multest || SAmethod == "unit") {
         predselectlst.unit_row[[SApopdatnm]] <- predselect.unit_row
       }

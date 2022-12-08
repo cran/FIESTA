@@ -66,24 +66,23 @@ smallbnd <- WYbhdistfn
 smallbnd.domain <- "DISTRICTNA"
 
 ## -----------------------------------------------------------------------------
+
 SApltdat <- spGetPlots(bnd = WYbhdistfn,
-                     xy_datsource = "obj",
-                     xy = WYplt,
-                     xy.uniqueid = "CN",
-                     xvar = "LON_PUBLIC",
-                     yvar = "LAT_PUBLIC",
-                     xy.crs = 4269, 
-                     datsource = "obj",
-                     istree = TRUE,
-                     isseed = TRUE,
-                     plot_layer = WYplt,
-                     cond_layer = WYcond,
-                     tree_layer = WYtree,
-                     seed_layer = WYseed,
-                     invyrs = 2011:2013,
-                     showsteps = TRUE,
-                     returnxy=TRUE,
-                     savedata_opts = savedata_options(outfolder = outfolder))
+                       xy_datsource = "obj",
+                       xy = WYplt,
+                       xy_opts = list(xy.uniqueid = "CN", xvar = "LON_PUBLIC", 
+                                    yvar = "LAT_PUBLIC", xy.crs = 4269),
+                       datsource = "obj",
+                       istree = TRUE,
+                       isseed = TRUE,
+                       dbTabs = list(plot_layer = WYplt, cond_layer = WYcond,
+                                   tree_layer = WYtree, seed_layer = WYseed),
+                       eval = "custom",
+                       eval_opts = list(invyrs = 2011:2013),
+                       showsteps = TRUE,
+                       returnxy = TRUE,
+                       savedata_opts = savedata_options(outfolder = outfolder))
+
 
 ## -----------------------------------------------------------------------------
 str(SApltdat, max.level = 1)
@@ -99,7 +98,7 @@ unitvar <- "DISTRICTNA"
 
 auxdat <- spGetAuxiliary(
   xyplt = SApltdat$spxy,
-  uniqueid = "CN",
+  uniqueid = "PLT_CN",
   unit_layer = unit_layer,
   unitvar = "DISTRICTNA",
   rastlst.cont = rastlst.cont,

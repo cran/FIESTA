@@ -120,13 +120,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -607,7 +614,7 @@ output
 output
 </summary>
 <pre><code>##   ONEUNIT ACRES_GIS
-## 1       1   1112401</code></pre>
+## 1       1   1112384</code></pre>
 </details>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Pixel counts and strata weights (strwt) by strata and estimation unit</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>stratdat.bh<span class="sc">$</span>stratalut</span></code></pre></div>
@@ -616,8 +623,8 @@ output
 output
 </summary>
 <pre><code>##   ONEUNIT STRATUMCD count     strwt
-## 1       1         1 52289 0.7260344
-## 2       1         2 19731 0.2739656</code></pre>
+## 1       1         1 52280 0.7259397
+## 2       1         2 19737 0.2740603</code></pre>
 </details>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Variable names</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>stratdat.bh<span class="sc">$</span>unitvar        <span class="co"># Estimation unit variable</span></span></code></pre></div>
@@ -721,9 +728,9 @@ output
 output
 </summary>
 <pre><code>##                       DISTRICTNA ACRES_GIS
-## 1 Medicine Wheel Ranger District  364522.8
-## 2   Powder River Ranger District  334333.7
-## 3         Tongue Ranger District  413774.9</code></pre>
+## 1 Medicine Wheel Ranger District  364517.3
+## 2   Powder River Ranger District  334328.0
+## 3         Tongue Ranger District  413768.5</code></pre>
 </details>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Pixel counts and strata weights (strwt) by strata and estimation unit</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>stratdat.bhdist<span class="sc">$</span>stratalut</span></code></pre></div>
@@ -732,12 +739,12 @@ output
 output
 </summary>
 <pre><code>##                       DISTRICTNA STRATUMCD count     strwt
-## 1 Medicine Wheel Ranger District         1 14472 0.6127789
-## 2 Medicine Wheel Ranger District         2  9145 0.3872211
-## 3   Powder River Ranger District         1 15251 0.7044667
-## 4   Powder River Ranger District         2  6398 0.2955333
-## 5         Tongue Ranger District         1 22588 0.8437804
-## 6         Tongue Ranger District         2  4182 0.1562196</code></pre>
+## 1 Medicine Wheel Ranger District         1 14471 0.6127625
+## 2 Medicine Wheel Ranger District         2  9145 0.3872375
+## 3   Powder River Ranger District         1 15247 0.7044121
+## 4   Powder River Ranger District         2  6398 0.2955879
+## 5         Tongue Ranger District         1 22583 0.8436251
+## 6         Tongue Ranger District         2  4186 0.1563749</code></pre>
 </details>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Variable names</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>stratdat.bhdist<span class="sc">$</span>unitvar        <span class="co"># Estimation unit variable</span></span></code></pre></div>
@@ -824,8 +831,8 @@ output
 ##  [6] &quot;ACI.filter&quot;  &quot;unitarea&quot;    &quot;areavar&quot;     &quot;areaunits&quot;   &quot;unitvar&quot;    
 ## [11] &quot;unitvars&quot;    &quot;strata&quot;      &quot;stratalut&quot;   &quot;strvar&quot;      &quot;strwtvar&quot;   
 ## [16] &quot;expcondtab&quot;  &quot;plotsampcnt&quot; &quot;condsampcnt&quot; &quot;states&quot;      &quot;invyrs&quot;     
-## [21] &quot;estvar.area&quot; &quot;adj&quot;         &quot;areawt&quot;      &quot;treex&quot;       &quot;tuniqueid&quot;  
-## [26] &quot;adjtree&quot;     &quot;seedx&quot;</code></pre>
+## [21] &quot;estvar.area&quot; &quot;adj&quot;         &quot;areawt&quot;      &quot;P2POINTCNT&quot;  &quot;treex&quot;      
+## [26] &quot;tuniqueid&quot;   &quot;adjtree&quot;     &quot;seedx&quot;</code></pre>
 </details>
 <p>From this list outputted by <code>GBpopdat</code> we can access many
 things. Some examples include the number of plots by plot status that
@@ -904,117 +911,80 @@ output
 ## 34:        43         2      92938         63      63       63 1.00000000
 ## 35:        45         2      99461         73      73       73 1.00000000
 ##     ESTN_UNIT STRATUMCD P1POINTCNT P2POINTCNT n.total n.strata      strwt
-##     CONDPROP_UNADJ_SUM SUBPPROP_UNADJ_SUM MICRPROP_UNADJ_SUM MACRPROP_UNADJ_SUM
-##  1:              16.75              16.75              16.75                  0
-##  2:             116.00             116.00             116.00                  0
-##  3:              12.00              12.00              12.00                  0
-##  4:              85.25              85.25              85.25                  0
-##  5:             152.00             152.00             152.00                  0
-##  6:              35.00              35.00              35.00                  0
-##  7:             210.00             210.00             210.00                  0
-##  8:              15.75              15.75              15.75                  0
-##  9:             117.00             117.00             117.00                  0
-## 10:              28.00              28.00              28.00                  0
-## 11:              57.00              57.00              57.00                  0
-## 12:              47.75              47.75              47.75                  0
-## 13:             242.00             242.00             242.00                  0
-## 14:              70.00              70.00              70.00                  0
-## 15:              58.00              58.00              58.00                  0
-## 16:              17.75              17.75              17.75                  0
-## 17:             110.00             110.00             110.00                  0
-## 18:              86.00              86.00              86.00                  0
-## 19:              34.75              34.75              34.75                  0
-## 20:              97.00              97.00              97.00                  0
-## 21:             175.00             175.00             175.00                  0
-## 22:              79.00              79.00              79.00                  0
-## 23:              99.25              99.25              99.25                  0
-## 24:             115.75             115.75             115.75                  0
-## 25:              64.00              64.00              64.00                  0
-## 26:              17.75              17.75              17.75                  0
-## 27:              64.00              64.00              64.00                  0
-## 28:              44.00              44.00              44.00                  0
-## 29:             114.00             114.00             114.00                  0
-## 30:             339.00             339.00             339.00                  0
-## 31:              97.25              97.25              97.25                  0
-## 32:              27.00              27.00              27.00                  0
-## 33:              63.00              63.00              63.00                  0
-## 34:              63.00              63.00              63.00                  0
-## 35:              72.50              72.50              72.50                  0
-##     CONDPROP_UNADJ_SUM SUBPPROP_UNADJ_SUM MICRPROP_UNADJ_SUM MACRPROP_UNADJ_SUM
-##      cadjfac ADJ_FACTOR_SUBP ADJ_FACTOR_MICR ADJ_FACTOR_MACR   ACRES    expfac
-##  1: 1.014925        1.014925        1.014925               0 2757613 162212.53
-##  2: 1.000000        1.000000        1.000000               0 2757613  23772.53
-##  3: 1.000000        1.000000        1.000000               0 2021729 168477.42
-##  4: 1.008798        1.008798        1.008798               0 2021729  23508.48
-##  5: 1.000000        1.000000        1.000000               0 3072988  20217.03
-##  6: 1.000000        1.000000        1.000000               0 5096959 145627.40
-##  7: 1.000000        1.000000        1.000000               0 5096959  24271.23
-##  8: 1.015873        1.015873        1.015873               0 2729653 170603.31
-##  9: 1.000000        1.000000        1.000000               0 2729653  23330.37
-## 10: 1.000000        1.000000        1.000000               0 1837124  65611.57
-## 11: 1.000000        1.000000        1.000000               0 1837124  32230.25
-## 12: 1.005236        1.005236        1.005236               0 5930088 123543.50
-## 13: 1.000000        1.000000        1.000000               0 5930088  24504.50
-## 14: 1.000000        1.000000        1.000000               0 1428579  20408.27
-## 15: 1.000000        1.000000        1.000000               0 1283969  22137.40
-## 16: 1.014085        1.014085        1.014085               0 2671802 148433.44
-## 17: 1.000000        1.000000        1.000000               0 2671802  24289.11
-## 18: 1.000000        1.000000        1.000000               0 1720074  20000.86
-## 19: 1.007194        1.007194        1.007194               0 2616954  74770.11
-## 20: 1.000000        1.000000        1.000000               0 2616954  26978.91
-## 21: 1.000000        1.000000        1.000000               0 3440445  19659.69
-## 22: 1.000000        1.000000        1.000000               0 1681849  21289.23
-## 23: 1.007557        1.007557        1.007557               0 4459826  44598.26
-## 24: 1.002160        1.002160        1.002160               0 4459826  38446.78
-## 25: 1.000000        1.000000        1.000000               0 1350969  21108.89
-## 26: 1.014085        1.014085        1.014085               0 1617318  89851.00
-## 27: 1.000000        1.000000        1.000000               0 1617318  25270.59
-## 28: 1.000000        1.000000        1.000000               0 3158807  71791.07
-## 29: 1.000000        1.000000        1.000000               0 3158807  27708.83
-## 30: 1.000000        1.000000        1.000000               0 6714319  19806.25
-## 31: 1.007712        1.007712        1.007712               0 2701941  27570.83
-## 32: 1.000000        1.000000        1.000000               0 2701941 100071.89
-## 33: 1.000000        1.000000        1.000000               0 1336034  21206.89
-## 34: 1.000000        1.000000        1.000000               0 1435352  22783.37
-## 35: 1.006897        1.006897        1.006897               0 1536038  21041.62
-##      cadjfac ADJ_FACTOR_SUBP ADJ_FACTOR_MICR ADJ_FACTOR_MACR   ACRES    expfac
-##        EXPNS
-##  1: 27800.62
-##  2: 19698.30
-##  3: 20462.23
-##  4: 20653.28
-##  5: 20217.03
-##  6: 22271.87
-##  7: 20559.25
-##  8: 13462.99
-##  9: 21489.27
-## 10: 19286.98
-## 11: 22755.94
-## 12: 19495.86
-## 13: 20637.55
-## 14: 20408.27
-## 15: 22137.40
-## 16: 21152.80
-## 17: 20827.74
-## 18: 20000.86
-## 19: 21780.52
-## 20: 19119.96
-## 21: 19659.69
-## 22: 21289.23
-## 23: 21629.77
-## 24: 19800.42
-## 25: 21108.89
-## 26: 20622.06
-## 27: 19470.64
-## 28: 19492.07
-## 29: 20185.58
-## 30: 19806.25
-## 31: 20328.15
-## 32: 26288.23
-## 33: 21206.89
-## 34: 22783.37
-## 35: 21041.62
-##        EXPNS</code></pre>
+##       ACRES    expfac    EXPNS ADJ_FACTOR_COND ADJ_FACTOR_SUBP ADJ_FACTOR_MICR
+##  1: 2757613 162212.53 27800.62        1.014925        1.014925        1.014925
+##  2: 2757613  23772.53 19698.30        1.000000        1.000000        1.000000
+##  3: 2021729 168477.42 20462.23        1.000000        1.000000        1.000000
+##  4: 2021729  23508.48 20653.28        1.008798        1.008798        1.008798
+##  5: 3072988  20217.03 20217.03        1.000000        1.000000        1.000000
+##  6: 5096959 145627.40 22271.87        1.000000        1.000000        1.000000
+##  7: 5096959  24271.23 20559.25        1.000000        1.000000        1.000000
+##  8: 2729653 170603.31 13462.99        1.015873        1.015873        1.015873
+##  9: 2729653  23330.37 21489.27        1.000000        1.000000        1.000000
+## 10: 1837124  65611.57 19286.98        1.000000        1.000000        1.000000
+## 11: 1837124  32230.25 22755.94        1.000000        1.000000        1.000000
+## 12: 5930088 123543.50 19495.86        1.005236        1.005236        1.005236
+## 13: 5930088  24504.50 20637.55        1.000000        1.000000        1.000000
+## 14: 1428579  20408.27 20408.27        1.000000        1.000000        1.000000
+## 15: 1283969  22137.40 22137.40        1.000000        1.000000        1.000000
+## 16: 2671802 148433.44 21152.80        1.014085        1.014085        1.014085
+## 17: 2671802  24289.11 20827.74        1.000000        1.000000        1.000000
+## 18: 1720074  20000.86 20000.86        1.000000        1.000000        1.000000
+## 19: 2616954  74770.11 21780.52        1.007194        1.007194        1.007194
+## 20: 2616954  26978.91 19119.96        1.000000        1.000000        1.000000
+## 21: 3440445  19659.69 19659.69        1.000000        1.000000        1.000000
+## 22: 1681849  21289.23 21289.23        1.000000        1.000000        1.000000
+## 23: 4459826  44598.26 21629.77        1.007557        1.007557        1.007557
+## 24: 4459826  38446.78 19800.42        1.002160        1.002160        1.002160
+## 25: 1350969  21108.89 21108.89        1.000000        1.000000        1.000000
+## 26: 1617318  89851.00 20622.06        1.014085        1.014085        1.014085
+## 27: 1617318  25270.59 19470.64        1.000000        1.000000        1.000000
+## 28: 3158807  71791.07 19492.07        1.000000        1.000000        1.000000
+## 29: 3158807  27708.83 20185.58        1.000000        1.000000        1.000000
+## 30: 6714319  19806.25 19806.25        1.000000        1.000000        1.000000
+## 31: 2701941  27570.83 20328.15        1.007712        1.007712        1.007712
+## 32: 2701941 100071.89 26288.23        1.000000        1.000000        1.000000
+## 33: 1336034  21206.89 21206.89        1.000000        1.000000        1.000000
+## 34: 1435352  22783.37 22783.37        1.000000        1.000000        1.000000
+## 35: 1536038  21041.62 21041.62        1.006897        1.006897        1.006897
+##       ACRES    expfac    EXPNS ADJ_FACTOR_COND ADJ_FACTOR_SUBP ADJ_FACTOR_MICR
+##     ADJ_FACTOR_MACR
+##  1:               0
+##  2:               0
+##  3:               0
+##  4:               0
+##  5:               0
+##  6:               0
+##  7:               0
+##  8:               0
+##  9:               0
+## 10:               0
+## 11:               0
+## 12:               0
+## 13:               0
+## 14:               0
+## 15:               0
+## 16:               0
+## 17:               0
+## 18:               0
+## 19:               0
+## 20:               0
+## 21:               0
+## 22:               0
+## 23:               0
+## 24:               0
+## 25:               0
+## 26:               0
+## 27:               0
+## 28:               0
+## 29:               0
+## 30:               0
+## 31:               0
+## 32:               0
+## 33:               0
+## 34:               0
+## 35:               0
+##     ADJ_FACTOR_MACR</code></pre>
 </details>
 <div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Adjustment factors added to condition-level data</span></span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>GBpopdat<span class="sc">$</span>condx</span></code></pre></div>
@@ -1034,7 +1004,7 @@ output
 ## 3208: 40407868010690      1              1              1              1
 ## 3209: 40407869010690      1              1              1              1
 ## 3210: 46792188020004      1              1              1              1
-##       MACRPROP_UNADJ ESTN_UNIT STRATUMCD ADJ_FACTOR_SUBP ADJ_FACTOR_MICR
+##       MACRPROP_UNADJ ESTN_UNIT STRATUMCD ADJ_FACTOR_COND ADJ_FACTOR_SUBP
 ##    1:             NA         1         2        1.000000        1.000000
 ##    2:             NA         1         2        1.000000        1.000000
 ##    3:             NA         1         1        1.014925        1.014925
@@ -1046,18 +1016,18 @@ output
 ## 3208:             NA        45         2        1.006897        1.006897
 ## 3209:             NA        45         2        1.006897        1.006897
 ## 3210:             NA        29         1        1.007557        1.007557
-##       ADJ_FACTOR_MACR CONDPROP_ADJ
-##    1:               0     1.000000
-##    2:               0     1.000000
-##    3:               0     1.014925
-##    4:               0     1.000000
-##    5:               0     1.000000
-##   ---                             
-## 3206:               0     1.006897
-## 3207:               0     1.006897
-## 3208:               0     1.006897
-## 3209:               0     1.006897
-## 3210:               0     1.007557</code></pre>
+##       ADJ_FACTOR_MICR ADJ_FACTOR_MACR CONDPROP_ADJ
+##    1:        1.000000               0     1.000000
+##    2:        1.000000               0     1.000000
+##    3:        1.014925               0     1.014925
+##    4:        1.000000               0     1.000000
+##    5:        1.000000               0     1.000000
+##   ---                                             
+## 3206:        1.006897               0     1.006897
+## 3207:        1.006897               0     1.006897
+## 3208:        1.006897               0     1.006897
+## 3209:        1.006897               0     1.006897
+## 3210:        1.007557               0     1.007557</code></pre>
 </details>
 <div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Adjustment factors added to tree data</span></span>
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>GBpopdat<span class="sc">$</span>treex</span></code></pre></div>
@@ -1139,13 +1109,19 @@ consistency. The can be done as follows:</p>
 <div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>qry <span class="ot">&lt;-</span> <span class="st">&quot;select estn_unit, stratumcd, p1pointcnt, p2pointcnt, expns, </span></span>
 <span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="st">          adj_factor_macr, adj_factor_subp, adj_factor_micr from pop_stratum </span></span>
 <span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="st">        where evalid = 561301 order by estn_unit, stratumcd&quot;</span></span>
-<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>pop_stratum <span class="ot">&lt;-</span> <span class="fu">DBqryCSV</span>(</span>
-<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>                  qry, </span>
-<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>                  <span class="at">states=</span><span class="st">&quot;Wyoming&quot;</span>,</span>
-<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>                  <span class="at">sqltables=</span><span class="st">&quot;pop_stratum&quot;</span></span>
-<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>                  )</span>
-<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(pop_stratum)</span>
-<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(GBpopdat<span class="sc">$</span>stratalut)</span></code></pre></div>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>pop_stratum <span class="ot">&lt;-</span> <span class="fu">tryCatch</span>(</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>        <span class="fu">DBqryCSV</span>(</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>                  qry, </span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>                  <span class="at">states=</span><span class="st">&quot;Wyoming&quot;</span>,</span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>                  <span class="at">sqltables=</span><span class="st">&quot;pop_stratum&quot;</span></span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>                  ),</span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">error=</span><span class="cf">function</span>(e) {</span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>            <span class="fu">return</span>(<span class="cn">NULL</span>) })</span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(pop_stratum)) {</span>
+<span id="cb50-14"><a href="#cb50-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(pop_stratum)</span>
+<span id="cb50-15"><a href="#cb50-15" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb50-16"><a href="#cb50-16" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(GBpopdat<span class="sc">$</span>stratalut)</span></code></pre></div>
 </details>
 </div>
 <div id="pop2-custom-population---get-population-data-for-area-and-tree-estimates-for-the-bighorn-national-forest-using-post-stratification" class="section level4">
@@ -1183,8 +1159,8 @@ output
 ##  [6] &quot;ACI.filter&quot;  &quot;unitarea&quot;    &quot;areavar&quot;     &quot;areaunits&quot;   &quot;unitvar&quot;    
 ## [11] &quot;unitvars&quot;    &quot;strata&quot;      &quot;stratalut&quot;   &quot;strvar&quot;      &quot;strwtvar&quot;   
 ## [16] &quot;expcondtab&quot;  &quot;plotsampcnt&quot; &quot;condsampcnt&quot; &quot;states&quot;      &quot;invyrs&quot;     
-## [21] &quot;estvar.area&quot; &quot;adj&quot;         &quot;areawt&quot;      &quot;treex&quot;       &quot;tuniqueid&quot;  
-## [26] &quot;adjtree&quot;     &quot;seedx&quot;</code></pre>
+## [21] &quot;estvar.area&quot; &quot;adj&quot;         &quot;areawt&quot;      &quot;P2POINTCNT&quot;  &quot;treex&quot;      
+## [26] &quot;tuniqueid&quot;   &quot;adjtree&quot;     &quot;seedx&quot;</code></pre>
 </details>
 <div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Using output as individual parameter inputs</span></span>
 <span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>GBpopdat.bh <span class="ot">&lt;-</span> <span class="fu">modGBpop</span>(</span>
@@ -1210,8 +1186,8 @@ output
 ##  [6] &quot;ACI.filter&quot;  &quot;unitarea&quot;    &quot;areavar&quot;     &quot;areaunits&quot;   &quot;unitvar&quot;    
 ## [11] &quot;unitvars&quot;    &quot;strata&quot;      &quot;stratalut&quot;   &quot;strvar&quot;      &quot;strwtvar&quot;   
 ## [16] &quot;expcondtab&quot;  &quot;plotsampcnt&quot; &quot;condsampcnt&quot; &quot;states&quot;      &quot;invyrs&quot;     
-## [21] &quot;estvar.area&quot; &quot;adj&quot;         &quot;areawt&quot;      &quot;treex&quot;       &quot;tuniqueid&quot;  
-## [26] &quot;adjtree&quot;     &quot;seedx&quot;</code></pre>
+## [21] &quot;estvar.area&quot; &quot;adj&quot;         &quot;areawt&quot;      &quot;P2POINTCNT&quot;  &quot;treex&quot;      
+## [26] &quot;tuniqueid&quot;   &quot;adjtree&quot;     &quot;seedx&quot;</code></pre>
 </details>
 <div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Condition information with adjusted condition proportions for area</span></span>
 <span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(GBpopdat.bh<span class="sc">$</span>condx)</span></code></pre></div>
@@ -1226,20 +1202,20 @@ output
 ## 4: 40404886010690      1           1.00           1.00           1.00
 ## 5: 40404893010690      1           1.00           1.00           1.00
 ## 6: 40404894010690      1           1.00           1.00           1.00
-##    MACRPROP_UNADJ ONEUNIT STRATUMCD ADJ_FACTOR_SUBP ADJ_FACTOR_MICR
+##    MACRPROP_UNADJ ONEUNIT STRATUMCD ADJ_FACTOR_COND ADJ_FACTOR_SUBP
 ## 1:             NA       1         1        1.006135        1.006135
 ## 2:             NA       1         1        1.006135        1.006135
 ## 3:             NA       1         1        1.006135        1.006135
 ## 4:             NA       1         2        1.000000        1.000000
 ## 5:             NA       1         2        1.000000        1.000000
 ## 6:             NA       1         2        1.000000        1.000000
-##    ADJ_FACTOR_MACR CONDPROP_ADJ
-## 1:               0    0.7546012
-## 2:               0    0.2515337
-## 3:               0    1.0061350
-## 4:               0    1.0000000
-## 5:               0    1.0000000
-## 6:               0    1.0000000</code></pre>
+##    ADJ_FACTOR_MICR ADJ_FACTOR_MACR CONDPROP_ADJ
+## 1:        1.006135               0    0.7546012
+## 2:        1.006135               0    0.2515337
+## 3:        1.006135               0    1.0061350
+## 4:        1.000000               0    1.0000000
+## 5:        1.000000               0    1.0000000
+## 6:        1.000000               0    1.0000000</code></pre>
 </details>
 <div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Tree information with tree-level adjustment factors</span></span>
 <span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(GBpopdat.bh<span class="sc">$</span>treex)</span></code></pre></div>
@@ -1296,15 +1272,12 @@ output
 <summary>
 output
 </summary>
-<pre><code>##    ONEUNIT STRATUMCD     strwt P2POINTCNT n.total n.strata CONDPROP_UNADJ_SUM
-## 1:       1         1 0.7260344         41      56       41              40.75
-## 2:       1         2 0.2739656         15      56       15              15.00
-##    SUBPPROP_UNADJ_SUM MICRPROP_UNADJ_SUM MACRPROP_UNADJ_SUM  cadjfac
-## 1:              40.75              40.75                  0 1.006135
-## 2:              15.00              15.00                  0 1.000000
-##    ADJ_FACTOR_SUBP ADJ_FACTOR_MICR ADJ_FACTOR_MACR ACRES_GIS   expfac    EXPNS
-## 1:        1.006135        1.006135               0   1112401 27131.74 19698.58
-## 2:        1.000000        1.000000               0   1112401 74160.10 20317.31</code></pre>
+<pre><code>##    ONEUNIT STRATUMCD     strwt P2POINTCNT n.total n.strata ACRES_GIS   expfac
+## 1:       1         1 0.7259397         41      56       41   1112384 27131.31
+## 2:       1         2 0.2740603         15      56       15   1112384 74158.93
+##       EXPNS ADJ_FACTOR_COND ADJ_FACTOR_SUBP ADJ_FACTOR_MICR ADJ_FACTOR_MACR
+## 1: 19695.70        1.006135        1.006135        1.006135               0
+## 2: 20324.02        1.000000        1.000000        1.000000               0</code></pre>
 </details>
 </details>
 </details>
@@ -1347,8 +1320,8 @@ output
 ##  [6] &quot;ACI.filter&quot;  &quot;unitarea&quot;    &quot;areavar&quot;     &quot;areaunits&quot;   &quot;unitvar&quot;    
 ## [11] &quot;unitvars&quot;    &quot;strata&quot;      &quot;stratalut&quot;   &quot;strvar&quot;      &quot;strwtvar&quot;   
 ## [16] &quot;expcondtab&quot;  &quot;plotsampcnt&quot; &quot;condsampcnt&quot; &quot;states&quot;      &quot;invyrs&quot;     
-## [21] &quot;estvar.area&quot; &quot;adj&quot;         &quot;areawt&quot;      &quot;treex&quot;       &quot;tuniqueid&quot;  
-## [26] &quot;adjtree&quot;     &quot;seedx&quot;</code></pre>
+## [21] &quot;estvar.area&quot; &quot;adj&quot;         &quot;areawt&quot;      &quot;P2POINTCNT&quot;  &quot;treex&quot;      
+## [26] &quot;tuniqueid&quot;   &quot;adjtree&quot;     &quot;seedx&quot;</code></pre>
 </details>
 <div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>GBpopdat.bhdist <span class="ot">&lt;-</span> <span class="fu">modGBpop</span>(</span>
 <span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>      <span class="at">popTabs=</span><span class="fu">list</span>(<span class="at">plt=</span>WYplt, <span class="at">cond=</span>WYcond, <span class="at">tree=</span>WYtree, <span class="at">seed=</span>WYseed), </span>
@@ -1373,8 +1346,8 @@ output
 ##  [6] &quot;ACI.filter&quot;  &quot;unitarea&quot;    &quot;areavar&quot;     &quot;areaunits&quot;   &quot;unitvar&quot;    
 ## [11] &quot;unitvars&quot;    &quot;strata&quot;      &quot;stratalut&quot;   &quot;strvar&quot;      &quot;strwtvar&quot;   
 ## [16] &quot;expcondtab&quot;  &quot;plotsampcnt&quot; &quot;condsampcnt&quot; &quot;states&quot;      &quot;invyrs&quot;     
-## [21] &quot;estvar.area&quot; &quot;adj&quot;         &quot;areawt&quot;      &quot;treex&quot;       &quot;tuniqueid&quot;  
-## [26] &quot;adjtree&quot;     &quot;seedx&quot;</code></pre>
+## [21] &quot;estvar.area&quot; &quot;adj&quot;         &quot;areawt&quot;      &quot;P2POINTCNT&quot;  &quot;treex&quot;      
+## [26] &quot;tuniqueid&quot;   &quot;adjtree&quot;     &quot;seedx&quot;</code></pre>
 </details>
 <div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Condition information with adjusted condition proportions for area</span></span>
 <span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(GBpopdat.bhdist<span class="sc">$</span>condx)</span></code></pre></div>
@@ -1389,20 +1362,20 @@ output
 ## 4: 40404886010690      1           1.00           1.00           1.00
 ## 5: 40404893010690      1           1.00           1.00           1.00
 ## 6: 40404894010690      1           1.00           1.00           1.00
-##    MACRPROP_UNADJ                     DISTRICTNA STRATUMCD ADJ_FACTOR_SUBP
+##    MACRPROP_UNADJ                     DISTRICTNA STRATUMCD ADJ_FACTOR_COND
 ## 1:             NA Medicine Wheel Ranger District         1        1.028571
 ## 2:             NA Medicine Wheel Ranger District         1        1.028571
 ## 3:             NA Medicine Wheel Ranger District         1        1.028571
 ## 4:             NA Medicine Wheel Ranger District         2        1.000000
 ## 5:             NA Medicine Wheel Ranger District         2        1.000000
 ## 6:             NA Medicine Wheel Ranger District         2        1.000000
-##    ADJ_FACTOR_MICR ADJ_FACTOR_MACR CONDPROP_ADJ
-## 1:        1.028571               0    0.7714286
-## 2:        1.028571               0    0.2571429
-## 3:        1.028571               0    1.0285714
-## 4:        1.000000               0    1.0000000
-## 5:        1.000000               0    1.0000000
-## 6:        1.000000               0    1.0000000</code></pre>
+##    ADJ_FACTOR_SUBP ADJ_FACTOR_MICR ADJ_FACTOR_MACR CONDPROP_ADJ
+## 1:        1.028571        1.028571               0    0.7714286
+## 2:        1.028571        1.028571               0    0.2571429
+## 3:        1.028571        1.028571               0    1.0285714
+## 4:        1.000000        1.000000               0    1.0000000
+## 5:        1.000000        1.000000               0    1.0000000
+## 6:        1.000000        1.000000               0    1.0000000</code></pre>
 </details>
 <div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Tree information with tree-level adjustment factors</span></span>
 <span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(GBpopdat.bhdist<span class="sc">$</span>treex)</span></code></pre></div>
@@ -1460,33 +1433,26 @@ output
 output
 </summary>
 <pre><code>##                        DISTRICTNA STRATUMCD     strwt P2POINTCNT n.total
-## 1: Medicine Wheel Ranger District         1 0.6127789          9      16
-## 2: Medicine Wheel Ranger District         2 0.3872211          7      16
-## 3:   Powder River Ranger District         1 0.7044667         13      19
-## 4:   Powder River Ranger District         2 0.2955333          6      19
-## 5:         Tongue Ranger District         1 0.8437804         19      21
-## 6:         Tongue Ranger District         2 0.1562196          2      21
-##    n.strata CONDPROP_UNADJ_SUM SUBPPROP_UNADJ_SUM MICRPROP_UNADJ_SUM
-## 1:        9               8.75               8.75               8.75
-## 2:        7               7.00               7.00               7.00
-## 3:       13              13.00              13.00              13.00
-## 4:        6               6.00               6.00               6.00
-## 5:       19              19.00              19.00              19.00
-## 6:        2               2.00               2.00               2.00
-##    MACRPROP_UNADJ_SUM  cadjfac ADJ_FACTOR_SUBP ADJ_FACTOR_MICR ADJ_FACTOR_MACR
-## 1:                  0 1.028571        1.028571        1.028571               0
-## 2:                  0 1.000000        1.000000        1.000000               0
-## 3:                  0 1.000000        1.000000        1.000000               0
-## 4:                  0 1.000000        1.000000        1.000000               0
-## 5:                  0 1.000000        1.000000        1.000000               0
-## 6:                  0 1.000000        1.000000        1.000000               0
-##    ACRES_GIS    expfac    EXPNS
-## 1:  364522.8  40502.53 24819.10
-## 2:  364522.8  52074.69 20164.42
-## 3:  334333.7  25717.97 18117.46
-## 4:  334333.7  55722.28 16467.79
-## 5:  413774.9  21777.63 18375.53
-## 6:  413774.9 206887.44 32319.88</code></pre>
+## 1: Medicine Wheel Ranger District         1 0.6127625          9      16
+## 2: Medicine Wheel Ranger District         2 0.3872375          7      16
+## 3:   Powder River Ranger District         1 0.7044121         13      19
+## 4:   Powder River Ranger District         2 0.2955879          6      19
+## 5:         Tongue Ranger District         1 0.8436251         19      21
+## 6:         Tongue Ranger District         2 0.1563749          2      21
+##    n.strata ACRES_GIS    expfac    EXPNS ADJ_FACTOR_COND ADJ_FACTOR_SUBP
+## 1:        9  364517.3  40501.92 24818.06        1.028571        1.028571
+## 2:        7  364517.3  52073.90 20164.96        1.000000        1.000000
+## 3:       13  334328.0  25717.54 18115.74        1.000000        1.000000
+## 4:        6  334328.0  55721.33 16470.55        1.000000        1.000000
+## 5:       19  413768.5  21777.29 18371.87        1.000000        1.000000
+## 6:        2  413768.5 206884.26 32351.51        1.000000        1.000000
+##    ADJ_FACTOR_MICR ADJ_FACTOR_MACR
+## 1:        1.028571               0
+## 2:        1.000000               0
+## 3:        1.000000               0
+## 4:        1.000000               0
+## 5:        1.000000               0
+## 6:        1.000000               0</code></pre>
 </details>
 </details>
 </div>
@@ -1510,7 +1476,7 @@ the contents.</p>
 <span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>conn <span class="ot">&lt;-</span> DBI<span class="sc">::</span><span class="fu">dbConnect</span>(RSQLite<span class="sc">::</span><span class="fu">SQLite</span>(), SQLitefn)</span>
 <span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a>DBI<span class="sc">::</span><span class="fu">dbListTables</span>(conn)</span>
 <span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a>DBI<span class="sc">::</span><span class="fu">dbDisconnect</span>(conn)</span></code></pre></div>
-<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>GBpopdat.RI <span class="ot">&lt;-</span> <span class="fu">modGBpop</span>(<span class="at">popTabs =</span> <span class="fu">list</span>(<span class="at">plot=</span><span class="st">&quot;plot&quot;</span>, <span class="at">cond=</span><span class="st">&quot;cond&quot;</span>, <span class="at">tree=</span><span class="st">&quot;tree&quot;</span>, <span class="at">seed=</span><span class="st">&quot;seed&quot;</span>),</span>
+<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>GBpopdat.RI <span class="ot">&lt;-</span> <span class="fu">modGBpop</span>(<span class="at">popTabs =</span> <span class="fu">list</span>(<span class="at">plt=</span><span class="st">&quot;plot&quot;</span>, <span class="at">cond=</span><span class="st">&quot;cond&quot;</span>, <span class="at">tree=</span><span class="st">&quot;tree&quot;</span>, <span class="at">seed=</span><span class="st">&quot;seed&quot;</span>),</span>
 <span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">dsn =</span> SQLitefn,</span>
 <span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">pltassgn =</span> <span class="st">&quot;pop_plot_stratum_assgn&quot;</span>,</span>
 <span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">stratalut =</span> <span class="st">&quot;pop_stratum&quot;</span>,</span>
@@ -2223,23 +2189,23 @@ we can just grab the <code>est</code> object from our ouputted list:</p>
 output
 </summary>
 <pre><code>##                        Forest type Large diameter Medium diameter
-## 1                      Douglas-fir        19819.4              --
-## 2                 Engelmann spruce        45091.6         19819.4
-## 3 Engelmann spruce / subalpine fir        49548.6          9909.7
-## 4                    Subalpine fir        24774.3              --
-## 5                   Lodgepole pine       164008.2        203149.2
+## 1                      Douglas-fir        19816.5              --
+## 2                 Engelmann spruce        45094.7         19816.5
+## 3 Engelmann spruce / subalpine fir        49541.3          9908.3
+## 4                    Subalpine fir        24770.7              --
+## 5                   Lodgepole pine       163993.9        203119.4
 ## 6                            Aspen             --              --
 ## 7                       Nonstocked             --              --
-## 8                            Total       303242.1        232878.3
+## 8                            Total       303217.1        232844.2
 ##   Small diameter Nonstocked    Total
-## 1        19819.4         --  39638.9
-## 2             --         --    64911
-## 3         9909.7         --    69368
-## 4        20317.3         --  45091.6
-## 5        40136.7         -- 407294.1
-## 6        19819.4         --  19819.4
-## 7             --    19819.4  19819.4
-## 8       110002.6    19819.4 665942.4</code></pre>
+## 1        19816.5         --  39633.1
+## 2             --         --  64911.2
+## 3         9908.3         --  69357.9
+## 4          20324         --  45094.7
+## 5        40140.5         -- 407253.9
+## 6        19816.5         --  19816.5
+## 7             --    19816.5  19816.5
+## 8       110005.9    19816.5 665883.7</code></pre>
 </details>
 <p>We can also look at raw data and titles for estimate, as shown below.
 Note the change in titles.</p>
@@ -2260,33 +2226,33 @@ output
 output
 </summary>
 <pre><code>##   ONEUNIT                      Forest type Stand-size class        nhat
-## 1       1                      Douglas-fir   Large diameter 0.017816796
-## 2       1                      Douglas-fir   Small diameter 0.017816796
-## 3       1                 Engelmann spruce   Large diameter 0.040535366
-## 4       1                 Engelmann spruce  Medium diameter 0.017816796
-## 5       1 Engelmann spruce / subalpine fir   Large diameter 0.044541990
-## 6       1 Engelmann spruce / subalpine fir  Medium diameter 0.008908398
+## 1       1                      Douglas-fir   Large diameter 0.017814471
+## 2       1                      Douglas-fir   Small diameter 0.017814471
+## 3       1                 Engelmann spruce   Large diameter 0.040538775
+## 4       1                 Engelmann spruce  Medium diameter 0.017814471
+## 5       1 Engelmann spruce / subalpine fir   Large diameter 0.044536178
+## 6       1 Engelmann spruce / subalpine fir  Medium diameter 0.008907236
 ##       nhat.var NBRPLT.gt0 STDSZCD FORTYPCD ACRES_GIS AREAUSED       est
-## 1 3.222659e-04          1       1      201   1112401  1112401 19819.430
-## 2 3.222659e-04          1       3      201   1112401  1112401 19819.430
-## 3 6.799631e-04          3       1      265   1112401  1112401 45091.601
-## 4 3.222659e-04          1       2      265   1112401  1112401 19819.430
-## 5 6.928718e-04          3       1      266   1112401  1112401 49548.576
-## 6 8.056649e-05          1       2      266   1112401  1112401  9909.715
+## 1 3.222249e-04          1       1      201   1112384  1112384 19816.531
+## 2 3.222249e-04          1       3      201   1112384  1112384 19816.531
+## 3 6.800308e-04          3       1      265   1112384  1112384 45094.680
+## 4 3.222249e-04          1       2      265   1112384  1112384 19816.531
+## 5 6.927836e-04          3       1      266   1112384  1112384 49541.327
+## 6 8.055623e-05          1       2      266   1112384  1112384  9908.265
 ##     est.var    est.se    est.cv       pse CI99left CI99right CI95left CI95right
-## 1 398783824 19969.572 1.0075755 100.75755        0  71257.64        0  58959.07
-## 2 398783824 19969.572 1.0075755 100.75755        0  71257.64        0  58959.07
-## 3 841411576 29007.095 0.6432926  64.32926        0 119808.93        0 101944.46
-## 4 398783824 19969.572 1.0075755 100.75755        0  71257.64        0  58959.07
-## 5 857385222 29281.141 0.5909583  59.09583        0 124971.80        0 106938.56
-## 6  99695956  9984.786 1.0075755 100.75755        0  35628.82        0  29479.54
+## 1 398720445 19967.986 1.0076428 100.76428        0  71250.65        0  58953.06
+## 2 398720445 19967.986 1.0076428 100.76428        0  71250.65        0  58953.06
+## 3 841468698 29008.080 0.6432706  64.32706        0 119814.54        0 101949.47
+## 4 398720445 19967.986 1.0076428 100.76428        0  71250.65        0  58953.06
+## 5 857248958 29278.814 0.5909978  59.09978        0 124958.55        0 106926.75
+## 6  99680111  9983.993 1.0076428 100.76428        0  35625.33        0  29476.53
 ##   CI68left CI68right
-## 1     0.00  39678.33
-## 2     0.00  39678.33
-## 3 16245.27  73937.94
-## 4     0.00  39678.33
-## 5 20429.71  78667.44
-## 6     0.00  19839.16</code></pre>
+## 1     0.00  39673.85
+## 2     0.00  39673.85
+## 3 16247.37  73941.99
+## 4     0.00  39673.85
+## 5 20424.78  78657.87
+## 6     0.00  19836.93</code></pre>
 </details>
 <div class="sourceCode" id="cb147"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb147-1"><a href="#cb147-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Titles (list object) for estimate</span></span>
 <span id="cb147-2"><a href="#cb147-2" aria-hidden="true" tabindex="-1"></a>titlelst2<span class="fl">.1</span> <span class="ot">&lt;-</span> area2<span class="fl">.1</span><span class="sc">$</span>titlelst</span>
@@ -2389,22 +2355,22 @@ output
 </summary>
 <pre><code>##                       Forest-type group No visible disturbance Disease
 ## 1                Pinyon / juniper group                      0       0
-## 2                     Douglas-fir group                39638.9       0
+## 2                     Douglas-fir group                39633.1       0
 ## 3                  Ponderosa pine group                      0       0
-## 4 Fir / spruce / mountain hemlock group               133781.2  4954.9
-## 5                  Lodgepole pine group               352292.8 35181.9
-## 6                 Aspen / birch / group                19819.4       0
-## 7                            Nonstocked                19819.4       0
-## 8                                 Total               565351.6 40136.7
-##   Disease to trees    Fire    Wind    Total
-## 1                0       0       0      0.0
-## 2                0       0       0  39638.9
-## 3                0       0       0      0.0
-## 4          20317.3 20317.3       0 179370.6
-## 5                0       0 19819.4 407294.1
-## 6                0       0       0  19819.4
-## 7                0       0       0  19819.4
-## 8          20317.3 20317.3 19819.4 665942.4</code></pre>
+## 4 Fir / spruce / mountain hemlock group               133761.6  4954.1
+## 5                  Lodgepole pine group               352250.9 35186.4
+## 6                 Aspen / birch / group                19816.5       0
+## 7                            Nonstocked                19816.5       0
+## 8                                 Total               565278.6 40140.5
+##   Disease to trees  Fire    Wind    Total
+## 1                0     0       0      0.0
+## 2                0     0       0  39633.1
+## 3                0     0       0      0.0
+## 4            20324 20324       0 179363.7
+## 5                0     0 19816.5 407253.9
+## 6                0     0       0  19816.5
+## 7                0     0       0  19816.5
+## 8            20324 20324 19816.5 665883.7</code></pre>
 </details>
 <p>We can also look at raw data and titles for estimate, as shown below.
 Note the change in titles.</p>
@@ -2430,28 +2396,28 @@ output
 ## 3       1 Pinyon / juniper group       Disease to trees 0.00000000 0.0000000000
 ## 4       1 Pinyon / juniper group                   Fire 0.00000000 0.0000000000
 ## 5       1 Pinyon / juniper group                   Wind 0.00000000 0.0000000000
-## 6       1      Douglas-fir group No visible disturbance 0.03563359 0.0006284186
+## 6       1      Douglas-fir group No visible disturbance 0.03562894 0.0006283386
 ##   NBRPLT.gt0 FORTYPGRPCD DSTRBCD1 ACRES_GIS AREAUSED      est   est.var
-## 1          0         180        0   1112401  1112401     0.00         0
-## 2          0         180       20   1112401  1112401     0.00         0
-## 3          0         180       22   1112401  1112401     0.00         0
-## 4          0         180       30   1112401  1112401     0.00         0
-## 5          0         180       52   1112401  1112401     0.00         0
-## 6          2         200        0   1112401  1112401 39638.86 777628457
+## 1          0         180        0   1112384  1112384     0.00         0
+## 2          0         180       20   1112384  1112384     0.00         0
+## 3          0         180       22   1112384  1112384     0.00         0
+## 4          0         180       30   1112384  1112384     0.00         0
+## 5          0         180       52   1112384  1112384     0.00         0
+## 6          2         200        0   1112384  1112384 39633.06 777504869
 ##     est.se    est.cv      pse CI99left CI99right CI95left CI95right CI68left
-## 1     0.00       NaN      NaN        0       0.0        0       0.0     0.00
-## 2     0.00       NaN      NaN        0       0.0        0       0.0     0.00
-## 3     0.00       NaN      NaN        0       0.0        0       0.0     0.00
-## 4     0.00       NaN      NaN        0       0.0        0       0.0     0.00
-## 5     0.00       NaN      NaN        0       0.0        0       0.0     0.00
-## 6 27885.99 0.7035013 70.35013        0  111468.4        0   94294.4 11907.42
+## 1     0.00       NaN      NaN        0       0.0        0      0.00     0.00
+## 2     0.00       NaN      NaN        0       0.0        0      0.00     0.00
+## 3     0.00       NaN      NaN        0       0.0        0      0.00     0.00
+## 4     0.00       NaN      NaN        0       0.0        0      0.00     0.00
+## 5     0.00       NaN      NaN        0       0.0        0      0.00     0.00
+## 6 27883.77 0.7035483 70.35483        0  111456.9        0  94284.25 11903.82
 ##   CI68right
 ## 1       0.0
 ## 2       0.0
 ## 3       0.0
 ## 4       0.0
 ## 5       0.0
-## 6   67370.3</code></pre>
+## 6   67362.3</code></pre>
 </details>
 <div class="sourceCode" id="cb160"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb160-1"><a href="#cb160-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Titles (list object) for estimate</span></span>
 <span id="cb160-2"><a href="#cb160-2" aria-hidden="true" tabindex="-1"></a>titlelst2<span class="fl">.2</span> <span class="ot">&lt;-</span> area2<span class="fl">.2</span><span class="sc">$</span>titlelst</span>
@@ -2550,14 +2516,14 @@ we can just grab the <code>est</code> object from our ouputted list:</p>
 <summary>
 output
 </summary>
-<pre><code>##                       Forest-type group Disease Disease to trees    Fire
-## 1 Fir / spruce / mountain hemlock group  6382.1          20164.4 20164.4
-## 2                  Lodgepole pine group 39310.6               --      --
-## 3                                 Total 45692.6          20164.4 20164.4
-##      Wind   Total
-## 1      -- 46710.9
-## 2 18375.5 57686.1
-## 3 18375.5  104397</code></pre>
+<pre><code>##                       Forest-type group Disease Disease to trees  Fire    Wind
+## 1 Fir / spruce / mountain hemlock group  6381.8            20165 20165      --
+## 2                  Lodgepole pine group 39310.3               --    -- 18371.9
+## 3                                 Total 45692.1            20165 20165 18371.9
+##      Total
+## 1  46711.7
+## 2  57682.2
+## 3 104393.9</code></pre>
 </details>
 <p>We can also look at raw data and titles for estimate, as shown
 below:</p>
@@ -2582,17 +2548,17 @@ output
 ## 2 Medicine Wheel Ranger District                  Lodgepole pine group
 ## 3         Tongue Ranger District                  Lodgepole pine group
 ##         nhat    nhat.var NBRPLT.gt0 FORTYPGRPCD ACRES_GIS AREAUSED      est
-## 1 0.12814256 0.006624630          3         260  364522.8 364522.8 46710.89
-## 2 0.10784120 0.006431702          2         280  364522.8 364522.8 39310.58
-## 3 0.04440949 0.002133382          1         280  413774.9 413774.9 18375.53
+## 1 0.12814678 0.006624852          3         260  364517.3 364517.3 46711.72
+## 2 0.10784214 0.006431776          2         280  364517.3 364517.3 39310.33
+## 3 0.04440132 0.002133011          1         280  413768.5 413768.5 18371.87
 ##     est.var   est.se    est.cv       pse CI99left CI99right CI95left CI95right
-## 1 880260198 29669.18 0.6351663  63.51663        0 123133.63        0 104861.41
-## 2 854624495 29233.96 0.7436665  74.36665        0 114612.27        0  96608.09
-## 3 365255577 19111.66 1.0400602 104.00602        0  67603.91        0  55833.70
+## 1 880262976 29669.23 0.6351560  63.51560        0 123134.58        0  104862.3
+## 2 854608390 29233.69 0.7436643  74.36643        0 114611.31        0   96607.3
+## 3 365180880 19109.71 1.0401613 104.01613        0  67595.21        0   55826.2
 ##   CI68left CI68right
-## 1 17206.14  76215.64
-## 2 10238.64  68382.52
-## 3     0.00  37381.27</code></pre>
+## 1 17206.92  76216.51
+## 2 10238.66  68381.99
+## 3     0.00  37375.67</code></pre>
 </details>
 <div class="sourceCode" id="cb173"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb173-1"><a href="#cb173-1" aria-hidden="true" tabindex="-1"></a>raw3<span class="fl">.1</span><span class="sc">$</span>rowest              <span class="co"># estimates for population for row domains</span></span></code></pre></div>
 <details>
@@ -2600,14 +2566,14 @@ output
 output
 </summary>
 <pre><code>##                       Forest-type group FORTYPGRPCD      est    est.var
-## 1 Fir / spruce / mountain hemlock group         260 46710.89  880260198
-## 2                  Lodgepole pine group         280 57686.11 1219880072
+## 1 Fir / spruce / mountain hemlock group         260 46711.72  880262976
+## 2                  Lodgepole pine group         280 57682.19 1219789270
 ##   NBRPLT.gt0 AREAUSED   est.se    est.cv      pse CI99left CI99right CI95left
-## 1          3 364522.8 29669.18 0.6351663 63.51663        0  123133.6        0
-## 2          3 778297.7 34926.78 0.6054626 60.54626        0  147651.5        0
+## 1          3 364517.3 29669.23 0.6351560 63.51560        0  123134.6        0
+## 2          3 778285.8 34925.48 0.6054812 60.54812        0  147644.3        0
 ##   CI95right CI68left CI68right
-## 1  104861.4 17206.14  76215.64
-## 2  126141.3 22952.90  92419.32</code></pre>
+## 1  104862.3 17206.92  76216.51
+## 2  126134.9 22950.27  92414.11</code></pre>
 </details>
 <div class="sourceCode" id="cb175"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb175-1"><a href="#cb175-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw3<span class="fl">.1</span><span class="sc">$</span>unit_colest)   <span class="co"># estimates by estimation unit for column domains</span></span></code></pre></div>
 <details>
@@ -2615,20 +2581,20 @@ output
 output
 </summary>
 <pre><code>##                       DISTRICTNA Primary disturbance       nhat    nhat.var
-## 1 Medicine Wheel Ranger District             Disease 0.12534917 0.008479138
-## 2 Medicine Wheel Ranger District    Disease to trees 0.05531730 0.003799284
-## 3 Medicine Wheel Ranger District                Fire 0.05531730 0.003799284
-## 4         Tongue Ranger District                Wind 0.04440949 0.002133382
+## 1 Medicine Wheel Ranger District             Disease 0.12534964 0.008479163
+## 2 Medicine Wheel Ranger District    Disease to trees 0.05531964 0.003799421
+## 3 Medicine Wheel Ranger District                Fire 0.05531964 0.003799421
+## 4         Tongue Ranger District                Wind 0.04440132 0.002133011
 ##   NBRPLT.gt0 DSTRBCD1 ACRES_GIS AREAUSED      est    est.var   est.se    est.cv
-## 1          2       20  364522.8 364522.8 45692.63 1126681476 33566.08 0.7346059
-## 2          1       22  364522.8 364522.8 20164.42  504836949 22468.58 1.1142686
-## 3          1       30  364522.8 364522.8 20164.42  504836949 22468.58 1.1142686
-## 4          1       52  413774.9 413774.9 18375.53  365255577 19111.66 1.0400602
+## 1          2       20  364517.3 364517.3 45692.11 1126650561 33565.62 0.7346042
+## 2          1       22  364517.3 364517.3 20164.96  504839885 22468.64 1.1142416
+## 3          1       30  364517.3 364517.3 20164.96  504839885 22468.64 1.1142416
+## 4          1       52  413768.5 413768.5 18371.87  365180880 19109.71 1.0401613
 ##         pse CI99left CI99right CI95left CI95right CI68left CI68right
-## 1  73.46059        0 132153.12        0 111480.93 12312.58  79072.68
-## 2 111.42686        0  78039.64        0  64202.02     0.00  42508.47
-## 3 111.42686        0  78039.64        0  64202.02     0.00  42508.47
-## 4 104.00602        0  67603.91        0  55833.70     0.00  37381.27</code></pre>
+## 1  73.46042        0 132151.41        0 111479.51 12312.52  79071.70
+## 2 111.42416        0  78040.35        0  64202.69     0.00  42509.08
+## 3 111.42416        0  78040.35        0  64202.69     0.00  42509.08
+## 4 104.01613        0  67595.21        0  55826.20     0.00  37375.67</code></pre>
 </details>
 <div class="sourceCode" id="cb177"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb177-1"><a href="#cb177-1" aria-hidden="true" tabindex="-1"></a>raw3<span class="fl">.1</span><span class="sc">$</span>colest              <span class="co"># estimates for population for column domains</span></span></code></pre></div>
 <details>
@@ -2636,15 +2602,15 @@ output
 output
 </summary>
 <pre><code>##   Primary disturbance DSTRBCD1      est    est.var NBRPLT.gt0 AREAUSED   est.se
-## 1             Disease       20 45692.63 1126681476          2 364522.8 33566.08
-## 2    Disease to trees       22 20164.42  504836949          1 364522.8 22468.58
-## 3                Fire       30 20164.42  504836949          1 364522.8 22468.58
-## 4                Wind       52 18375.53  365255577          1 413774.9 19111.66
+## 1             Disease       20 45692.11 1126650561          2 364517.3 33565.62
+## 2    Disease to trees       22 20164.96  504839885          1 364517.3 22468.64
+## 3                Fire       30 20164.96  504839885          1 364517.3 22468.64
+## 4                Wind       52 18371.87  365180880          1 413768.5 19109.71
 ##      est.cv       pse CI99left CI99right CI95left CI95right CI68left CI68right
-## 1 0.7346059  73.46059        0 132153.12        0 111480.93 12312.58  79072.68
-## 2 1.1142686 111.42686        0  78039.64        0  64202.02     0.00  42508.47
-## 3 1.1142686 111.42686        0  78039.64        0  64202.02     0.00  42508.47
-## 4 1.0400602 104.00602        0  67603.91        0  55833.70     0.00  37381.27</code></pre>
+## 1 0.7346042  73.46042        0 132151.41        0 111479.51 12312.52  79071.70
+## 2 1.1142416 111.42416        0  78040.35        0  64202.69     0.00  42509.08
+## 3 1.1142416 111.42416        0  78040.35        0  64202.69     0.00  42509.08
+## 4 1.0401613 104.01613        0  67595.21        0  55826.20     0.00  37375.67</code></pre>
 </details>
 <div class="sourceCode" id="cb179"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb179-1"><a href="#cb179-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Titles (list object) for estimate</span></span>
 <span id="cb179-2"><a href="#cb179-2" aria-hidden="true" tabindex="-1"></a>titlelst3<span class="fl">.1</span> <span class="ot">&lt;-</span> area3<span class="fl">.1</span><span class="sc">$</span>titlelst</span>
@@ -2712,7 +2678,7 @@ View Example
 <span id="cb183-2"><a href="#cb183-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">GBpopdat =</span> GBpopdat.RI,        <span class="co"># pop - population calculations for Bighorn NF, post-stratification</span></span>
 <span id="cb183-3"><a href="#cb183-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">landarea =</span> <span class="st">&quot;FOREST&quot;</span>,           <span class="co"># est - forest land filter</span></span>
 <span id="cb183-4"><a href="#cb183-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">sumunits =</span> <span class="cn">TRUE</span>,               <span class="co"># est - sum estimation units to population</span></span>
-<span id="cb183-5"><a href="#cb183-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">rowvar =</span> <span class="st">&quot;FORTYPGRPCD&quot;</span>,        <span class="co"># est - row domain</span></span>
+<span id="cb183-5"><a href="#cb183-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">rowvar =</span> <span class="st">&quot;FORTYPCD&quot;</span>,        <span class="co"># est - row domain</span></span>
 <span id="cb183-6"><a href="#cb183-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">colvar =</span> <span class="st">&quot;STDSZCD&quot;</span>,            <span class="co"># est - column domain</span></span>
 <span id="cb183-7"><a href="#cb183-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">returntitle =</span> <span class="cn">TRUE</span>,            <span class="co"># out - return title information</span></span>
 <span id="cb183-8"><a href="#cb183-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">table_opts =</span> <span class="fu">list</span>(   </span>
@@ -2727,7 +2693,7 @@ our call of <code>modGBarea</code>, we run the following code:</p>
 <summary>
 output
 </summary>
-<pre><code>## [1] &quot;est&quot;      &quot;pse&quot;      &quot;titlelst&quot; &quot;raw&quot;      &quot;statecd&quot;</code></pre>
+<pre><code>## [1] &quot;est&quot;      &quot;pse&quot;      &quot;titlelst&quot; &quot;raw&quot;      &quot;statecd&quot;  &quot;invyr&quot;</code></pre>
 </details>
 <p>To easily access our estimate and percent sampling error of estimate
 we can just grab the <code>est</code> object from our ouputted list:</p>
@@ -2736,30 +2702,56 @@ we can just grab the <code>est</code> object from our ouputted list:</p>
 <summary>
 output
 </summary>
-<pre><code>##                  Forest-type group Large diameter Medium diameter
-## 1    White / red / jack pine group        30679.9              --
-## 2  Loblolly / shortleaf pine group        11079.8              --
-## 3                 Oak / pine group        12761.6          2888.3
-## 4              Oak / hickory group       180474.1         47968.7
-## 5        Oak / gum / cypress group        18424.4          7108.3
-## 6     Elm / ash / cottonwood group         4598.9         10300.1
-## 7      Maple / beech / birch group          14794          5086.7
-## 8            Aspen / birch / group         1990.2              --
-## 9            Other hardwoods group         1942.8          3745.7
-## 10                      Nonstocked             --              --
-## 11                           Total       276745.7         77097.8
-##    Small diameter Nonstocked    Total
-## 1              --         --  30679.9
-## 2              --         --  11079.8
-## 3              --         --  15649.9
-## 4              --         -- 228442.8
-## 5              --         --  25532.8
-## 6              --         --  14898.9
-## 7              --         --  19880.8
-## 8            3000         --   4990.1
-## 9           936.4         --   6624.9
-## 10             --     3347.5   3347.5
-## 11         3936.4     3347.5 361127.4</code></pre>
+<pre><code>##                                          Forest type Large diameter
+## 1                                 Eastern white pine        29664.4
+## 2                                    Eastern hemlock         1015.5
+## 3                                         Pitch pine        11079.8
+## 4  Eastern white pine / northern red oak / white ash        11494.2
+## 5                              Other pine / hardwood         1267.4
+## 6                                       Chestnut oak             --
+## 7                      White oak / red oak / hickory        75625.8
+## 8                                          White oak        11354.2
+## 9                                   Northern red oak        31766.7
+## 10      Yellow-poplar / white oak / northern red oak         3745.7
+## 11                                       Scarlet oak         6384.2
+## 12            Chestnut oak / black oak / scarlet oak        31237.2
+## 13                                   Red maple / oak        15559.7
+## 14                            Mixed upland hardwoods         4800.7
+## 15               Sweetbay / swamp tupelo / red maple        18424.4
+## 16                       Silver maple / American elm         1411.5
+## 17                               Red maple / lowland         3187.3
+## 18                Sugar maple / beech / yellow birch           8744
+## 19                                      Black cherry         2304.4
+## 20                                Red maple / upland         3745.7
+## 21                                             Aspen         1990.2
+## 22                                   Other hardwoods         1942.8
+## 23                                        Nonstocked             --
+## 24                                             Total       276745.7
+##    Medium diameter Small diameter Nonstocked    Total
+## 1               --             --         --  29664.4
+## 2               --             --         --   1015.5
+## 3               --             --         --  11079.8
+## 4           2888.3             --         --  14382.6
+## 5               --             --         --   1267.4
+## 6           3745.7             --         --   3745.7
+## 7          22315.7             --         --  97941.5
+## 8            653.5             --         --  12007.7
+## 9               --             --         --  31766.7
+## 10              --             --         --   3745.7
+## 11         19346.9             --         --  25731.1
+## 12           337.8             --         --    31575
+## 13            1569             --         --  17128.7
+## 14              --             --         --   4800.7
+## 15          7108.3             --         --  25532.8
+## 16              --             --         --   1411.5
+## 17         10300.1             --         --  13487.4
+## 18              --             --         --     8744
+## 19              --             --         --   2304.4
+## 20          5086.7             --         --   8832.4
+## 21              --           3000         --   4990.1
+## 22          3745.7          936.4         --   6624.9
+## 23              --             --     3347.5   3347.5
+## 24         77097.8         3936.4     3347.5 361127.4</code></pre>
 </details>
 <p>We can also look at raw data and titles for estimate, as shown below.
 Note the change in titles.</p>
@@ -2779,34 +2771,34 @@ output
 <summary>
 output
 </summary>
-<pre><code>##   ESTN_UNIT               Forest-type group Stand-size class        nhat
-## 1         2   White / red / jack pine group   Large diameter 0.028448787
-## 2         2 Loblolly / shortleaf pine group   Large diameter 0.006389858
-## 3         2                Oak / pine group   Large diameter 0.017107711
-## 4         2                Oak / pine group  Medium diameter 0.005081007
-## 5         2             Oak / hickory group   Large diameter 0.250504684
-## 6         2             Oak / hickory group  Medium diameter 0.062469588
-##       nhat.var NBRPLT.gt0 STDSZCD FORTYPGRPCD AREA_USED AREAUSED        est
-## 1 1.617642e-04          5       1         100  568453.6 568453.6  16171.816
-## 2 3.795914e-05          1       1         160  568453.6 568453.6   3632.338
-## 3 7.325378e-05          6       1         400  568453.6 568453.6   9724.940
-## 4 1.297166e-05          2       2         400  568453.6 568453.6   2888.317
-## 5 5.766549e-04         52       1         500  568453.6 568453.6 142400.290
-## 6 3.075739e-04         15       2         500  568453.6 568453.6  35511.062
-##     est.var    est.se     est.cv       pse   CI99left  CI99right    CI95left
-## 1  52272413  7229.966 0.44707202 44.707202      0.000  34794.975   2001.3421
-## 2  12266098  3502.299 0.96419971 96.419971      0.000  12653.662      0.0000
-## 3  23671189  4865.305 0.50029148 50.029148      0.000  22257.134    189.1182
-## 4   4191655  2047.353 0.70883959 70.883959      0.000   8161.949      0.0000
-## 5 186339968 13650.640 0.09586104  9.586104 107238.572 177562.008 115645.5272
-## 6  99389281  9969.417 0.28074117 28.074117   9831.545  61190.579  15971.3632
-##    CI95right    CI68left  CI68right
-## 1  30342.289   8981.9186  23361.713
-## 2  10496.717    149.4489   7115.226
-## 3  19260.762   4886.5995  14563.281
-## 4   6901.056    852.3102   4924.323
-## 5 169155.052 128825.3032 155975.276
-## 6  55050.761  25596.8965  45425.228</code></pre>
+<pre><code>##   ESTN_UNIT                                       Forest type Stand-size class
+## 1         2                                Eastern white pine   Large diameter
+## 2         2                                   Eastern hemlock   Large diameter
+## 3         2                                        Pitch pine   Large diameter
+## 4         2 Eastern white pine / northern red oak / white ash   Large diameter
+## 5         2 Eastern white pine / northern red oak / white ash  Medium diameter
+## 6         2                             Other pine / hardwood   Large diameter
+##          nhat     nhat.var NBRPLT.gt0 STDSZCD FORTYPCD AREA_USED AREAUSED
+## 1 0.026662405 1.600966e-04          4       1      103  568453.6 568453.6
+## 2 0.001786383 2.880391e-06          1       1      105  568453.6 568453.6
+## 3 0.006389858 3.795914e-05          1       1      167  568453.6 568453.6
+## 4 0.014878180 7.034373e-05          4       1      401  568453.6 568453.6
+## 5 0.005081007 1.297166e-05          2       2      401  568453.6 568453.6
+## 6 0.002229531 2.996697e-06          2       1      409  568453.6 568453.6
+##         est    est.var    est.se    est.cv      pse CI99left CI99right CI95left
+## 1 15156.340 51733547.1 7192.6036 0.4745607 47.45607        0 33683.259 1059.096
+## 2  1015.476   930768.0  964.7632 0.9500603 95.00603        0  3500.541    0.000
+## 3  3632.338 12266097.9 3502.2989 0.9641997 96.41997        0 12653.662    0.000
+## 4  8457.555 22730838.2 4767.6869 0.5637193 56.37193        0 20738.302    0.000
+## 5  2888.317  4191655.5 2047.3533 0.7088396 70.88396        0  8161.949    0.000
+## 6  1267.385   968351.2  984.0484 0.7764399 77.64399        0  3802.126    0.000
+##   CI95right   CI68left CI68right
+## 1 29253.584 8003.59845 22309.081
+## 2  2906.377   56.05943  1974.892
+## 3 10496.717  149.44889  7115.226
+## 4 17802.049 3716.29112 13198.819
+## 5  6901.056  852.31018  4924.323
+## 6  3196.085  288.79044  2245.980</code></pre>
 </details>
 <div class="sourceCode" id="cb192"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb192-1"><a href="#cb192-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Titles (list object) for estimate</span></span>
 <span id="cb192-2"><a href="#cb192-2" aria-hidden="true" tabindex="-1"></a>titlelst4<span class="fl">.1</span> <span class="ot">&lt;-</span> area4<span class="fl">.1</span><span class="sc">$</span>titlelst</span>
@@ -2825,37 +2817,37 @@ output
 output
 </summary>
 <pre><code>## $title.est
-## [1] &quot;Area, in acres, on forest land by forest-type group and stand-size class&quot;
+## [1] &quot;Area, in acres, on forest land by forest type and stand-size class&quot;
 ## 
 ## $title.pse
-## [1] &quot;Percent sampling error of area, in acres, on forest land by forest-type group and stand-size class&quot;
+## [1] &quot;Percent sampling error of area, in acres, on forest land by forest type and stand-size class&quot;
 ## 
 ## $title.unitvar
 ## [1] &quot;ESTN_UNIT&quot;
 ## 
 ## $title.ref
-## [1] &quot;Rhode Island, &quot;
+## [1] &quot;Rhode Island, 2013-2019&quot;
 ## 
 ## $outfn.estpse
-## [1] &quot;area_FORTYPGRPNM_STDSZNM_forestland&quot;
+## [1] &quot;area_FORTYPNM_STDSZNM_forestland&quot;
 ## 
 ## $outfn.rawdat
-## [1] &quot;area_FORTYPGRPNM_STDSZNM_forestland_rawdata&quot;
+## [1] &quot;area_FORTYPNM_STDSZNM_forestland_rawdata&quot;
 ## 
 ## $outfn.param
-## [1] &quot;area_FORTYPGRPNM_STDSZNM_forestland_parameters&quot;
+## [1] &quot;area_FORTYPNM_STDSZNM_forestland_parameters&quot;
 ## 
 ## $title.rowvar
-## [1] &quot;Forest-type group&quot;
+## [1] &quot;Forest type&quot;
 ## 
 ## $title.row
-## [1] &quot;Area, in acres, on forest land by forest-type group; Rhode Island, &quot;
+## [1] &quot;Area, in acres, on forest land by forest type; Rhode Island, 2013-2019&quot;
 ## 
 ## $title.colvar
 ## [1] &quot;Stand-size class&quot;
 ## 
 ## $title.col
-## [1] &quot;Area, in acres, on forest land by stand-size class; Rhode Island, &quot;
+## [1] &quot;Area, in acres, on forest land by stand-size class; Rhode Island, 2013-2019&quot;
 ## 
 ## $title.unitsn
 ## [1] &quot;acres&quot;</code></pre>
@@ -3339,7 +3331,7 @@ output
 <summary>
 plot
 </summary>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 </details>
 <p>And a fancier barplot:</p>
 <div class="sourceCode" id="cb233"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb233-1"><a href="#cb233-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Create fancier barplot</span></span>
@@ -3357,7 +3349,7 @@ plot
 <summary>
 plot
 </summary>
-<p><img src="data:image/png;base64,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TUI6Ck1POrW2kpxlllmSccYZJ5GRVOlwnS4fGQmLLbZYQ4ZWWWWVZMEFF0zuuOMOdb/xxhv1WYanyRVXXJHMP//8yaSTTppsvPHGCSCce+65yRxzzJHINCjZcsstEz6k0Ycffqj+eDf11FMn66yzTvLWW2/Z68Lrfffdp+GmnXbahN+6666bvP7666n/X/3qV5oHGAt5Ib8PP/xw+t5u8ir+Gmusof5vuumm5L333ktkGqfPzz77rAXTD7zIIouo+xNPPKHu5GnJJZdMxh9//GTOOedMDj744JSppQG/uxEZSjLvvPOmlUemNclBBx2kb4nD8J155pkTGfInxA2VSaOVH+npkp133jmRkYw2KLDfaKONEr5FMwIH8Hz66adTb//3f/+XwJCoI+ONN14y33zzJTB+vnuzMqYRfHeT9x149Yc//EGxBNMlllgiufnmmxuCNkvfPMq0UbGmcU044YTJT3/60+Tuu+/W1+3kUWRfWv4f/ehHiUzXk48//tiSKLw+//zz+i35ntbBwch5Pu2005Kzzz5b8yaj9GTNNddMjIkURThy5MhkoYUW0jq29NJLJ7fddltahyzsH//4R41/t912S6N54IEHki222CKZaaaZkkkmmUTr6XnnnZe+54b6x/e1etjwsuCh6vKJLCoRUUky5ZRTJjPOOGOyww47JGGsscZqSH666abTjI4YMULd//znP+vz5JNPnowyyijJ9NNPn4hcRd3mmmsuvU4xxRR6pYD77befhoNTw5hwG2200ZIJJphA72FEzT7uI488oh+AcKTHlR8f8YUXXtC4aQjmbte77rqroRw85FV8egLCXHzxxer/Zz/7mT7L9EOf+RP5kLpRVirj/fffn4w++ujqNvHEE6f52nzzzdMw8Q2VxfJl180220y90NhwA0+ulBH/ZdIo42fTTTfVeEU2llA2GiXp4F5ElHHsscdWJhP7+e1vf6thxxxzzISGaWXZaqutNM/2bFcrYxwH93nfYe+9907jI6/EARbXXnttGrxZ+ni67rrr0vwtuuii2gCJhzoG82r2HdJEvruxeg6jtfzQiVAfiyivXHvssYfmiQZGO4lxW3XVVYui0nR++MMfaljq2rjjjpuAu2FrDIgOATcYGsSIns4GN9qhtTOeb7nlljQ9BhK4wQDKUpXle+ONN9K8UU74DvkpzYDwTMOEDGTc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" /><!-- --></p>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 </details>
 </details>
 </div>
@@ -4063,25 +4055,25 @@ output
 </summary>
 <pre><code>##                        Forest type         subalpine fir      Engelmann spruce
 ## 1                      Douglas-fir           -- (    --)           -- (    --)
-## 2                 Engelmann spruce  5,748,668.1 ( 77.02) 13,619,359.9 ( 52.63)
-## 3 Engelmann spruce / subalpine fir 27,057,507.3 ( 64.52) 12,145,337.3 ( 60.75)
-## 4                    Subalpine fir 11,180,825.7 ( 86.24)    119,274.2 (100.76)
-## 5                   Lodgepole pine 27,362,519.2 ( 36.76) 28,612,774.3 ( 44.96)
+## 2                 Engelmann spruce  5,749,743.6 ( 77.01) 13,619,056.1 ( 52.63)
+## 3 Engelmann spruce / subalpine fir 27,053,549.0 ( 64.52) 12,143,560.5 ( 60.75)
+## 4                    Subalpine fir 11,179,190.0 ( 86.25)    119,256.8 (100.76)
+## 5                   Lodgepole pine 27,358,749.2 ( 36.77) 28,613,115.1 ( 44.96)
 ## 6                            Aspen           -- (    --)           -- (    --)
 ##           lodgepole pine          limber pine           Douglas-fir
-## 1            -- (    --) 4,283,555.0 ( 97.92) 21,223,387.2 ( 89.14)
-## 2   4,641,377.7 ( 98.14)          -- (    --)  3,513,431.3 (100.76)
-## 3            -- (    --)   357,822.7 (100.76)  1,431,290.9 ( 79.06)
-## 4   2,504,759.1 ( 79.85)          -- (    --)           -- (    --)
-## 5 158,998,727.8 ( 22.59)          -- (    --)    238,548.5 (100.76)
-## 6  11,886,153.4 (100.76)          -- (    --)           -- (    --)
+## 1            -- (    --) 4,282,928.4 ( 97.93) 21,220,282.3 ( 89.14)
+## 2   4,640,698.7 ( 98.14)          -- (    --)  3,512,917.3 (100.76)
+## 3            -- (    --)   357,770.4 (100.76)  1,431,081.5 ( 79.06)
+## 4   2,504,392.7 ( 79.86)          -- (    --)           -- (    --)
+## 5 158,979,797.7 ( 22.59)          -- (    --)    238,513.6 (100.76)
+## 6  11,884,414.5 (100.76)          -- (    --)           -- (    --)
 ##           quaking aspen                  Total
-## 1           -- (    --)  25,506,942.2 ( 90.53)
-## 2           -- (    --)  27,522,837.1 ( 50.80)
-## 3           -- (    --)  40,991,958.3 ( 55.71)
-## 4           -- (    --)  13,804,859.0 ( 85.10)
-## 5 10,052,879.2 ( 84.38) 225,265,449.0 ( 19.47)
-## 6           -- (    --)  11,886,153.4 (100.76)</code></pre>
+## 1           -- (    --)  25,503,210.7 ( 90.54)
+## 2           -- (    --)  27,522,415.8 ( 50.80)
+## 3           -- (    --)  40,985,961.4 ( 55.71)
+## 4           -- (    --)  13,802,839.4 ( 85.10)
+## 5 10,051,408.5 ( 84.39) 225,241,584.0 ( 19.47)
+## 6           -- (    --)  11,884,414.5 (100.76)</code></pre>
 </details>
 </details>
 </div>
@@ -4123,33 +4115,33 @@ output
 output
 </summary>
 <pre><code>##            Species                  Other                Insect
-## 1    subalpine fir  21,190,713.8 ( 49.41)  2,542,352.8 (100.76)
-## 2 Engelmann spruce  41,509,462.5 ( 46.15) 55,085,858.6 ( 97.75)
-## 3   lodgepole pine  60,858,957.0 ( 29.62)  4,118,397.1 ( 66.16)
-## 4      limber pine      80,032.4 (100.76)           -- (    --)
-## 5      Douglas-fir  13,989,308.8 (100.76)           -- (    --)
-## 6            Total 137,628,474.6 ( 30.03) 61,746,608.4 ( 91.29)
+## 1    subalpine fir  21,188,943.0 ( 49.41)  2,541,980.9 (100.76)
+## 2 Engelmann spruce  41,510,341.8 ( 46.15) 55,078,596.7 ( 97.75)
+## 3   lodgepole pine  60,851,875.1 ( 29.62)  4,117,794.6 ( 66.17)
+## 4      limber pine      80,020.7 (100.76)           -- (    --)
+## 5      Douglas-fir  13,987,262.2 (100.76)           -- (    --)
+## 6            Total 137,618,442.9 ( 30.03) 61,738,372.1 ( 91.29)
 ##                 Disease                  Fire  Unidentified animal
-## 1 30,508,319.8 ( 62.45)  2,658,383.3 (101.19)          -- (    --)
-## 2  2,289,154.2 ( 69.15) 32,915,727.9 (101.19)          -- (    --)
-## 3  1,673,509.8 (100.76)           -- (    --) 3,118,558.7 ( 84.42)
-## 4           -- (    --)  3,004,004.7 (100.76)          -- (    --)
+## 1 30,508,131.3 ( 62.45)  2,659,260.4 (101.17)          -- (    --)
+## 2  2,289,345.6 ( 69.14) 32,926,587.7 (101.17)          -- (    --)
+## 3  1,673,265.0 (100.76)           -- (    --) 3,119,310.3 ( 84.42)
+## 4           -- (    --)  3,003,565.2 (100.76)          -- (    --)
 ## 5           -- (    --)           -- (    --)          -- (    --)
-## 6 34,470,983.8 ( 61.02) 38,578,115.9 ( 93.64) 3,118,558.7 ( 84.42)
+## 6 34,470,741.9 ( 61.02) 38,589,413.3 ( 93.63) 3,119,310.3 ( 84.42)
 ##                Weather Vegetation (e.g., suppression)          Unidentified
-## 1   538,264.0 (101.19)             276,742.8 (100.76)  7,867,809.7 ( 66.63)
-## 2   610,593.0 (100.76)                    -- (    --)  8,283,794.0 ( 78.51)
-## 3   730,095.4 ( 97.76)                    -- (    --) 12,650,215.0 ( 62.27)
-## 4          -- (    --)                    -- (    --)    128,237.6 (100.76)
+## 1   538,441.5 (101.17)             276,702.4 (100.76)  7,868,989.3 ( 66.63)
+## 2   610,503.7 (100.76)                    -- (    --)  8,282,582.2 ( 78.51)
+## 3   729,988.6 ( 97.76)                    -- (    --) 12,650,831.9 ( 62.27)
+## 4          -- (    --)                    -- (    --)    128,218.8 (100.76)
 ## 5          -- (    --)                    -- (    --)           -- (    --)
-## 6 1,878,952.4 ( 57.37)             276,742.8 (100.76) 28,930,056.4 ( 40.25)
+## 6 1,878,933.8 ( 57.37)             276,702.4 (100.76) 28,930,622.3 ( 40.25)
 ##                    Total
-## 1  65,582,586.2 ( 44.71)
-## 2 140,694,590.2 ( 50.63)
-## 3  83,149,733.1 ( 29.20)
-## 4   3,212,274.7 ( 96.72)
-## 5  13,989,308.8 (100.76)
-## 6 306,628,493.0 ( 30.22)</code></pre>
+## 1  65,582,448.8 ( 44.71)
+## 2 140,697,957.6 ( 50.62)
+## 3  83,143,065.6 ( 29.20)
+## 4   3,211,804.8 ( 96.72)
+## 5  13,987,262.2 (100.76)
+## 6 306,622,538.9 ( 30.22)</code></pre>
 </details>
 </details>
 </div>
@@ -4342,40 +4334,40 @@ output
 output
 </summary>
 <pre><code>##                 Species group               1.0-2.9               3.0-4.9
-## 1                 Douglas-fir 14,857,691.8 (100.76)  5,943,076.7 ( 60.40)
-## 2                    True fir 35,733,108.1 ( 34.02) 23,772,306.8 ( 41.20)
-## 3 Engelmann and other spruces 19,538,943.0 ( 52.05)  7,428,845.9 ( 59.10)
-## 4              Lodgepole pine 43,087,306.1 ( 36.30) 34,284,662.9 ( 34.68)
-## 5     Other western softwoods  2,971,538.4 (100.76)           -- (    --)
-## 6        Cottonwood and aspen  5,943,076.7 (100.76)  1,485,769.2 (100.76)
+## 1                 Douglas-fir 14,855,518.2 (100.76)  5,942,207.3 ( 60.41)
+## 2                    True fir 35,729,331.2 ( 34.02) 23,768,829.1 ( 41.20)
+## 3 Engelmann and other spruces 19,540,436.5 ( 52.06)  7,427,759.1 ( 59.10)
+## 4              Lodgepole pine 43,081,002.7 ( 36.30) 34,281,823.2 ( 34.68)
+## 5     Other western softwoods  2,971,103.6 (100.76)           -- (    --)
+## 6        Cottonwood and aspen  5,942,207.3 (100.76)  1,485,551.8 (100.76)
 ##                 5.0-6.9               7.0-8.9              9.0-10.9
-## 1  2,146,936.4 ( 46.77)  1,550,565.2 ( 60.21)    715,645.5 ( 56.70)
-## 2  6,461,783.1 ( 32.38)  2,862,581.8 ( 36.05)    840,912.3 ( 36.35)
-## 3  8,247,900.5 ( 29.96)  6,458,786.8 ( 34.84)  3,473,934.5 ( 36.36)
-## 4 37,267,496.8 ( 24.24) 32,818,394.5 ( 21.39) 17,789,839.9 ( 20.44)
-## 5  1,192,742.4 ( 82.60)    357,822.7 ( 74.35)    119,274.2 (100.76)
-## 6  2,266,210.6 ( 54.80)    238,548.5 ( 70.35)    119,274.2 (100.76)
+## 1  2,146,622.3 ( 46.77)  1,550,338.3 ( 60.21)    715,540.8 ( 56.70)
+## 2  6,461,245.4 ( 32.39)  2,862,163.0 ( 36.06)    840,905.7 ( 36.35)
+## 3  8,247,043.2 ( 29.96)  6,458,191.3 ( 34.84)  3,473,717.4 ( 36.37)
+## 4 37,263,092.9 ( 24.24) 32,813,942.7 ( 21.39) 17,787,586.7 ( 20.44)
+## 5  1,192,567.9 ( 82.60)    357,770.4 ( 74.35)    119,256.8 (100.76)
+## 6  2,265,879.1 ( 54.81)    238,513.6 ( 70.35)    119,256.8 (100.76)
 ##              11.0-12.9            13.0-14.9            15.0-16.9
-## 1   119,274.2 (100.76)   357,822.7 ( 74.35)   357,822.7 (100.76)
-## 2 1,318,009.2 ( 44.43)   119,274.2 (100.76)   122,270.5 (101.19)
-## 3 4,067,309.4 ( 28.16) 2,045,639.8 ( 39.54)   834,919.7 ( 64.85)
-## 4 7,168,439.7 ( 22.35) 3,226,397.1 ( 30.61) 1,076,464.5 ( 41.49)
+## 1   119,256.8 (100.76)   357,770.4 ( 74.35)   357,770.4 (100.76)
+## 2 1,317,932.9 ( 44.43)   119,256.8 (100.76)   122,310.9 (101.17)
+## 3 4,066,947.3 ( 28.16) 2,045,689.9 ( 39.54)   834,797.6 ( 64.86)
+## 4 7,167,623.9 ( 22.35) 3,226,041.6 ( 30.61) 1,076,365.2 ( 41.49)
 ## 5          -- (    --)          -- (    --)          -- (    --)
 ## 6          -- (    --)          -- (    --)          -- (    --)
 ##            17.0-18.9            19.0-20.9          21.0-22.9          23.0-24.9
-## 1        -- (    --)   119,274.2 (100.76) 119,274.2 (100.76) 119,274.2 (100.76)
-## 2 119,274.2 (100.76)          -- (    --)        -- (    --)        -- (    --)
-## 3 957,190.2 ( 55.17) 1,079,460.8 ( 42.09) 119,274.2 (100.76) 244,541.1 (101.19)
-## 4 834,919.7 ( 74.03)   357,822.7 ( 74.35)        -- (    --) 119,274.2 (100.76)
+## 1        -- (    --)   119,256.8 (100.76) 119,256.8 (100.76) 119,256.8 (100.76)
+## 2 119,256.8 (100.76)          -- (    --)        -- (    --)        -- (    --)
+## 3 957,108.4 ( 55.17) 1,079,419.3 ( 42.09) 119,256.8 (100.76) 244,621.7 (101.17)
+## 4 834,797.6 ( 74.03)   357,770.4 ( 74.35)        -- (    --) 119,256.8 (100.76)
 ## 5        -- (    --)          -- (    --)        -- (    --)        -- (    --)
 ## 6        -- (    --)          -- (    --)        -- (    --)        -- (    --)
 ##                    Total
-## 1  26,406,657.9 ( 72.43)
-## 2  71,349,520.3 ( 30.27)
-## 3  54,496,745.8 ( 28.35)
-## 4 178,031,018.1 ( 20.43)
-## 5   4,641,377.7 ( 90.51)
-## 6  10,052,879.2 ( 84.38)</code></pre>
+## 1  26,402,794.7 ( 72.44)
+## 2  71,341,231.7 ( 30.28)
+## 3  54,494,988.5 ( 28.35)
+## 4 178,009,303.6 ( 20.43)
+## 5   4,640,698.7 ( 90.51)
+## 6  10,051,408.5 ( 84.39)</code></pre>
 </details>
 </details>
 </div>
@@ -4419,19 +4411,19 @@ output
 output
 </summary>
 <pre><code>##                 Species group                 0-4.9                 5-9.9
-## 1                 Douglas-fir 20,800,768.5 ( 86.59)  4,055,324.3 ( 51.25)
-## 2                    True fir 59,505,414.9 ( 31.91) 10,046,002.9 ( 31.06)
-## 3 Engelmann and other spruces 26,967,788.9 ( 45.56) 16,385,515.5 ( 32.40)
-## 4              Lodgepole pine 77,371,969.0 ( 30.20) 80,597,006.1 ( 21.14)
-## 5     Other western softwoods  2,971,538.4 (100.76)  1,550,565.2 ( 80.36)
-## 6        Cottonwood and aspen  7,428,845.9 (100.76)  2,624,033.3 ( 56.06)
+## 1                 Douglas-fir 20,797,725.4 ( 86.59)  4,054,731.0 ( 51.25)
+## 2                    True fir 59,498,160.3 ( 31.91) 10,045,057.3 ( 31.06)
+## 3 Engelmann and other spruces 26,968,195.6 ( 45.56) 16,383,991.8 ( 32.40)
+## 4              Lodgepole pine 77,362,825.9 ( 30.21) 80,586,903.8 ( 21.14)
+## 5     Other western softwoods  2,971,103.6 (100.76)  1,550,338.3 ( 80.37)
+## 6        Cottonwood and aspen  7,427,759.1 (100.76)  2,623,649.5 ( 56.07)
 ##                 10-19.9                20+                  Total
-## 1  1,192,742.4 ( 47.37) 357,822.7 ( 74.35)  26,406,657.9 ( 72.43)
-## 2  1,798,102.5 ( 38.15)        -- (    --)  71,349,520.3 ( 30.27)
-## 3 10,415,810.8 ( 29.66) 727,630.6 ( 71.82)  54,496,745.8 ( 28.35)
-## 4 19,823,494.6 ( 20.78) 238,548.5 ( 70.35) 178,031,018.1 ( 20.43)
-## 5    119,274.2 (100.76)        -- (    --)   4,641,377.7 ( 90.51)
-## 6           -- (    --)        -- (    --)  10,052,879.2 ( 84.38)</code></pre>
+## 1  1,192,567.9 ( 47.37) 357,770.4 ( 74.35)  26,402,794.7 ( 72.44)
+## 2  1,798,014.1 ( 38.16)        -- (    --)  71,341,231.7 ( 30.28)
+## 3 10,415,044.0 ( 29.66) 727,757.1 ( 71.82)  54,494,988.5 ( 28.35)
+## 4 19,821,060.3 ( 20.78) 238,513.6 ( 70.35) 178,009,303.6 ( 20.43)
+## 5    119,256.8 (100.76)        -- (    --)   4,640,698.7 ( 90.51)
+## 6           -- (    --)        -- (    --)  10,051,408.5 ( 84.39)</code></pre>
 </details>
 </details>
 </div>
@@ -4475,19 +4467,19 @@ output
 output
 </summary>
 <pre><code>##                 Species group                     &lt;1                 0-4.9
-## 1                 Douglas-fir  25,258,076.1 ( 88.99) 20,800,768.5 ( 86.59)
-## 2                    True fir 339,359,746.0 ( 25.54) 59,505,414.9 ( 31.91)
-## 3 Engelmann and other spruces  70,428,334.8 ( 39.27) 26,967,788.9 ( 45.56)
-## 4              Lodgepole pine  72,877,337.8 ( 26.90) 77,371,969.0 ( 30.20)
-## 5     Other western softwoods  34,172,691.2 ( 96.37)  2,971,538.4 (100.76)
-## 6        Cottonwood and aspen  77,259,997.6 ( 84.01)  7,428,845.9 (100.76)
+## 1                 Douglas-fir  25,254,381.0 ( 89.00) 20,797,725.4 ( 86.59)
+## 2                    True fir 339,350,718.1 ( 25.55) 59,498,160.3 ( 31.91)
+## 3 Engelmann and other spruces  70,429,636.8 ( 39.28) 26,968,195.6 ( 45.56)
+## 4              Lodgepole pine  72,868,126.9 ( 26.90) 77,362,825.9 ( 30.21)
+## 5     Other western softwoods  34,167,691.9 ( 96.37)  2,971,103.6 (100.76)
+## 6        Cottonwood and aspen  77,248,694.9 ( 84.02)  7,427,759.1 (100.76)
 ##                   5-9.9               10-19.9                  Total
-## 1  4,055,324.3 ( 51.25)  1,192,742.4 ( 47.37)  51,306,911.2 ( 80.67)
-## 2 10,046,002.9 ( 31.06)  1,798,102.5 ( 38.15) 410,709,266.3 ( 24.79)
-## 3 16,385,515.5 ( 32.40) 10,415,810.8 ( 29.66) 124,197,450.0 ( 32.00)
-## 4 80,597,006.1 ( 21.14) 19,823,494.6 ( 20.78) 250,669,807.4 ( 19.14)
-## 5  1,550,565.2 ( 80.36)    119,274.2 (100.76)  38,814,069.0 ( 95.62)
-## 6  2,624,033.3 ( 56.06)           -- (    --)  87,312,876.8 ( 76.24)</code></pre>
+## 1  4,054,731.0 ( 51.25)  1,192,567.9 ( 47.37)  51,299,405.3 ( 80.67)
+## 2 10,045,057.3 ( 31.06)  1,798,014.1 ( 38.16) 410,691,949.8 ( 24.79)
+## 3 16,383,991.8 ( 32.40) 10,415,044.0 ( 29.66) 124,196,868.2 ( 32.00)
+## 4 80,586,903.8 ( 21.14) 19,821,060.3 ( 20.78) 250,638,916.9 ( 19.14)
+## 5  1,550,338.3 ( 80.37)    119,256.8 (100.76)  38,808,390.7 ( 95.62)
+## 6  2,623,649.5 ( 56.07)           -- (    --)  87,300,103.4 ( 76.24)</code></pre>
 </details>
 </details>
 </div>
@@ -4530,19 +4522,19 @@ output
 output
 </summary>
 <pre><code>##                       Forest-type group Medicine Wheel Ranger District
-## 1                     Douglas-fir group             165,175.1 ( 97.68)
-## 2 Fir / spruce / mountain hemlock group         157,055,354.0 ( 48.22)
-## 3                  Lodgepole pine group          36,412,904.6 ( 56.21)
+## 1                     Douglas-fir group             165,168.2 ( 97.68)
+## 2 Fir / spruce / mountain hemlock group         157,053,582.6 ( 48.22)
+## 3                  Lodgepole pine group          36,412,167.9 ( 56.21)
 ## 4                 Aspen / birch / group                    -- (    --)
 ## 5                            Nonstocked                    -- (    --)
-## 6                                 Total         193,633,433.7 ( 37.60)
+## 6                                 Total         193,630,918.7 ( 37.60)
 ##   Powder River Ranger District Tongue Ranger District                  Total
-## 1                  -- (    --)            -- (    --)     130,096.2 (101.16)
-## 2        71,882,234.1 ( 82.23)     467,909.0 (104.01) 218,543,614.3 ( 42.93)
-## 3        12,312,080.1 ( 71.60)  31,023,626.0 ( 30.93)  77,698,950.9 ( 28.38)
-## 4         7,704,906.0 ( 99.63)            -- (    --)   8,313,354.1 (101.16)
-## 5                  -- (    --)   2,859,356.9 (104.01)   3,041,827.7 (101.16)
-## 6        91,899,220.2 ( 63.23)  34,350,891.9 ( 28.07) 307,727,843.3 ( 30.19)</code></pre>
+## 1                  -- (    --)            -- (    --)     130,080.5 (101.17)
+## 2        71,875,434.1 ( 82.23)     467,815.7 (104.02) 218,544,089.8 ( 42.93)
+## 3        12,310,915.4 ( 71.60)  31,017,502.8 ( 30.93)  77,693,998.4 ( 28.38)
+## 4         7,704,177.1 ( 99.64)            -- (    --)   8,312,352.1 (101.17)
+## 5                  -- (    --)   2,858,786.7 (104.02)   3,041,461.1 (101.17)
+## 6        91,890,526.6 ( 63.23)  34,344,105.2 ( 28.07) 307,721,982.0 ( 30.19)</code></pre>
 </details>
 <div class="sourceCode" id="cb332"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb332-1"><a href="#cb332-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Estimate and percent sampling error by district</span></span>
 <span id="cb332-2"><a href="#cb332-2" aria-hidden="true" tabindex="-1"></a>tree3<span class="fl">.1</span><span class="sc">$</span>raw<span class="sc">$</span>unit_rowest</span></code></pre></div>
@@ -4562,38 +4554,38 @@ output
 ## 9          Tongue Ranger District                  Lodgepole pine group
 ## 10         Tongue Ranger District                            Nonstocked
 ##           nhat     nhat.var NBRPLT.gt0 FORTYPGRPCD ACRES_GIS AREAUSED
-## 1    0.4531269 1.959208e-01          1         200  364522.8 364522.8
-## 2  430.8519180 4.316523e+04          5         260  364522.8 364522.8
-## 3   99.8919770 3.152230e+03          5         280  364522.8 364522.8
-## 4  215.0014788 3.125324e+04          3         260  334333.7 334333.7
-## 5   36.8257257 6.951532e+02          3         280  334333.7 334333.7
-## 6   23.0455579 5.272159e+02          1         900  334333.7 334333.7
-## 7    0.0000000 0.000000e+00          0         200  413774.9 413774.9
-## 8    1.1308300 1.383285e+00          1         260  413774.9 413774.9
-## 9   74.9770645 5.376754e+02         13         280  413774.9 413774.9
-## 10   6.9104167 5.165656e+01          1         999  413774.9 413774.9
+## 1    0.4531147     0.195916          1         200  364517.3 364517.3
+## 2  430.8535875 43165.341520          5         260  364517.3 364517.3
+## 3   99.8914695  3152.227017          5         280  364517.3 364517.3
+## 4  214.9848104 31250.992937          3         260  334328.0 334328.0
+## 5   36.8228707   695.103278          3         280  334328.0 334328.0
+## 6   23.0437713   527.177977          1         900  334328.0 334328.0
+## 7    0.0000000     0.000000          0         200  413768.5 413768.5
+## 8    1.1306219     1.383045          1         260  413768.5 413768.5
+## 9   74.9634203   537.582034         13         280  413768.5 413768.5
+## 10   6.9091452    51.647585          1         999  413768.5 413768.5
 ##            est      est.var     est.se    est.cv       pse CI99left   CI99right
-## 1     165175.1 2.603334e+10   161348.5 0.9768332  97.68332        0    580781.3
-## 2  157055354.0 5.735661e+15 75734144.2 0.4822131  48.22131        0 352133581.9
-## 3   36412904.6 4.188584e+14 20466031.5 0.5620544  56.20544        0  89129908.4
-## 4   71882234.1 3.493456e+15 59105464.4 0.8222541  82.22541        0 224127821.4
-## 5   12312080.1 7.770354e+13  8814960.9 0.7159603  71.59603        0  35017914.8
-## 6    7704906.0 5.893166e+13  7676696.2 0.9963387  99.63387        0  27478765.0
+## 1     165168.2 2.603192e+10   161344.1 0.9768476  97.68476        0    580763.1
+## 2  157053582.6 5.735502e+15 75733098.4 0.4822118  48.22118        0 352129116.7
+## 3   36412167.9 4.188454e+14 20465712.9 0.5620570  56.20570        0  89128350.9
+## 4   71875434.1 3.493086e+15 59102331.6 0.8222883  82.22883        0 224112951.8
+## 5   12310915.4 7.769530e+13  8814493.7 0.7159901  71.59901        0  35015546.6
+## 6    7704177.1 5.892542e+13  7676289.3 0.9963802  99.63802        0  27476988.1
 ## 7          0.0 0.000000e+00        0.0       NaN       NaN        0         0.0
-## 8     467909.0 2.368317e+11   486653.6 1.0400602 104.00602        0   1721445.6
-## 9   31023626.0 9.205522e+13  9594541.3 0.3092656  30.92656  6309725  55737526.7
-## 10   2859356.9 8.844102e+12  2973903.4 1.0400602 104.00602        0  10519624.4
+## 8     467815.7 2.367833e+11   486603.8 1.0401613 104.01613        0   1721224.2
+## 9   31017502.8 9.203640e+13  9593560.3 0.3092951  30.92951  6306129  55728876.5
+## 10   2858786.7 8.842293e+12  2973599.3 1.0401613 104.01613        0  10518271.0
 ##    CI95left   CI95right     CI68left   CI68right
-## 1         0    481412.3     4720.787    325629.4
-## 2   8619159 305491549.0 81740937.247 232369770.7
-## 3         0  76525589.3 16060298.267  56765511.0
-## 4         0 187726815.7 13104338.994 130660129.1
-## 5         0  29589086.1  3545972.728  21078187.5
-## 6         0  22750954.1    70754.980  15339057.1
+## 1         0    481396.8     4718.232    325618.1
+## 2   8619437 305487727.9 81740205.936 232366959.4
+## 3         0  76524228.1 16059878.321  56764457.4
+## 4         0 187713875.5 13100654.439 130650213.7
+## 5         0  29587005.6  3545272.651  21076558.2
+## 6         0  22749427.7    70430.741  15337923.5
 ## 7         0         0.0        0.000         0.0
-## 8         0   1421732.6        0.000    951865.5
-## 9  12218671  49828581.4 21482258.792  40564993.3
-## 10        0   8688100.5        0.000   5816778.6</code></pre>
+## 8         0   1421541.7        0.000    951722.8
+## 9  12214470  49820535.4 21477111.101  40557894.4
+## 10        0   8686934.3        0.000   5815906.0</code></pre>
 </details>
 </details>
 </div>
@@ -4629,7 +4621,7 @@ diameter class (DIACL2IN):</p>
 <summary>
 output
 </summary>
-<pre><code>## [1] &quot;est&quot;      &quot;titlelst&quot; &quot;raw&quot;      &quot;statecd&quot;</code></pre>
+<pre><code>## [1] &quot;est&quot;      &quot;titlelst&quot; &quot;raw&quot;      &quot;statecd&quot;  &quot;invyr&quot;</code></pre>
 </details>
 <div class="sourceCode" id="cb337"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb337-1"><a href="#cb337-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Estimate and percent sampling error of estimate</span></span>
 <span id="cb337-2"><a href="#cb337-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(tree4<span class="fl">.1</span><span class="sc">$</span>est)</span></code></pre></div>
@@ -5544,10 +5536,10 @@ output
 <pre><code>##            Species Estimate Percent Sampling Error
 ## 1    subalpine fir    107.1                  29.07
 ## 2 Engelmann spruce     81.8                  26.99
-## 3   lodgepole pine    267.3                  18.32
-## 4      limber pine        7                  90.07
-## 5      Douglas-fir     39.7                  71.92
-## 6    quaking aspen     15.1                  83.91</code></pre>
+## 3   lodgepole pine    267.3                  18.33
+## 4      limber pine        7                  90.08
+## 5      Douglas-fir     39.7                  71.93
+## 6    quaking aspen     15.1                  83.92</code></pre>
 </details>
 </details>
 </div>
@@ -5639,11 +5631,11 @@ output
 output
 </summary>
 <pre><code>##            Species Estimate Percent Sampling Error
-## 1    subalpine fir    616.7                  22.55
+## 1    subalpine fir    616.8                  22.55
 ## 2 Engelmann spruce    187.6                  30.53
 ## 3   lodgepole pine    376.8                  17.35
-## 4      limber pine     58.3                   95.2
-## 5      Douglas-fir     77.6                  79.66
+## 4      limber pine     58.3                  95.21
+## 5      Douglas-fir     77.6                  79.67
 ## 6    quaking aspen    131.1                  75.72</code></pre>
 </details>
 <div class="sourceCode" id="cb415"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb415-1"><a href="#cb415-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Compare estimates with and without seedlings</span></span>
@@ -5655,10 +5647,10 @@ output
 <pre><code>##            Species Estimate Percent Sampling Error
 ## 1    subalpine fir    107.1                  29.07
 ## 2 Engelmann spruce     81.8                  26.99
-## 3   lodgepole pine    267.3                  18.32
-## 4      limber pine        7                  90.07
-## 5      Douglas-fir     39.7                  71.92
-## 6    quaking aspen     15.1                  83.91</code></pre>
+## 3   lodgepole pine    267.3                  18.33
+## 4      limber pine        7                  90.08
+## 5      Douglas-fir     39.7                  71.93
+## 6    quaking aspen     15.1                  83.92</code></pre>
 </details>
 <div class="sourceCode" id="cb417"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb417-1"><a href="#cb417-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ratio2<span class="fl">.2</span><span class="sc">$</span>est)</span></code></pre></div>
 <details>
@@ -5666,11 +5658,11 @@ output
 output
 </summary>
 <pre><code>##            Species Estimate Percent Sampling Error
-## 1    subalpine fir    616.7                  22.55
+## 1    subalpine fir    616.8                  22.55
 ## 2 Engelmann spruce    187.6                  30.53
 ## 3   lodgepole pine    376.8                  17.35
-## 4      limber pine     58.3                   95.2
-## 5      Douglas-fir     77.6                  79.66
+## 4      limber pine     58.3                  95.21
+## 5      Douglas-fir     77.6                  79.67
 ## 6    quaking aspen    131.1                  75.72</code></pre>
 </details>
 </details>
@@ -5721,7 +5713,7 @@ output
 ## 3   lodgepole pine    109.4                  26.47
 ## 4      limber pine     51.3                  95.96
 ## 5      Douglas-fir     37.9                  88.55
-## 6    quaking aspen      116                  83.54</code></pre>
+## 6    quaking aspen      116                  83.55</code></pre>
 </details>
 <div class="sourceCode" id="cb424"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb424-1"><a href="#cb424-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Compare estimates with, without, and only seedlings</span></span>
 <span id="cb424-2"><a href="#cb424-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ratio2<span class="fl">.1</span><span class="sc">$</span>est)</span></code></pre></div>
@@ -5732,10 +5724,10 @@ output
 <pre><code>##            Species Estimate Percent Sampling Error
 ## 1    subalpine fir    107.1                  29.07
 ## 2 Engelmann spruce     81.8                  26.99
-## 3   lodgepole pine    267.3                  18.32
-## 4      limber pine        7                  90.07
-## 5      Douglas-fir     39.7                  71.92
-## 6    quaking aspen     15.1                  83.91</code></pre>
+## 3   lodgepole pine    267.3                  18.33
+## 4      limber pine        7                  90.08
+## 5      Douglas-fir     39.7                  71.93
+## 6    quaking aspen     15.1                  83.92</code></pre>
 </details>
 <div class="sourceCode" id="cb426"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb426-1"><a href="#cb426-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ratio2<span class="fl">.2</span><span class="sc">$</span>est)</span></code></pre></div>
 <details>
@@ -5743,11 +5735,11 @@ output
 output
 </summary>
 <pre><code>##            Species Estimate Percent Sampling Error
-## 1    subalpine fir    616.7                  22.55
+## 1    subalpine fir    616.8                  22.55
 ## 2 Engelmann spruce    187.6                  30.53
 ## 3   lodgepole pine    376.8                  17.35
-## 4      limber pine     58.3                   95.2
-## 5      Douglas-fir     77.6                  79.66
+## 4      limber pine     58.3                  95.21
+## 5      Douglas-fir     77.6                  79.67
 ## 6    quaking aspen    131.1                  75.72</code></pre>
 </details>
 <div class="sourceCode" id="cb428"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb428-1"><a href="#cb428-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ratio2<span class="fl">.3</span><span class="sc">$</span>est)</span></code></pre></div>
@@ -5761,7 +5753,7 @@ output
 ## 3   lodgepole pine    109.4                  26.47
 ## 4      limber pine     51.3                  95.96
 ## 5      Douglas-fir     37.9                  88.55
-## 6    quaking aspen      116                  83.54</code></pre>
+## 6    quaking aspen      116                  83.55</code></pre>
 </details>
 </details>
 </div>
@@ -5806,17 +5798,17 @@ output
 </summary>
 <pre><code>##                        Forest type  subalpine fir Engelmann spruce
 ## 1                      Douglas-fir    -- (    --)      -- (    --)
-## 2                 Engelmann spruce  88.6 ( 62.90)   209.8 ( 22.86)
+## 2                 Engelmann spruce  88.6 ( 62.89)   209.8 ( 22.85)
 ## 3 Engelmann spruce / subalpine fir 390.1 ( 36.28)   175.1 ( 47.50)
-## 4                    Subalpine fir 248.0 ( 61.36)     2.6 ( 73.63)
+## 4                    Subalpine fir 247.9 ( 61.37)     2.6 ( 73.64)
 ## 5                   Lodgepole pine  67.2 ( 34.42)    70.3 ( 40.77)
 ## 6                            Aspen    -- (    --)      -- (    --)
 ##   lodgepole pine    limber pine    Douglas-fir quaking aspen          Total
-## 1    -- (    --) 108.1 ( 68.11) 535.4 ( 54.74)   -- (    --) 643.5 ( 56.98)
-## 2  71.5 ( 81.44)    -- (    --)  54.1 ( 83.85)   -- (    --) 424.0 ( 12.33)
-## 3    -- (    --)   5.2 ( 82.44)  20.6 ( 60.31)   -- (    --) 590.9 ( 26.06)
-## 4  55.5 ( 57.27)    -- (    --)    -- (    --)   -- (    --) 306.2 ( 60.54)
-## 5 390.4 ( 15.86)    -- (    --)   0.6 (100.61) 24.7 ( 82.69) 553.1 ( 10.85)
+## 1    -- (    --) 108.1 ( 68.12) 535.4 ( 54.74)   -- (    --) 643.5 ( 56.99)
+## 2  71.5 ( 81.45)    -- (    --)  54.1 ( 83.86)   -- (    --) 424.0 ( 12.33)
+## 3    -- (    --)   5.2 ( 82.44)  20.6 ( 60.31)   -- (    --) 590.9 ( 26.07)
+## 4  55.5 ( 57.28)    -- (    --)    -- (    --)   -- (    --) 306.1 ( 60.55)
+## 5 390.4 ( 15.86)    -- (    --)   0.6 (100.62) 24.7 ( 82.69) 553.1 ( 10.85)
 ## 6 599.7 (    --)    -- (    --)    -- (    --)   -- (    --) 599.7 (    --)</code></pre>
 </details>
 </details>
@@ -5861,26 +5853,26 @@ output
 output
 </summary>
 <pre><code>##            Species          Other        Insect       Disease          Fire
-## 1    subalpine fir  31.8 ( 48.54)  3.8 (100.36) 45.8 ( 61.06)  4.0 ( 99.21)
-## 2 Engelmann spruce  62.3 ( 44.05) 82.7 ( 97.29)  3.4 ( 67.45) 49.4 ( 99.21)
-## 3   lodgepole pine  91.4 ( 28.53)  6.2 ( 66.27)  2.5 (100.36)   -- (    --)
-## 4      limber pine   0.1 (100.36)   -- (    --)   -- (    --)  4.5 (100.36)
-## 5      Douglas-fir  21.0 (100.36)   -- (    --)   -- (    --)   -- (    --)
-## 6            Total 206.7 ( 28.20) 92.7 ( 90.84) 51.8 ( 59.59) 57.9 ( 91.64)
+## 1    subalpine fir  31.8 ( 48.54)  3.8 (100.37) 45.8 ( 61.05)  4.0 ( 99.20)
+## 2 Engelmann spruce  62.3 ( 44.05) 82.7 ( 97.30)  3.4 ( 67.44) 49.4 ( 99.20)
+## 3   lodgepole pine  91.4 ( 28.53)  6.2 ( 66.27)  2.5 (100.37)   -- (    --)
+## 4      limber pine   0.1 (100.37)   -- (    --)   -- (    --)  4.5 (100.37)
+## 5      Douglas-fir  21.0 (100.37)   -- (    --)   -- (    --)   -- (    --)
+## 6            Total 206.7 ( 28.20) 92.7 ( 90.84) 51.8 ( 59.59) 58.0 ( 91.62)
 ##   Unidentified animal      Weather Vegetation (e.g., suppression)  Unidentified
-## 1         -- (    --) 0.8 ( 99.21)                   0.4 (100.36) 11.8 ( 64.97)
-## 2         -- (    --) 0.9 (100.36)                    -- (    --) 12.4 ( 80.26)
-## 3        4.7 ( 82.40) 1.1 ( 97.35)                    -- (    --) 19.0 ( 60.58)
-## 4         -- (    --)  -- (    --)                    -- (    --)  0.2 (100.36)
+## 1         -- (    --) 0.8 ( 99.20)                   0.4 (100.37) 11.8 ( 64.97)
+## 2         -- (    --) 0.9 (100.37)                    -- (    --) 12.4 ( 80.26)
+## 3        4.7 ( 82.39) 1.1 ( 97.36)                    -- (    --) 19.0 ( 60.58)
+## 4         -- (    --)  -- (    --)                    -- (    --)  0.2 (100.37)
 ## 5         -- (    --)  -- (    --)                    -- (    --)   -- (    --)
-## 6        4.7 ( 82.40) 2.8 ( 55.87)                   0.4 (100.36) 43.4 ( 39.35)
+## 6        4.7 ( 82.39) 2.8 ( 55.87)                   0.4 (100.37) 43.4 ( 39.35)
 ##            Total
 ## 1  98.5 ( 42.92)
-## 2 211.3 ( 48.91)
+## 2 211.3 ( 48.90)
 ## 3 124.9 ( 27.57)
-## 4   4.8 ( 96.31)
-## 5  21.0 (100.36)
-## 6 460.4 ( 27.78)</code></pre>
+## 4   4.8 ( 96.32)
+## 5  21.0 (100.37)
+## 6 460.5 ( 27.78)</code></pre>
 </details>
 </details>
 </div>
@@ -5927,26 +5919,26 @@ output
 output
 </summary>
 <pre><code>##                 Species group       1.0-2.9       3.0-4.9       5.0-6.9
-## 1                 Douglas-fir 22.3 (100.36)  8.9 ( 59.74)  3.2 ( 46.01)
+## 1                 Douglas-fir 22.3 (100.37)  8.9 ( 59.75)  3.2 ( 46.01)
 ## 2                    True fir 53.7 ( 32.92) 35.7 ( 40.47)  9.7 ( 31.02)
-## 3 Engelmann and other spruces 29.3 ( 50.99) 11.2 ( 59.47) 12.4 ( 28.93)
+## 3 Engelmann and other spruces 29.3 ( 50.99) 11.2 ( 59.48) 12.4 ( 28.93)
 ## 4              Lodgepole pine 64.7 ( 35.42) 51.5 ( 32.89) 56.0 ( 22.45)
-## 5     Other western softwoods  4.5 (100.36)   -- (    --)  1.8 ( 82.12)
-## 6        Cottonwood and aspen  8.9 (100.36)  2.2 (100.36)  3.4 ( 54.08)
+## 5     Other western softwoods  4.5 (100.37)   -- (    --)  1.8 ( 82.12)
+## 6        Cottonwood and aspen  8.9 (100.37)  2.2 (100.37)  3.4 ( 54.08)
 ##         7.0-8.9      9.0-10.9     11.0-12.9    13.0-14.9    15.0-16.9
-## 1  2.3 ( 59.95)  1.1 ( 56.69)  0.2 (100.36) 0.5 ( 73.81) 0.5 (100.36)
-## 2  4.3 ( 35.49)  1.3 ( 33.91)  2.0 ( 42.85) 0.2 (101.90) 0.2 ( 99.21)
+## 1  2.3 ( 59.95)  1.1 ( 56.69)  0.2 (100.37) 0.5 ( 73.82) 0.5 (100.37)
+## 2  4.3 ( 35.49)  1.3 ( 33.91)  2.0 ( 42.85) 0.2 (101.90) 0.2 ( 99.20)
 ## 3  9.7 ( 33.61)  5.2 ( 35.15)  6.1 ( 27.02) 3.1 ( 37.39) 1.3 ( 64.24)
 ## 4 49.3 ( 19.64) 26.7 ( 18.62) 10.8 ( 20.67) 4.8 ( 29.27) 1.6 ( 40.50)
-## 5  0.5 ( 73.81)  0.2 (100.36)   -- (    --)  -- (    --)  -- (    --)
-## 6  0.4 ( 69.79)  0.2 (100.36)   -- (    --)  -- (    --)  -- (    --)
+## 5  0.5 ( 73.82)  0.2 (100.37)   -- (    --)  -- (    --)  -- (    --)
+## 6  0.4 ( 69.79)  0.2 (100.37)   -- (    --)  -- (    --)  -- (    --)
 ##      17.0-18.9    19.0-20.9    21.0-22.9    23.0-24.9          Total
-## 1  -- (    --) 0.2 (100.36) 0.2 (100.36) 0.2 (100.36)  39.7 ( 71.92)
-## 2 0.2 (100.36)  -- (    --)  -- (    --)  -- (    --) 107.1 ( 29.07)
-## 3 1.4 ( 54.08) 1.6 ( 41.09) 0.2 (100.36) 0.4 ( 99.21)  81.8 ( 26.99)
-## 4 1.3 ( 73.49) 0.5 ( 74.51)  -- (    --) 0.2 (100.36) 267.3 ( 18.32)
-## 5  -- (    --)  -- (    --)  -- (    --)  -- (    --)   7.0 ( 90.07)
-## 6  -- (    --)  -- (    --)  -- (    --)  -- (    --)  15.1 ( 83.91)</code></pre>
+## 1  -- (    --) 0.2 (100.37) 0.2 (100.37) 0.2 (100.37)  39.7 ( 71.93)
+## 2 0.2 (100.37)  -- (    --)  -- (    --)  -- (    --) 107.1 ( 29.07)
+## 3 1.4 ( 54.08) 1.6 ( 41.09) 0.2 (100.37) 0.4 ( 99.20)  81.8 ( 26.99)
+## 4 1.3 ( 73.50) 0.5 ( 74.51)  -- (    --) 0.2 (100.37) 267.3 ( 18.33)
+## 5  -- (    --)  -- (    --)  -- (    --)  -- (    --)   7.0 ( 90.08)
+## 6  -- (    --)  -- (    --)  -- (    --)  -- (    --)  15.1 ( 83.92)</code></pre>
 </details>
 </details>
 </div>

@@ -22,9 +22,6 @@
 #' @author Tracey S. Frescino
 #' @examples
 #' \dontrun{
-#' # Get reference table for FIA research stations
-#' DBgetCSV(DBtable="ref_research_station")
-#' 
 #' # Get plot data for multiple states
 #' FIAplots <- DBgetCSV("PLOT", c("Georgia", "Utah"))
 #' table(FIAplots$STATECD)
@@ -36,6 +33,12 @@ DBgetCSV <- function(DBtable,
                      stopifnull = TRUE, 
                      noIDate = TRUE) {
   # DESCRIPTION: Import data tables from FIA Datamart
+
+
+  ## Set options
+  opts <- options()
+  options(timeout = max(5000, getOption("timeout")))
+  on.exit(options(opts))
 
   # Stop if no arguments passed. No GUI available for this function
   if (nargs() == 0) {
@@ -70,7 +73,7 @@ DBgetCSV <- function(DBtable,
   if (!is.vector(DBtable) || !is.character(DBtable) || !length(DBtable) == 1) {
     stop("DBtable must be a character vector of length 1")
   }
-
+ 
   ## Check states and get in proper format (abbr)
   stabbrs <- pcheck.states(states, "ABBR")
 
@@ -97,6 +100,9 @@ DBgetCSV <- function(DBtable,
   			  return(NULL)
              }
       )
+      if (nrow(tab) == 0) {
+        stop("invalid table in datamart")
+      }
       tab <- changeclass(tab)
       return(tab)
     }
@@ -127,6 +133,9 @@ DBgetCSV <- function(DBtable,
 
       filenm <- utils::unzip(temp, exdir=tempdir)
       tab <- fread(filenm, integer64="character")
+      if (nrow(tab) == 0) {
+        stop("invalid table in datamart")
+      }
       tab <- changeclass(tab)
 
       unlink(temp)
@@ -143,7 +152,7 @@ DBgetCSV <- function(DBtable,
     csvtable <- gettab(DBtable=DBtable)
   } else {
     csvtable <- tryCatch(
-      do.call(rbindlist, list(lapply(stabbrs, gettab, DBtable))),
+      do.call(rbind, lapply(stabbrs, gettab, DBtable)),
 		    error=function(e) {
  		    message(e, "\n")
 		    return(NULL)
@@ -153,6 +162,7 @@ DBgetCSV <- function(DBtable,
   if (is.null(csvtable)) {
     return(NULL)
   }
+  names(csvtable) <- toupper(names(csvtable))
   if (!returnDT) {
     csvtable <- data.frame(csvtable, stringsAsFactors=FALSE)
   }
