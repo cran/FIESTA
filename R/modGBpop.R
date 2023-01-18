@@ -294,7 +294,7 @@ modGBpop <- function(popType = "VOL",
   ## Set global variables
   ONEUNIT=n.total=n.strata=strwt=expcondtab=V1=SUBPCOND_PROP=SUBPCOND_PROP_UNADJ=
     	treef=seedf=vcondsppf=vcondstrf=cond_dwm_calcf=bndx=RHGlut=
-	sccmx=cond_pcondx=lulcx <- NULL
+	sccmx=cond_pcondx=lulcx=popevalid <- NULL
   condid <- "CONDID"
   
   
@@ -493,12 +493,13 @@ modGBpop <- function(popType = "VOL",
   evalTyplst <- c("ALL", "CURR", "VOL", "LULC", "P2VEG", "INV", "DWM", "CHNG", "GRM")
   popType <- pcheck.varchar(var2check=popType, varnm="popType", gui=gui,
 		checklst=evalTyplst, caption="popType", multiple=FALSE, stopifnull=TRUE)
-  popevalid <- as.character(evalid)
   if (!is.null(evalid)) {
+    popevalid <- as.character(evalid)
     substr(popevalid, nchar(popevalid)-1, nchar(popevalid)) <- 
 		FIESTA::ref_popType[FIESTA::ref_popType$popType %in% popType, "EVAL_TYP_CD"]
+    evalid <- as.character(evalid)
+    substr(evalid, nchar(evalid)-1, nchar(evalid)) <- "01"
   } 
-
 
  
   ###################################################################################
@@ -692,7 +693,7 @@ modGBpop <- function(popType = "VOL",
   }
 
 
-  if (popType %in% c("ALL", "AREA", "VOL")) {
+  if (popType %in% c("ALL", "CURR", "AREA", "VOL")) {
     ###################################################################################
     ## Check parameters and data for popType AREA/VOL
     ###################################################################################
@@ -719,7 +720,7 @@ modGBpop <- function(popType = "VOL",
     popcheck <- check.popdataP2VEG(gui=gui, 
                tabs=popTabs, tabIDs=popTabIDs, pltassgnx=pltassgnx, 
                pfromqry=pfromqry, palias=palias, pjoinid=pjoinid, whereqry=whereqry, 
-               adj=adj, ACI=ACI, pltx=pltx, puniqueid=puniqueid, dsn=dsn, 
+               adj=adj, ACI=ACI, pltx=pltx, puniqueid=puniqueid, dsn=dsn, dbconn=dbconn, 
                condid="CONDID", nonsamp.cfilter=nonsamp.cfilter)
     pltcondx <- popcheck$pltcondx
     pltassgnx <- popcheck$pltassgnx
@@ -727,6 +728,8 @@ modGBpop <- function(popType = "VOL",
     vcondx <- popcheck$vcondx
     vcondsppf <- popcheck$vcondsppf
     vcondstrf <- popcheck$vcondstrf
+    ACI.filter <- popcheck$ACI.filter
+    condsampcnt <- popcheck$condsampcnt
     areawt <- popcheck$areawt
     vareawt <- popcheck$vareawt
     vuniqueid <- popcheck$vcondstrid
@@ -924,14 +927,17 @@ modGBpop <- function(popType = "VOL",
   if (!is.null(bndx)) {
     returnlst$bndx <- bndx
   }
+ 
   if (is.null(key(unitarea))) {
-     setkeyv(unitarea, unitvar)
+    setkeyv(unitarea, unitvars)
   }
+  setorderv(stratalut, c(unitvars, strvar))
+
   returnlst <- append(returnlst, list(condx=condx, pltcondx=pltcondx, 
             cuniqueid=cuniqueid, condid=condid, ACI.filter=ACI.filter, 
-            unitarea=unitarea, areavar=areavar, areaunits=areaunits, 
-            unitvar=unitvar, unitvars=unitvars, 
-            strata=strata, stratalut=stratalut, 
+            unitarea=unitarea, areavar=areavar, 
+            areaunits=areaunits, unitvar=unitvar, unitvars=unitvars, 
+            strata=strata, stratalut=data.table(stratalut), 
             strvar=strvar, strwtvar=strwtvar, expcondtab=expcondtab, 
             plotsampcnt=plotsampcnt, condsampcnt=condsampcnt, 
             states=states, invyrs=invyrs, estvar.area=estvar.area, 
@@ -975,16 +981,31 @@ modGBpop <- function(popType = "VOL",
     returnlst$RHGlut <- RHGlut
   }
 
-  ###################################################################################
-  ## Save population data objects
-  ###################################################################################
+
+  ## Save list object
+  ##################################################################
   if (saveobj) {
-    objfn <- getoutfn(outfn=objnm, ext="rda", outfolder=outfolder, 
-		          overwrite=overwrite_layer, outfn.pre=outfn.pre, outfn.date=outfn.date)
-    save(returnlst, file=objfn)
-    message("saving object to: ", objfn)
+    if (getext(objfn) == "llo") {
+      if (append_layer) {
+        message("appending list object to: ", objfn)
+        largeList::saveList(returnlst, file=objfn, append=append_layer, compress=TRUE)
+      } else {
+        message("saving list object to: ", objfn)
+        largeList::saveList(returnlst, file=objfn, compress=TRUE)
+      }
+    } else if (getext(objfn) == "rds") {
+      message("saving list object to: ", objfn)
+      saveRDS(returnlst, objfn)
+    } else if (getext(objfn) == "rda") {
+      message("saving list object to: ", objfn)
+      save(returnlst, objfn)
+    } else {
+      message("invalid object name... must end in: ", toString(c("rds", "rda", "llo")))
+    } 
   } 
 
+  ## Save data frames
+  ##################################################################
   if (savedata) {
     datExportData(condx, 
           savedata_opts=list(outfolder=outfolder, 

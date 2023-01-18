@@ -415,6 +415,7 @@ DBgetXY <- function (states = NULL,
   if (length(evalidlist) > 0) {
     invyrlst <- evalInfo$invyrs
     iseval <- TRUE
+    savePOP <- TRUE
   }
   ppsanm <- evalInfo$ppsanm
   dbconn <- evalInfo$dbconn
@@ -427,7 +428,7 @@ DBgetXY <- function (states = NULL,
   if (!is.null(PLOT)) {
     plotnm <- "PLOT"
   }
-
+ 
   ####################################################################
   ## Check custom Evaluation data
   ####################################################################
@@ -491,11 +492,14 @@ DBgetXY <- function (states = NULL,
       xyflds <- names(XYdf)
     }
   } else if (xy_datsource == "sqlite") {
+    if (!is.character(xy)) {
+      stop("invalid xy")
+    }
     xynm <- chkdbtab(xytablst, xy, stopifnull=FALSE)
     if (!is.null(xynm)) {
       xyflds <- DBI::dbListFields(xyconn, xynm)
     } else {
-      stop(xy, " does not exist in database")
+      stop(xy, " does not exist in database\n ", toString(xytablst))
     }
   } else {
     XYdf <- pcheck.table(xy, stopifnull=TRUE, stopifinvalid=TRUE)
@@ -503,6 +507,11 @@ DBgetXY <- function (states = NULL,
     names(XYdf) <- toupper(names(XYdf))
     xyflds <- names(XYdf)
   }
+
+  ## Check xy.uniqueid
+  xy.uniqueid <- pcheck.varchar(var2check=xy.uniqueid, varnm="xy.uniqueid", 
+		gui=gui, checklst=xyflds, caption="UniqueID variable of xy",
+		warn=paste(xy.uniqueid, "not in xy table"), stopifnull=TRUE)
 
   ## Check XYdf variables
   ####################################################################
@@ -518,7 +527,7 @@ DBgetXY <- function (states = NULL,
   } else {
     pvars2keep <- NULL
   }
-
+ 
   ####################################################################
   ## Check plot table
   ####################################################################
@@ -617,12 +626,15 @@ DBgetXY <- function (states = NULL,
       pjoinid <- findnm(pjoinid, pltflds, returnNULL=TRUE)
       if (is.null(pjoinid)) {
         pjoinid <- findnm(xyjoinid, pltflds, returnNULL=TRUE)
-        if (is.null(pjoinid) && xyjoinid == "PLT_CN" && "CN" %in% pltflds) {
-          pjoinid <- "CN"
-        } else {
-          stop("pjoinid is invalid")
+        if (is.null(pjoinid)) {
+          if (xyjoinid == "PLT_CN" && "CN" %in% pltflds) {
+            pjoinid <- "CN"
+          } else {
+            stop("pjoinid is invalid")
+          }
         }
       }
+
       if (datsource == "sqlite") {
         if ("STATECD" %in% pltflds) {
           plot.qry <- paste("select", toString(unique(c(pjoinid, pvars))), 
@@ -712,7 +724,7 @@ DBgetXY <- function (states = NULL,
 
   evalFilter=xyfromqry <- NULL
   stabbr <- pcheck.states(states, "ABBR")
-
+ 
   ## If iseval = TRUE 
   if (iseval) {
     evalid <- unlist(evalidlist) 
@@ -907,7 +919,7 @@ DBgetXY <- function (states = NULL,
   }
   if (!is.null(yrvarnm) && !is.null(stcdnm)) {
     invarsA <- toString(paste0("p.", c(stcdnm, yrvarnm)))
-    invyrtab.qry <- paste0("SELECT ", invarsA, ", COUNT(*)", 
+    invyrtab.qry <- paste0("SELECT distinct ", invarsA, ", COUNT(*)", 
 		           " from ", xyfromqry,
 				" GROUP BY statecd, ", yrvar, 
 				" ORDER BY statecd, ", yrvar) 
@@ -915,7 +927,7 @@ DBgetXY <- function (states = NULL,
 
   ## Create invyrtab query 
   ###########################################################
-  xycoords.qry <- paste0("select ", toString(xyvarsA), 
+  xycoords.qry <- paste0("select distinct ", toString(xyvarsA), 
 		" from ", xyfromqry,
 		" where ", evalFilter)
   message(xycoords.qry)

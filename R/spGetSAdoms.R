@@ -647,6 +647,7 @@ spGetSAdoms <- function(smallbnd,
     if (is.null(helperbndx)) {
       stop("invalid helperbnd for autoselection")
     }
+ 
     autoselectlst <- helper.select(smallbndx, smallbnd.unique=smallbnd.unique,
  		      smallbnd.domain=smallbnd.domain,
  		      helperbndx=helperbndx, helperbnd.unique=helperbnd.unique, 
@@ -664,9 +665,7 @@ spGetSAdoms <- function(smallbnd,
     SAdomslst <- autoselectlst$SAdomslst
     helperbndxlst <- autoselectlst$helperbndxlst
     smallbndxlst <- autoselectlst$smallbndxlst
-    largebndx <- autoselectlst$largebndx.int
-    maxbndx <- autoselectlst$maxbndx.int
- 
+
   } else {
 
     ## Add DOMAIN column to all rows
@@ -678,7 +677,7 @@ spGetSAdoms <- function(smallbnd,
   ###########################################################################
   ## Aggregate (dissolve) polygons on DOMAIN and calculate area on dissolved polygons
   ###########################################################################
-  SAcols <- unique(c("DOMAIN", "AOI", largebnd.unique, maxbnd.unique))
+  SAcols <- unique(c("DOMAIN", "AOI"))
   SAcols <- SAcols[SAcols %in% names(SAdomslst[[1]])]
   SAdomslst <- lapply(SAdomslst, sf_dissolve, SAcols)
 
@@ -692,7 +691,7 @@ spGetSAdoms <- function(smallbnd,
   }
  
   for (i in 1:length(SAdomslst)) { 
-  
+ 
     ## Check domain
     if (any(table(SAdomslst[[i]]$DOMAIN) > 1)) {
       stop("check smallbnd.domain.. may not be unique")
@@ -711,7 +710,16 @@ spGetSAdoms <- function(smallbnd,
 #		sf::st_drop_geometry(smallbndx[, c(smallbnd.unique, smallbnd.domain)]), 
 #		by.x="DOMAIN", by.y=smallbnd.unique, all.x=TRUE)
 
- 
+    if (!is.null(largebndx)) {
+      SAdomslst[[i]] <- suppressWarnings(sf::st_join(SAdomslst[[i]], 
+					largebndx[, largebnd.unique], largest=TRUE))
+    }
+
+    if (!maxislarge && !is.null(maxbndx)) {
+      SAdomslst[[i]] <- suppressWarnings(sf::st_join(SAdomslst[[i]], 
+					maxbndx[, maxbnd.unique], largest=TRUE))
+    }
+  
     if (addstate) {
       ## Check projections (reproject largebndx to projection of helperbndx
       prjdat <- crsCompare(SAdomslst[[i]], stunitco, nolonglat=TRUE)
@@ -774,19 +782,12 @@ spGetSAdoms <- function(smallbnd,
   #  par(mar=mar)
   #}
 
-  rm(smallbndx)
-  rm(helperbndx)
-  rm(largebndx)
-  rm(maxbndx)
-  if (helper_autoselect) rm(autoselectlst)
-  gc()
 
   #if (!multiSAdoms) {
   #  SAdoms <- SAdomdat$SAdomlst[[1]]
   #  smallbnd <- SAdomdat$smallbndlst[[1]]
   #} 
 
-  
   message("Number of model domains generated: ", length(SAdomslst), "\n") 
 
   returnlst <- list(SAdomlst=SAdomslst, smallbndlst=smallbndxlst, 
@@ -801,8 +802,16 @@ spGetSAdoms <- function(smallbnd,
     returnlst$largebndlst <- unique(unlist(lapply(SAdomslst, function(x, largebnd.unique)
  		unique(x[[largebnd.unique]]), largebnd.unique)))
     returnlst$largebndsf <- 
-		largebnd[largebnd[[largebnd.unique]] %in% returnlst$largebndlst, ]
+		largebndx[largebndx[[largebnd.unique]] %in% returnlst$largebndlst, ]
   }
+
+  rm(smallbndx)
+  rm(helperbndx)
+  rm(largebndx)
+  rm(maxbndx)
+  if (helper_autoselect) rm(autoselectlst)
+  gc()
+
 
   if (saveobj) {
     objfn <- getoutfn(outfn=objnm, ext="rda", outfolder=outfolder, 

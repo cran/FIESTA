@@ -619,7 +619,7 @@ modMApop <- function(popType="VOL",
     nfplotsampcnt <- pltcheck$nfplotsampcnt
   }
 
-  if (popType %in% c("ALL", "AREA", "VOL")) {
+  if (popType %in% c("ALL", "CURR", "AREA", "VOL")) {
  
     ###################################################################################
     ## Check parameters and data for popType AREA/VOL
@@ -747,7 +747,7 @@ modMApop <- function(popType="VOL",
   returnlst <- append(returnlst, list(condx=condx, pltcondx=pltcondx, 
              cuniqueid=cuniqueid, condid=condid, ACI.filter=ACI.filter,
              unitarea=unitarea, areavar=areavar, areaunits=areaunits,
-             unitvar=unitvar, unitvars=unitvars, unitlut=unitlut, 
+             unitvar=unitvar, unitvars=unitvars, unitlut=data.table(unitlut), 
              plotsampcnt=plotsampcnt, condsampcnt=condsampcnt, 
              npixels=npixels, npixelvar=npixelvar,
              states=states, invyrs=invyrs, estvar.area=estvar.area, adj=adj))
@@ -764,17 +764,30 @@ modMApop <- function(popType="VOL",
   returnlst$predfac <- predfac
 
 
-  ###################################################################################
-  ## Save population data objects
-  ###################################################################################
-
+  ## Save list object
+  ##################################################################
   if (saveobj) {
-    objfn <- getoutfn(outfn=objnm, outfolder=outfolder, 
-		      overwrite=overwrite_layer, outfn.date=outfn.date, ext="rda")
-    save(returnlst, file=objfn)
-    message("saving object to: ", objfn)
+    if (getext(objfn) == "llo") {
+      if (append_layer) {
+        message("appending list object to: ", objfn)
+        largeList::saveList(returnlst, file=objfn, append=append_layer, compress=TRUE)
+      } else {
+        message("saving list object to: ", objfn)
+        largeList::saveList(returnlst, file=objfn, compress=TRUE)
+      }
+    } else if (getext(objfn) == "rds") {
+      message("saving list object to: ", objfn)
+      saveRDS(returnlst, objfn)
+    } else if (getext(objfn) == "rda") {
+      message("saving list object to: ", objfn)
+      save(returnlst, objfn)
+    } else {
+      message("invalid object name... must end in: ", toString(c("rds", "rda", "llo")))
+    } 
   } 
 
+  ## Save data frames
+  ##################################################################
   if (savedata) {
     datExportData(condx, 
         savedata_opts=list(outfolder=outfolder, 

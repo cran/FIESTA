@@ -235,7 +235,7 @@ spGetPlots <- function(bnd = NULL,
 
   gui <- FALSE
   coordtype <- "public"
-  evalresp <- FALSE 
+  iseval <- FALSE 
   pltassgnid = "PLT_CN"
 
   ##################################################################
@@ -571,7 +571,7 @@ spGetPlots <- function(bnd = NULL,
                          invtype = invtype, 
                          intensity1 = intensity1, 
                          clipxy = clipxy, 
-                         showsteps = showsteps, 
+                         showsteps = FALSE, 
                          returnxy = TRUE)
           spxy1 <- xydat1$spxy
           pltids1 <- xydat1$pltids
@@ -602,7 +602,7 @@ spGetPlots <- function(bnd = NULL,
                          invtype = invtype, 
                          intensity1 = intensity1, 
                          clipxy = clipxy, 
-                         showsteps = showsteps, 
+                         showsteps = FALSE, 
                          returnxy = TRUE)
           spxy2 <- xydat2$spxy
           pltids2 <- xydat2$pltids
@@ -619,7 +619,6 @@ spGetPlots <- function(bnd = NULL,
           bndx <- rbind(bndx1, bndx2)
 
         } else {
-
           xydat <- spGetXY(bnd = bndx, 
                          states = states, 
                          RS = RS, 
@@ -636,7 +635,7 @@ spGetPlots <- function(bnd = NULL,
                          invtype = invtype, 
                          intensity1 = intensity1, 
                          clipxy = clipxy, 
-                         showsteps = showsteps, 
+                         showsteps = FALSE, 
                          returnxy = TRUE)
           spxy <- xydat$spxy
           pltids <- xydat$pltids
@@ -770,14 +769,14 @@ spGetPlots <- function(bnd = NULL,
   ## Initialize lists
   tabs2save <- {}
 
-  msg <- "getting data for..."
+  msg <- "getting data for... "
   if (!is.null(evalid)) {
-    evalresp=savePOP <- TRUE
+    iseval=savePOP <- TRUE
     evalid <- unlist(evalid)
     msg <- paste0(msg, "for evaluation: ", toString(evalid))
     savePOP <- TRUE
   } else if (allyrs) {
-    msg <- paste0(msg, "for all years")
+    msg <- paste0(msg, "for all years in database")
   } else if (measCur) {
     msg <- paste0(msg, "for most currently measured plots")
     if (!is.null(measEndyr)) {
@@ -787,10 +786,10 @@ spGetPlots <- function(bnd = NULL,
       }
     }
   } else if (evalCur) {
-    evalresp=savePOP <- TRUE
+    iseval=savePOP <- TRUE
     msg <- paste0(msg, "for most current evaluation")
     if (!is.null(evalEndyr)) {
-      evalresp=savePOP <- TRUE
+      iseval=savePOP <- TRUE
       msg <- paste0(msg, ", ending in ", evalEndyr)
     }
   } else if (!is.null(invyrs)) {
@@ -916,13 +915,14 @@ spGetPlots <- function(bnd = NULL,
                          greenwt = greenwt,
                          savePOP = savePOP,
                          stateFilter = stateFilter1, 
-                         returndata = returndata,
+                         returndata = TRUE,
                          evalInfo = evalInfo1st
                          )
       tabs1 <- dat1$tabs
       tabIDs <- dat1$tabIDs
       PLOT1 <- tabs1$plt
-      pop_plot_stratum_assgn1 <- tabs1$pop_plot_stratum_assgn
+      pop_plot_stratum_assgn1 <- dat1$pop_plot_stratum_assgn
+      evalid1 <- dat1$evalid
       puniqueid <- dat1$puniqueid
       dbqueries <- dat1$dbqueries
 
@@ -1001,11 +1001,12 @@ spGetPlots <- function(bnd = NULL,
                          greenwt = greenwt,
                          savePOP = savePOP,
                          stateFilter = stateFilter2, 
-                         returndata = returndata,
+                         returndata = TRUE,
                          evalInfo = evalInfo2st
                          )
       tabs2 <- dat2$tabs
-      pop_plot_stratum_assgn2 <- tabs2$pop_plot_stratum_assgn
+      pop_plot_stratum_assgn2 <- dat2$pop_plot_stratum_assgn
+      evalid2 <- dat2$evalid
       PLOT2 <- tabs2$plt
 
       if (nrow(PLOT2) > length(unique(PLOT2[[puniqueid]]))) {
@@ -1066,7 +1067,6 @@ spGetPlots <- function(bnd = NULL,
       } else {
         evalInfost <- NULL
       }
-
       dat <- DBgetPlots(states = stcd, 
                          datsource = datsource,
                          data_dsn = data_dsn, 
@@ -1090,15 +1090,21 @@ spGetPlots <- function(bnd = NULL,
                          greenwt = greenwt,
                          savePOP = savePOP,
                          stateFilter = stateFilter, 
-                         returndata = returndata,
+                         returndata = TRUE,
                          evalInfo = evalInfost
                          )
       tabs <- dat$tabs
       tabIDs <- dat$tabIDs
-      pop_plot_stratum_assgn <- tabs$pop_plot_stratum_assgn
+      pop_plot_stratum_assgn <- dat$pop_plot_stratum_assgn
+      evalid <- dat$evalid
       PLOT <- tabs$plt
       puniqueid <- dat$puniqueid
       dbqueries <- dat$dbqueries
+
+      if (is.null(PLOT)) {
+        message("no data for ", stcd)
+        break
+      }
 
       ## If duplicate plots, sort descending based on INVYR or CN and select 1st row
       if (nrow(PLOT) > length(unique(PLOT[[puniqueid]]))) {
@@ -1157,7 +1163,7 @@ spGetPlots <- function(bnd = NULL,
       ###############################################################################
       ## SAVE data
       ###############################################################################
-      if (savedata && !returndata) {
+      if (savedata) {
         message("saving data...")
         col.names <- ifelse (i == 1, TRUE, FALSE)
         if (i > 1) { 
@@ -1169,6 +1175,7 @@ spGetPlots <- function(bnd = NULL,
 
         for (tabnm in names(stcliptabs)) {
           tab <- stcliptabs[[tabnm]]
+          if (tabnm == "plt") tabnm <- "plot"
 
           indx <- ifelse(tabnm == "plt", "CN", 
 		  ifelse(tabnm %in% c("cond", "vsubpspp", "vsubpstr", 
@@ -1185,15 +1192,17 @@ spGetPlots <- function(bnd = NULL,
             if (is.null(tabIDs[[tabnm]]) && i == 1 && length(indx) > 0) {
               assign(paste0("index.unique.", tabnm), indx)
             }
-            savedata_opts = list(outfolder = outfolder, 
+            datExportData(tab, 
+              index.unique = get(paste0("index.unique.", tabnm)),
+              savedata_opts = list(outfolder = outfolder, 
                                  out_fmt = out_fmt, 
                                  out_dsn = out_dsn, 
-                                 out_layer = "plot",
+                                 out_layer = tabnm,
                                  outfn.pre = outfn.pre, 
                                  overwrite_layer = overwrite_layer,
                                  append_layer = append_layer,
                                  outfn.date = outfn.date, 
-                                 add_layer = TRUE)
+                                 add_layer = TRUE))
           }
         } 
 
@@ -1318,11 +1327,11 @@ spGetPlots <- function(bnd = NULL,
         }
       }
     }
-
+ 
     if (savePOP) {
       returnlst$pop_plot_stratum_assgn <- pop_plot_stratum_assgn
     }
-    if (evalresp) {
+    if (iseval) {
       returnlst$evalid <- evalid
     }
     return(returnlst)
