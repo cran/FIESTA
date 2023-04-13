@@ -9,7 +9,7 @@
 #' Dependent external functions: datFilter Dependent internal functions:
 #' addcommas, fileexistsnm, getadjfactor
 #' 
-#' For adjcond (bycond=FALSE): \cr If you want to get trees-per-acre
+#' For adjcond (bycond=FALSE): \cr If you want to summarize trees-per-acre
 #' information aggregated to plot or condition level, you need to include a TPA
 #' variable in tree table. \cr For tsumvars = GROWCFGS, GROWBFSL, GROWCFAL,
 #' FGROWCFGS, FGROWBFSL, or FGROWCFAL, you must have TPAGROW_UNADJ \cr For
@@ -17,13 +17,9 @@
 #' you must have TPAMORT_UNADJ \cr For tsumvars = REMVCFGS, REMVBFSL, REMVCFAL,
 #' FREMVCFGS, FREMVBFSL, or FREMVCFAL, you must have TPAREMV_UNADJ \cr
 #' 
-#' If you want to adjust plot-level information by condition proportions
-#' (adjplot), you need to include CONDID & CONDPROP_UNADJ in cond or tree table
-#' and COND_STATUS_CD and FORTYPCD if adjplot="FVS". For adjplot="WEIGHTED" -
-#' each tree is weighted (or multiplied) by the condition proportions
-#' (CONDPROP_UNADJ). For adjplot="FVS", each tree is weighted (or multiplied)
-#' by the sum of the condition proportions (CONDPROP_UNADJ) that are forested
-#' and not nonstocked (COND_STATUS_CD = 1 and FORTYPCD != 999).  \cr
+#' If you want to adjust plot-level or subplot-level information by condition 
+#' proportions (adjplot), you need to include CONDID & CONDPROP_UNADJ in cond 
+#' or tree table and COND_STATUS_CD. \cr
 #' 
 #' @param tree Dataframe or comma-delimited file (*.csv). The tree-level table.
 #' @param seed Dataframe or comma-delimited file (*.csv). The seedling table.
@@ -31,24 +27,31 @@
 #' to join the aggregated tree data to, if bycond=TRUE. This table also may be
 #' used for condition proportion or strata variables used if adjcond or
 #' adjstrata = TRUE (See details below).  This table is optional.
-#' @param datsource String. Source of data ('obj', 'csv', 'sqlite', 'gdb').
-#' @param data_dsn String. If datsource='sqlite', the name of SQLite database
-#' (*.sqlite).
 #' @param plt Dataframe, comma-delimited file (*.csv), or shapefile (*.shp).
 #' Plot-level table to join the aggregated tree data to, if bycond=FALSE. This
 #' table is optional.
-#' @param plt_dsn String. The data source name (dsn; i.e., folder or database
-#' name) of plt. The dsn varies by driver. See gdal OGR vector formats
-#' (https://www.gdal.org/ogr_formats.html). Optional.
+#' @param subp_cond Dataframe, comma-delimited file (*.csv), or shapefile (*.shp).
+#' Subplot condition-level table to use to sum condition proportions, 
+#' if bysubp=TRUE. 
+#' @param subplot Dataframe, comma-delimited file (*.csv), or shapefile (*.shp).
+#' Subplot-level table to used to calculate adjustment factors, to remove 
+#' nonsampled conditions (SUBP_STATUS_CD = 3). This table is optional. If 
+#' included the aggregated tree data are joined to subplot before returning.
+#' @param datsource String. Source of data ('obj', 'csv', 'sqlite', 'gdb').
+#' @param data_dsn String. If datsource='sqlite', the name of SQLite database
+#' (*.sqlite).
 #' @param tuniqueid String. Unique identifier of plt in tree table.
 #' @param cuniqueid String. Unique identifier of plt in cond table if cond is
 #' NOT NULL.
 #' @param puniqueid String. Unique identifier of plt table if plt is NOT NULL.
 #' @param bycond Logical. If TRUE, the data are aggregated to the condition
 #' level (by: cuniqueid, condid). If FALSE, the data are aggregated to the plot
-#' level (by: puniqueid).
+#' level (by: puniqueid). If bysubp = TRUE and bycond = TRUE, data are 
+#' aggregated by subpuniqueid, subpid, condid.
 #' @param condid String. Unique identifier for conditions.
 #' @param bysubp Logical. If TRUE, data are aggregated to the subplot level.
+#' @param subpuniqueid String. Unique identifier of plot in subplot and 
+#' subp_cond table.
 #' @param subpid String. Unique identifier of each subplot.
 #' @param tsumvarlst String (vector). Tree-level variable(s) to aggregate
 #' (e.g., "TPA_UNADJ", "BA"). Use tsumvar="PLT_CN" (tfun=sum) for summed tree
@@ -120,17 +123,19 @@
 #' @export datSumTree
 datSumTree <- function(tree = NULL, 
                        seed = NULL, 
-                       cond = NULL, 
+                       cond = NULL,
+                       plt = NULL, 
+                       subp_cond = NULL,  
+                       subplot = NULL, 
                        datsource = "obj", 
                        data_dsn = NULL, 
-                       plt = NULL, 
-                       plt_dsn = NULL, 
                        tuniqueid = "PLT_CN", 
                        cuniqueid = "PLT_CN", 
                        puniqueid = "CN", 
                        bycond = FALSE, 
                        condid = "CONDID", 
                        bysubp = FALSE, 
+                       subpuniqueid = "PLT_CN",
                        subpid = "SUBP", 
                        tsumvarlst = NULL, 
                        tsumvarnmlst = NULL, 
@@ -162,9 +167,9 @@ datSumTree <- function(tree = NULL,
 
   ## Set global variables  
   COND_STATUS_CD=PLOT_STATUS_CD=COUNT=plts=SUBP=NF_COND_STATUS_CD=
-	seedf=TREECOUNT_CALC=estunits=fname=NF_SUBP_STATUS_CD=
-	CONDPROP_UNADJ=MACRPROP_UNADJ=SUBPPROP_UNADJ <- NULL
-  subpuniqueid <- "PLT_CN"
+      seedf=TREECOUNT_CALC=estunits=fname=NF_SUBP_STATUS_CD=
+      CONDPROP_UNADJ=MACRPROP_UNADJ=SUBPPROP_UNADJ=sumbcvars=treef=
+      cond.nonsamp.filter  <- NULL
 
 
   ## If gui.. set variables to NULL
@@ -175,7 +180,6 @@ datSumTree <- function(tree = NULL,
   checkNAtvars <- {}
   seedonly=parameters <- FALSE
   ref_estvar <- FIESTAutils::ref_estvar
-  subplot=subpcond <- NULL
 
   ## For documentation
   # subplot Dataframe or comma-delimited file (*.csv). If getadjplot=TRUE, 
@@ -281,6 +285,10 @@ datSumTree <- function(tree = NULL,
   addseed <- pcheck.logical(addseed, varnm="addseed", title="Add seeds?", 
 		first="NO", gui=gui)
 
+  ## Check seedonly
+  seedonly <- pcheck.logical(seedonly, varnm="seedonly", title="Seed only?", 
+		first="NO", gui=gui)
+
   if (is.null(treex) && is.null(seedx)) {
     stop("must include tree and/or seed table")
   }
@@ -307,13 +315,28 @@ datSumTree <- function(tree = NULL,
 		first="YES", gui=gui, stopifnull=TRUE)
 
   if (bysubp) {
+    subpuniqueid <- "PLT_CN"
+    subpids <- c(subpuniqueid, subpid)
+
     ## Check subplot
     subplotx <- pcheck.table(subplot, tab_dsn=data_dsn, tabnm="subplot", gui=gui, 
 			caption="Subplot table?")
+  
+    ## Check subpid
+    if (!is.null(subplotx)) {
+      if (!all(subpids %in% names(subplotx))) {
+        stop("uniqueids not in subplot: ", toString(subpids))
+      }
+      setkeyv(subplotx, subpids)
+    }
 
     ## Check subplot
-    subpcondx <- pcheck.table(subpcond, tab_dsn=data_dsn, tabnm="subp_cond", gui=gui, 
-			caption="Subpcond table?")
+    subpcondx <- pcheck.table(subp_cond, tab_dsn=data_dsn, tabnm="subp_cond", gui=gui, 
+			caption="Subpcond table?", stopifnull=TRUE)
+    if (!all(subpids %in% names(subpcondx))) {
+      stop("uniqueids not in subp_cond: ", toString(subpids))
+    }
+    setkeyv(subpcondx, subpids)
   }
 
   ## Check checkNA
@@ -389,7 +412,6 @@ datSumTree <- function(tree = NULL,
       cuniqueid <- pcheck.varchar(var2check=cuniqueid, varnm="cuniqueid", 
 		checklst=condnmlst, caption="UniqueID variable - cond", 
 		warn=paste(cuniqueid, "not in cond table"))
-
       if (is.null(cuniqueid)) {
         if (tuniqueid %in% condnmlst) {
           cuniqueid <- tuniqueid
@@ -439,32 +461,39 @@ datSumTree <- function(tree = NULL,
 		warn=paste(subpid, "not in tree table"))
     if (is.null(subpid)) {
       warning("assuming only 1 subplot")
-      treex$SUBPID <- 1
-      subpid <- "SUBPID"
+      treex[[subpid]] <- 1
 
       if (addseed) {
         if (!subpid %in% names(seedx)) {
-          seedx$SUBPID <- 1
-        } else {
-          stop(subpid, "in seed but not in cond")
-        }
+          seedx[[subpid]] <- 1
+        } 
       }  
     } else {
-      if (!subpid %in% names(seedx)) {
-        stop(subpid, "not in seed") 
+      if (addseed) {
+        if (!subpid %in% names(seedx)) {
+          stop(subpid, " not in seed") 
+        }
       }
     }
 
-    tsumuniqueid <- c(tsumuniqueid, subpid)
+    tsumuniqueid <- c(tuniqueid, subpid)
+    if (bycond) {
+      tsumuniqueid <- c(tuniqueid, subpid, condid)
+    }
     setkeyv(treex, tsumuniqueid)
+
     checkNAtvars <- c(checkNAtvars, subpid)
     if (addseed) {
       setkeyv(seedx, tsumuniqueid)
     }
-  } 
 
-  pltx <- pcheck.table(plt, tab_dsn=plt_dsn, gui=gui, tabnm="plt", 
+    ## Set pltx to NULL   
+    pltx <- NULL
+  } else {
+
+    pltx <- pcheck.table(plt, tab_dsn=data_dsn, gui=gui, tabnm="plt", 
 			caption="Plot table?")
+  }
  
   if (!is.null(pltx)) {
     noplt <- FALSE
@@ -477,8 +506,9 @@ datSumTree <- function(tree = NULL,
       }
     }
 
-    if ("sf" %in% class(pltx))
+    if ("sf" %in% class(pltx)) {
       pltsp <- TRUE
+    }
 
     ## Check puniqueid
     pltnmlst <- names(pltx)
@@ -499,7 +529,7 @@ datSumTree <- function(tree = NULL,
 
     ## Check that the values of tuniqueid in treex are all in puniqueid in pltx
     treex <- check.matchval(treex, pltx, tuniqueid, puniqueid)
-
+ 
     if (addseed) {
       ## Check if class of tuniqueid matches class of puniqueid
       tabs <- check.matchclass(seedx, pltx, tuniqueid, puniqueid)
@@ -509,7 +539,7 @@ datSumTree <- function(tree = NULL,
       ## Check that the values of tuniqueid in seedx are all in puniqueid in pltx
       check.matchval(seedx, pltx, tuniqueid, puniqueid)
     }
- 
+
     ## Check that the values of cuniqueid in condx are all in puniqueid in pltx
     if (!is.null(condx)) 
       ## Check that the values of tuniqueid in treex are all in puniqueid in pltx
@@ -521,10 +551,12 @@ datSumTree <- function(tree = NULL,
 #      puniqueid <- tuniqueid
 #    }
 
-    setkeyv(pltx, puniqueid)
+    if (is.data.table(pltx)) {
+      setkeyv(pltx, puniqueid)
+    }
     checkNApvars <- c(checkNApvars, puniqueid)
   } 
-
+ 
   ## Check ACI. If TRUE, include all trees, If FALSE, filter for forested plots only 
   ## (COND_STATUS_CD = 1)
   ######################################################################################
@@ -580,10 +612,12 @@ datSumTree <- function(tree = NULL,
   }
   if (getadjplot) {
     if (bysubp) {
-      stop("not available yet")
-      if (is.null(subplotx) || is.null(subpcondx)) {
-        stop("must include subplotx and subpcondx to adjust to subplot")
-      }
+      if (sum(is.null(subpcondx), is.null(condx)) < 3) {
+        missing <- c("subp_cond", "cond")[which(is.null(subpcondx), is.null(condx))]
+        if (length(missing) > 0) {
+          stop("must include following tables to calculate adjustments: ", toString(missing))
+        }
+      } 
     } else {
       if (is.null(condx)) {
         stop("must include condx to adjust to plot")
@@ -601,7 +635,12 @@ datSumTree <- function(tree = NULL,
   if (any(tsumvarlst == tuniqueid)) {
     tsumvarlst[tsumvarlst == tuniqueid] <- "TPA_UNADJ"
   }
-  
+
+  ## Check seedonly
+  if (seedonly && !any(tsumvarlst %in% c("TPA_UNADJ", "PLT_CN"))) {
+    stop("tsumvarlst must be TPA_UNADJ for seedonly")
+  }
+ 
   ### Convert variables from pound to tons if lbs2tons=TRUE
   if (lbs2tons && any(tsumvarlst %in% vars2convert)) {
     convfac <- ifelse(metric, 0.00045359237, 0.0005)
@@ -720,7 +759,7 @@ datSumTree <- function(tree = NULL,
   treef <- tdat$xf
   tfilter <- tdat$xfilter
 
-  if (addseed || seedonly) {
+  if (addseed) {
     xfilter <- tryCatch( check.logic(seedx, tfilter),
 		error=function(e) return(NULL))
     if (!is.null(xfilter)) {
@@ -768,94 +807,32 @@ datSumTree <- function(tree = NULL,
 
   if (getadjplot) {
 
-    ## Remove nonsampled conditions by subplot
     if (bysubp) {
-      stop("not figured out yet")
+      ## Remove nonsampled conditions by subplot and summarize to condition-level
+      subpcx <- subpsamp(cond = condx, 
+                         subp_cond = subpcondx, 
+                         subplot = subplotx, 
+                         subpuniqueid = subpuniqueid, 
+                         subpid = subpid, ACI=ACI)
 
-      if ("SUBP_STATUS_CD" %in% names(subplotx)) {
-        subp.nonsamp.filter <- "SUBP_STATUS_CD != 3"
-        nonsampn <- sum(subplotx[["SUBP_STATUS_CD"]] == 3, na.rm=TRUE)
-        if (length(nonsampn) > 0) {
-          message("removing ", nonsampn, " nonsampled forest conditions")
-        } else {
-          message("assuming all sampled conditions in subplot")
-        }
-      } else {
-        message("assuming all sampled conditions in subplot")
-      }
-      
-      if (ACI && "NF_COND_STATUS_CD" %in% names(subplotx)) {
-        subp.nonsamp.filter.ACI <- "(is.na(NF_SUBP_STATUS_CD) | NF_SUBP_STATUS_CD != 3)"
-        message("removing ", sum(is.na(NF_SUBP_STATUS_CD) & NF_SUBP_STATUS_CD == 3, na.rm=TRUE), 
-		" nonsampled nonforest conditions")
-        if (!is.null(subp.nonsamp.filter)) {
-          subp.nonsamp.filter <- paste(subp.nonsamp.filter, "&", subp.nonsamp.filter.ACI)
-        }
-      }
-      subplotx <- datFilter(x=subplotx, xfilter=subp.nonsamp.filter, 
-		title.filter="subp.nonsamp.filter")$xf
-
-
-      ## Check subpuniqueid and subpid in subplot table
-      subpuniqueid <- pcheck.varchar(var2check=subpuniqueid, varnm="subpuniqueid", 
-		checklst=names(subplotx), caption="Plot ID - subplot", 
-		warn=paste(subpid, "not in tree table"))
-      subpid <- pcheck.varchar(var2check=subpid, varnm="subpid", 
-		checklst=names(subplotx), caption="subplot ID - subplot", 
-		warn=paste(subpid, "not in tree table"))
-      setkeyv(subplotx, c(subpuniqueid, subpid))
-
-      ## Check subpuniqueid and subpid in subpcond table
-      if (!all(c(subpuniqueid, subpid) %in% names(subpcondx))) {
-        stop("need ", subpuniqueid, " and ", subpid, " variables in subpcond")
-      }
-      setkeyv(subpcondx, c(subpuniqueid, subpid))
-
-
-      if (!is.null(condx)) {
-        if ("SUBP_STATUS_CD" %in% names(subpcondx) && "COND_STATUS_CD" %in% names(condx)) {
-          sumcprop.qry <- paste0("SELECT subp.", subpuniqueid, ", subp.", subpid,  
-                    ", SUM(COALESCE(subc.SUBPCOND_PROP,0)) / 4 AS SUBPPROP_UNADJ,
-                    SUM(COALESCE(subc.MICRCOND_PROP,0)) / 4 AS MICRPROP_UNADJ,
-                    SUM(COALESCE(subc.MACRCOND_PROP,0)) / 4 AS MACRPROP_UNADJ
-                FROM condx c
-                JOIN subplotx subp ON(subp.", subpuniqueid, " = c.", cuniqueid, ")
-                JOIN subpcondx subc ON(subc.", subpuniqueid, " = c.", cuniqueid, " and subc.CONDID=c.CONDID)
-                                  and subc.", subpid, " = subp.", subpid, ")
-        		WHERE subp.SUBP_STATUS_CD < 3 AND c.COND_STATUS_CD <> 5
-        		GROUP BY subp.PLT_CN")
-        } else {
-          message("need to include SUBP_STATUS_CD and COND_STATUS_CD")
-        }
-      } else {
-        if ("SUBP_STATUS_CD" %in% names(subpcondx)) {
-          sumcprop.qry <- paste0("SELECT subp.", subpuniqueid, ", subp.", subpid,  
-                    ", SUM(COALESCE(subc.SUBPCOND_PROP,0)) / 4 AS SUBPPROP_UNADJ,
-                    SUM(COALESCE(subc.MICRCOND_PROP,0)) / 4 AS MICRPROP_UNADJ,
-                    SUM(COALESCE(subc.MACRCOND_PROP,0)) / 4 AS MACRPROP_UNADJ
-                FROM subplotx subp 
-                JOIN subpcondx subc ON(subc.", subpuniqueid, " = subp.", subpuniqueid, ")
-                                   and subc.", subpid, " = subp.", subpid, ")
-        		WHERE subp.SUBP_STATUS_CD < 3 AND c.COND_STATUS_CD <> 5
-        		GROUP BY subp.PLT_CN")
-        } else {
-          message("need to include SUBP_STATUS_CD")
-        }
-      }
-      subpcx <- data.table(sqldf::sqldf(sumcprop.qry))
-      subpcx[, CONDPROP_UNADJ := ifelse(MACRPROP_UNADJ > 0, MACRPROP_UNADJ, SUBPPROP_UNADJ)]
-
-    
       ## Check if class of tuniqueid matches class of cuniqueid
       tabs <- check.matchclass(treex, subpcx, c(tuniqueid, subpid), c(subpuniqueid, subpid))
       treex <- tabs$tab1
-      subpcondx <- tabs$tab2
+      subpcx <- tabs$tab2
 
-      adjfacdata <- getadjfactorVOL(treex=treef, seedx=seedf, condx=subpcx, 
-		tuniqueid=c(tuniqueid, subpid), cuniqueid=c(subpuniqueid, subpid), adj="plot",
+      adjfacdata <- getadjfactorPLOT(treex=treef, seedx=seedf, condx=subpcx, 
+		tuniqueid=c(tuniqueid, subpid), cuniqueid=c(subpuniqueid, subpid),
 		areawt="CONDPROP_UNADJ")
+      condx <- adjfacdata$condx
+      cuniqueid <- c(subpuniqueid, subpid)
+      tuniqueid <- c(tuniqueid, subpid)
+ 
+      varadjlst <- c("ADJ_FACTOR_COND", "ADJ_FACTOR_SUBP", "ADJ_FACTOR_MICR", "ADJ_FACTOR_MACR")
+      if (any(varadjlst %in% names(condx))) {
+        varadjlst <- varadjlst[varadjlst %in% names(condx)]
+        condx[, (varadjlst) := NULL]
+      }
     
-
     } else {
       ## Remove nonsampled conditions  
       if ("COND_STATUS_CD" %in% names(condx)) {
@@ -899,8 +876,8 @@ datSumTree <- function(tree = NULL,
       treex <- tabs$tab1
       condx <- tabs$tab2
 
-      adjfacdata <- getadjfactorVOL(treex=treef, seedx=seedf, condx=condx, 
-		tuniqueid=tuniqueid, cuniqueid=cuniqueid, adj="plot")
+      adjfacdata <- getadjfactorPLOT(treex=treef, seedx=seedf, condx=condx, 
+		tuniqueid=tuniqueid, cuniqueid=cuniqueid)
       condx <- adjfacdata$condx
       varadjlst <- c("ADJ_FACTOR_COND", "ADJ_FACTOR_SUBP", "ADJ_FACTOR_MICR", "ADJ_FACTOR_MACR")
       if (any(varadjlst %in% names(condx))) {
@@ -927,7 +904,7 @@ datSumTree <- function(tree = NULL,
   ## If any variable in tsumvarlst is a TPA variable, add a count variable to treex
   if (any(tsumvarlst %in% tpavars)) {
     treef[, COUNT := 1]
-    if (addseed || seedonly) {
+    if (addseed) {
       seedf[, COUNT := 1]
     }
   }   
@@ -1002,7 +979,7 @@ datSumTree <- function(tree = NULL,
       }
       treef[, (newname) := get(eval(tvar)) * get(eval(tpavar))]
 
-      if ((addseed || seedonly) && tvar=="COUNT" && tpavar %in% names(seedf)) {
+      if (addseed && tvar=="COUNT" && tpavar %in% names(seedf)) {
         #seedf[, COUNT := TREECOUNT_CALC]
         if (adjTPA > 1) {
           seedf[, (tpavar) := get(eval(tpavar)) * adjTPA]
@@ -1016,6 +993,11 @@ datSumTree <- function(tree = NULL,
         setnames(treef, tvar, newname)
       } else {
         newname <- tvar
+      }
+      if (addseed && tvar=="COUNT") {
+        #seedf[, COUNT := TREECOUNT_CALC]
+        seedf[, (newname) := get(eval(tvar)) * TREECOUNT_CALC]
+        seedcountvar=treecountvar <- newname
       }
     }
 
@@ -1031,12 +1013,20 @@ datSumTree <- function(tree = NULL,
       ## Apply adjustments
       treef[, (newname2) := get(eval(newname)) * get(eval(adjvar))]
    
-      if ((addseed || seedonly) && tvar=="COUNT" && adjvar %in% names(seedf)) {
+      if (addseed && tvar=="COUNT" && adjvar %in% names(seedf)) {
         seedf[, (newname2) := get(eval(newname)) * get(eval(adjvar))]
         seedcountvar=treecountvar <- newname2
       }       
     } else {
       newname2 <- newname
+    }
+
+    if (tvar %in% c(biovars, carbvars)) {
+      unittxt <- ifelse (lbs2tons, "TONS", "LBS")
+
+      ## Apply new name
+      setnames(treef, newname2, paste0(newname2, "_", unittxt))
+      newname2 <- paste0(newname2, "_", unittxt)
     }
 
     tsumvarlst2 <- c(tsumvarlst2, newname2)
@@ -1057,7 +1047,7 @@ datSumTree <- function(tree = NULL,
   ######################################################################## 
 
   if (seedonly) {
-    datvars <- seedf[, lapply(.SD, function(x) round(tfun(x, na.rm=TRUE), tround) ), 
+    datvars <- treef[, lapply(.SD, function(x) round(tfun(x, na.rm=TRUE), tround) ), 
 		by=tsumuniqueid, .SDcols=tsumvarlst2]
     setnames(datvars, c(tsumuniqueid, tsumvarnmlst2))
   } else {
@@ -1094,71 +1084,23 @@ datSumTree <- function(tree = NULL,
       setkeyv(pltx, puniqueid)
     }
     sumdat <- merge(pltx, datvars, by.x=puniqueid, by.y=tuniqueid, all.x=TRUE)
+  } else if (bysubp && !is.null(subplotx)) {
+    sumdat <- merge(subplotx, datvars, by=tsumuniqueid, all.x=TRUE)
   } else {
     sumdat <- datvars
   }
 
-  if (NAto0) 
-    ## Change NA values TO 0
+  ## Change NA values TO 0
+  if (NAto0) {
     for (col in tsumvarnmlst2) set(sumdat, which(is.na(sumdat[[col]])), col, 0) 
-
-#   if (savedata && parameters) {
-#     ## OUTPUTS A TEXTFILE OF INPUT PARAMETERS TO OUTFOLDER
-#     ###########################################################
-#     outfn.param <- paste(out_layer, "parameters", sep="_")
-#     outparamfnbase <- paste(outfn.param, format(Sys.time(), "%Y%m%d"), sep="_")
-#     outparamfn <- fileexistsnm(outfolder, outparamfnbase, "txt")
-# 
-#     tsumvarlstout <- addcommas(sapply(tsumvarlst, function(x) {paste0("'", x, "'")}))
-#     tsumvarnmlstout <- addcommas(sapply(tsumvarnmlst, function(x) {paste0("'", x, "'")}))
-#     strunitvars <- addcommas(sapply(strunitvars, function(x) {paste0("'", x, "'")}))
-# 
-#     outfile <- file(paste0(outfolder, "/", outparamfn, ".txt"), "w")
-#     cat(  "tree = ", as.character(bquote(tree)), "\n",
-#       "cond = ", as.character(bquote(cond)), "\n",
-#       "plt = ", as.character(bquote(plt)), "\n",
-#       "plt_dsn = \"", plt_dsn, "\"", "\n",
-#       "tuniqueid = \"", tuniqueid, "\"", "\n",
-#       "cuniqueid = \"", cuniqueid, "\"", "\n",
-#       "puniqueid = \"", puniqueid, "\"", "\n",
-#       "bycond = ", bycond, "\n",
-#       "condid = \"", condid, "\"", "\n",
-#       "bysubp = ", bysubp, "\n",
-#       "subpid = \"", subpid, "\"", "\n",
-#       "tsumvarlst = c(", tsumvarlstout, ")", "\n",
-#       "tsumvarnmlst = c(", tsumvarnmlstout, ")", "\n",  
-#       "TPA = ", TPA, "\n",
-#       "tfun = ", noquote(tfunstr), "\n",
-#       "ACI = ", ACI, "\n",
-#       "tfilter = \"", tfilter, "\"", "\n",
-#       "lbs2tons = ", lbs2tons, "\n",
-#       "getadjplot = ", getadjplot, "\n",
-#       "adjtree = ", adjtree, "\n",
-#       "adjTPA = ", adjTPA, "\n",
-#       "NAto0 = ", NAto0, "\n",
-#       "savedata = ", savedata, "\n",
-#       "outfolder = \"", outfolder, "\"", "\n",
-#       "out_layer = ", out_layer, "\n",
-#       "outfn.date = ", outfn.date, "\n",
-#       "overwrite_dsn = ", overwrite_dsn, "\n",
-#       "tround = \"", tround, "\"", "\n", "\n",
-#     file = outfile, sep="")
-# 
-#     cat(  "sumdat <- datSumTree(tree=tree, cond=cond, plt=plt, plt_dsn=plt_dsn,
-# 	tuniqueid=tuniqueid, cuniqueid=cuniqueid, puniqueid=puniqueid, bycond=bycond, 
-# 	condid=condid, bysubp=bysubp, subpid=subpid, tsumvarlst=tsumvarlst, 
-# 	tsumvarnmlst=tsumvarnmlst, TPA=TPA, tfun=tfun, ACI=ACI, tfilter=tfilter, 
-# 	lbs2tons=lbs2tons, getadjplot=getadjplot, adjtree=adjtree, adjTPA=adjTPA, 
-# 	NAto0=NAto0, savedata=savedata, outfolder=outfolder, out_layer=out_layer, 
-# 	outfn.date=outfn.date, overwrite_dsn=overwrite_dsn, tround=tround)",
-#     file = outfile, sep="")
-#     close(outfile)
-#   }
+  }
 
   ## Get metadata
   #############################################################  
-  if (bycond) {
-    meta = FIESTA::ref_cond[FIESTA::ref_cond$VARIABLE %in% names(sumdat), ]
+  sumdatcols <- names(sumdat)
+ 
+  if (bycond) {  
+    meta = FIESTA::ref_cond[FIESTA::ref_cond$VARIABLE %in% sumdatcols, ]
     missnames <- names(sumdat)[!names(sumdat) %in% meta$VARIABLE]
     meta2 = FIESTA::ref_plt[FIESTA::ref_plt$VARIABLE %in% missnames, ]
     if (nrow(meta2) > 0) {
@@ -1176,7 +1118,9 @@ datSumTree <- function(tree = NULL,
   tree_ref$VARIABLE[tree_ref$VARIABLE == "TPA_UNADJ"] <- "COUNT"
 
   if (nrow(tree_ref) > 0) {
-    tree_ref$VARIABLE <- paste0(tree_ref$VARIABLE, "_TPA")
+    if (TPA) {
+      tree_ref$VARIABLE <- paste0(tree_ref$VARIABLE, "_TPA")
+    } 
     if (!is.null(fname)) {
       tree_ref$VARIABLE <- paste0(tree_ref$VARIABLE, "_", fname)
       tree_ref$DESCRIPTION <- paste0(tree_ref$DESCRIPTION, " (", tfilter, ")")
@@ -1185,8 +1129,22 @@ datSumTree <- function(tree = NULL,
       tree_ref$VARIABLE <- paste0(tree_ref$VARIABLE, "_ADJ")
       tree_ref$DESCRIPTION <- paste(tree_ref$DESCRIPTION, "- adjusted for partial nonresponse at plot-level")
     }
+
+    ## Check for biomass and/or carbon variables to add units
+    if (any(tsumvarlst %in% c(biovars, carbvars))) {
+      bcvars <- tsumvarlst[tsumvarlst %in% c(biovars, carbvars)]
+      refbcvars <- unlist(lapply(bcvars, function(x) tree_ref$VARIABLE[grepl(x, tree_ref$VARIABLE)]))
+
+      unittxt <- ifelse(lbs2tons, "tons", "lbs")
+      tree_ref[tree_ref$VARIABLE %in% refbcvars, "DESCRIPTION"] <- 
+			paste0(tree_ref[tree_ref$VARIABLE %in% refbcvars, "DESCRIPTION"], " (in ", unittxt, ")")    
+      tree_ref[tree_ref$VARIABLE %in% refbcvars, "VARIABLE"] <- 
+			paste0(tree_ref[tree_ref$VARIABLE %in% refbcvars, "VARIABLE"], "_", toupper(unittxt))
+    } 
+   
     meta <- rbind(meta, tree_ref)
   }
+
 
   #### WRITE TO FILE 
   #############################################################

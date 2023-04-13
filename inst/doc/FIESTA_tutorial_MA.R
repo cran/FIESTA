@@ -43,18 +43,20 @@ demfn <- system.file("extdata", "sp_data/WYbighorn_dem_250m.img",
                      package = "FIESTA")
 
 # Derive new predictor layers from dem
-library(raster)
-dem <- raster(demfn)
-slp <- terrain(dem,
-               opt = "slope",
-               unit = "degrees",
-               filename = paste0(outfolder, "/WYbh_slp.img"), 
-               overwrite = TRUE)
-asp <- terrain(dem,
-               opt = "aspect",
-               unit = "degrees", 
-               filename = paste0(outfolder, "/WYbh_asp.img"),
-               overwrite = TRUE)
+library(terra)
+dem <- rast(demfn)
+slpfn <- paste0(outfolder, "/WYbh_slp.img")
+slp <- terra::terrain(dem,
+                      v = "slope",
+                      unit = "degrees",
+                      filename = slpfn, 
+                      overwrite = TRUE)
+aspfn <- paste0(outfolder, "/WYbh_asp.img")
+asp <- terra::terrain(dem,
+                      v = "aspect",
+                      unit = "degrees", 
+                      filename = aspfn,
+                      overwrite = TRUE)
 
 ## -----------------------------------------------------------------------------
 WYspplt <- spMakeSpatialPoints(
@@ -66,12 +68,13 @@ WYspplt <- spMakeSpatialPoints(
   datum = "NAD83"
 )
 
-rastlst.cont <- c(demfn, slp, asp)
+rastlst.cont <- c(demfn, slpfn, aspfn)
 rastlst.cont.name <- c("dem", "slp", "asp")
 rastlst.cat <- fornffn
-rastlst.cat.name="fornf"
+rastlst.cat.name <- "fornf"
 
 ## ---- results='hide'----------------------------------------------------------
+
 modeldat <- spGetAuxiliary(
   xyplt = WYspplt,
   uniqueid = "CN",
@@ -83,7 +86,7 @@ modeldat <- spGetAuxiliary(
   rastlst.cat.name = rastlst.cat.name,
   rastlst.cont.stat = "mean",
   asptransform = TRUE,
-  rast.asp = asp,
+  rast.asp = aspfn,
   keepNA = FALSE,
   showext = FALSE,
   savedata = FALSE)

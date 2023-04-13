@@ -66,7 +66,7 @@ check.popdataPLT <- function(dsn, tabs, tabIDs, pltassgn, pltassgnid,
     assign(tabnm, tabs[[tabnm]])
   }
   puniqueid <- tabIDs[["plt"]]
-
+ 
   ###################################################################################
   ## Check parameters
   ###################################################################################
@@ -210,7 +210,20 @@ check.popdataPLT <- function(dsn, tabs, tabIDs, pltassgn, pltassgnid,
     }
 
     if (!is.null(pfromqry)) {
-      plotqry <- paste("select distinct", palias, ".* from", pfromqry, whereqry)
+      pvars <- paste0(palias, ".*")
+      ppvars <- paste0("pplot", ".*")
+      plotqry <- paste("select distinct", palias, ".* from", pfromqry)
+      if (popType == "CHNG") {
+        plot1qry <- paste0("select distinct ", pvars, " from ", pfromqry, 
+        		" JOIN ", plt, " pplot ON (pplot", ".", puniqueid, " = ", 
+				palias, ".PREV_PLT_CN) ", whereqry)
+        plot2qry <- paste0("select distinct ", ppvars, " from ", pfromqry, 
+        		" JOIN ", plt, " pplot ON (pplot", ".", puniqueid, " = ", 
+				palias, ".PREV_PLT_CN) ", whereqry)
+        plotqry <- paste(plot1qry, "UNION", plot2qry)
+      } else {
+        plotqry <- paste("select distinct", pvars, "from", pfromqry, whereqry)
+      }
       #dbqueries$plot <- plotqry
     }
 
@@ -472,7 +485,7 @@ check.popdataPLT <- function(dsn, tabs, tabIDs, pltassgn, pltassgnid,
 			"partially sampled")
     plotsampcnt <- pltx[, list(NBRPLOT=uniqueN(get(puniqueid)))]
   }
-
+ 
   if (ACI) {
     if (any(c("NF_PLOT_STATUS_CD", "PSTATUSNF") %in% pltnmlst)) {
       if ("PSTATUSNF" %in% names(pltx))

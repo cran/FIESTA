@@ -17,7 +17,8 @@ DBgetStrata(
   savedata_opts = NULL,
   dbconn = NULL,
   dbconnopen = FALSE,
-  evalInfo = NULL
+  evalInfo = NULL,
+  ...
 )
 }
 \arguments{
@@ -54,7 +55,9 @@ of options. Only used when savedata = TRUE.}
 
 \item{dbconnopen}{Logical. If TRUE, the dbconn connection is not closed.}
 
-\item{evalInfo}{List. List object output from DBgetEvalid or DBgetXY 
+\item{evalInfo}{List. List object output from DBgetEvalid or DBgetXY}
+
+\item{...}{For extendibility.
 FIESTA functions.}
 }
 \value{
@@ -83,10 +86,8 @@ strata/estimation unit. Include a data frame of plots, states, or evaluation
 information.
 }
 \details{
-Dependent packages: DBI, rgdal
-
 The following variables must be present in dat: STATECD, UNITCD, INVYR, a
-uniqueid (ex. "PLT_CN"), and PLOT_STATUS_CD (if nonsampled plots in
+uniqueid (e.g. "PLT_CN"), and PLOT_STATUS_CD (if nonsampled plots in
 dataset).
 
 FIADB TABLES USED: \tabular{lll}{ \tab FS_FIADB.SURVEY \tab To get latest
@@ -97,7 +98,7 @@ pixel counts by stratum and estimation unit.\cr \tab
 FS_FIADB.POP_PLOT_STRATUM_ASSGN \tab To get estimation unit & stratum
 assignment for each plot.\cr }
 
-Area by estimation unit includes total area for all plots (evaltype="all").
+Area by estimation unit includes total area for all plots (Type="CURR").
 }
 \note{
 Steps used in data extraction:

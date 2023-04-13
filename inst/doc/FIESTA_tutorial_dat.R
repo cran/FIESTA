@@ -37,8 +37,8 @@ WYconddat.nfs <- datFilter(
 
 names(WYconddat.nfs)
 WYcond.nfs <- WYconddat.nfs$xf
+dim(WYcond)
 dim(WYcond.nfs)
-head(WYcond.nfs)
 
 ## -----------------------------------------------------------------------------
 WYtreedat.dead <- datFilter(
@@ -48,9 +48,7 @@ WYtreedat.dead <- datFilter(
 
 names(WYtreedat.dead)
 WYtree.deadasp <- WYtreedat.dead$xf
-head(WYtree.deadasp)
 dim(WYtree.deadasp)
-
 dim(WYtree)
 
 ## -----------------------------------------------------------------------------

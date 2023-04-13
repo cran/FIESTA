@@ -23,12 +23,9 @@ spGetPlots(
   puniqueid = "CN",
   invtype = "ANNUAL",
   intensity1 = FALSE,
-  istree = FALSE,
-  isseed = FALSE,
-  isveg = FALSE,
   issubp = FALSE,
-  ischng = FALSE,
-  isdwm = FALSE,
+  istree = FALSE,
+  isseed = TRUE,
   biojenk = FALSE,
   greenwt = FALSE,
   plotgeom = FALSE,
@@ -39,7 +36,6 @@ spGetPlots(
   showsteps = FALSE,
   returndata = TRUE,
   savedata = FALSE,
-  savePOP = FALSE,
   savebnd = FALSE,
   returnxy = TRUE,
   exportsp = FALSE,
@@ -111,23 +107,12 @@ for a list of options.}
 \item{intensity1}{Logical. If TRUE, includes only XY coordinates where 
 INTENSITY = 1 (FIA base grid).}
 
-\item{istree}{Logical. If TRUE, tree data are extracted from TREE table in
-database.}
-
-\item{isseed}{Logical. If TRUE, seedling data are extracted from SEEDLING
-table in database.}
-
-\item{isveg}{Logical. If TRUE, understory vegetation tables are extracted
-from FIA database (P2VEG_SUBPLOT_SPP, P2VEG_SUBP_STRUCTURE, INVASIVE_SUBPLOT_SPP).}
-
 \item{issubp}{Logical. If TRUE, subplot tables are extracted from FIA
 database (SUBPLOT, SUBP_COND).}
 
-\item{ischng}{Logical. If TRUE, sccm (SUBP_COND_CHNG_MTRX) table is returned 
-that includes current and previous conditions.}
+\item{istree}{Logical. If TRUE, include tree data.}
 
-\item{isdwm}{Logical. If TRUE, summarized condition-level down woody debris
-data are extracted from FIA database (COND_DWM_CALC).}
+\item{isseed}{Logical. If TRUE, include seedling data.}
 
 \item{biojenk}{Logical. If TRUE, Jenkins biomass is calculated.}
 
@@ -154,9 +139,6 @@ be unique. If using most current XY coordinates, use identifier for a plot
 \item{returndata}{Logical. If TRUE, returns data objects.}
 
 \item{savedata}{Logical. If TRUE, saves data to outfolder.}
-
-\item{savePOP}{Logical. If TRUE, save and return the POP_PLOT_STRATUM_ASSGN
-table.}
 
 \item{savebnd}{Logical. If TRUE, saves bnd. If out_fmt='sqlite', saves to a
 SpatiaLite database.}
@@ -213,7 +195,7 @@ measEndyr\cr \tab Endyr.filter - a filter for bnd that specifies the
 boundary where measEndyr should be applied\cr }
 }
 \note{
-If savebnd=TRUE:\cr If out_fmt=c('csv','shp'), the writeOGR (rgdal) function
+If savebnd=TRUE:\cr If out_fmt=c('csv','shp'), the st_write (sf) function
 is called. The ArcGIS driver truncates variable names to 10 characters or
 less. Variable names are changed before export using an internal function
 (trunc10shp). If Spatial object has more than 1 record, it will be returned

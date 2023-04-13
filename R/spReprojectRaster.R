@@ -93,22 +93,16 @@
 #'                      "sp_data/WYbighorn_dem_250m.img",
 #'                      package = "FIESTA")
 #' 
-#' # Plot original projection
-#' raster::plot(raster::raster(demfn))
-#' 
 #' # Check original projection
-#' sf::st_crs(raster::raster(demfn))$proj4string
+#' sf::st_crs(terra::rast(demfn))$proj4string
 #' 
 #' # Reproject raster
 #' reprojected <- spReprojectRaster(rastfn = demfn,
 #'                                  crs.new = "EPSG:32613",
 #'                                  outfolder = tempdir())
 #'                                  
-#' # Plot new projection
-#' raster::plot(raster::raster(reprojected))
-#' 
 #' # Check new projection
-#' sf::st_crs(raster::raster(reprojected))$proj4string
+#' sf::st_crs(terra::rast(demfn))$proj4string
 #' }
 #' @export spReprojectRaster
 spReprojectRaster <- function(rastfn, 

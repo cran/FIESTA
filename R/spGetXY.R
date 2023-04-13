@@ -97,7 +97,7 @@
 #' exported as shapefile to outfolder.\cr
 #' @note
 #' 
-#' If savebnd=TRUE:\cr If out_fmt=c('csv','shp'), the writeOGR (rgdal) function
+#' If savebnd=TRUE:\cr If out_fmt=c('csv','shp'), the st_write (sf) function
 #' is called. The ArcGIS driver truncates variable names to 10 characters or
 #' less. Variable names are changed before export using an internal function
 #' (trunc10shp). If Spatial object has more than 1 record, it will be returned
@@ -315,6 +315,11 @@ spGetXY <- function(bnd,
   } else {
     clipxy <- FALSE
   }
+
+  ## Check Endyr.filter
+  #############################################################################
+  Endyr.filter <- check.logic(bnd, Endyr.filter)
+
     
   ## Check intensity1
   #############################################################################
@@ -446,6 +451,7 @@ spGetXY <- function(bnd,
     xyjoinid <- xydat$xyjoinid
     pjoinid <- xydat$pjoinid 
     evalInfo <- xydat$evalInfo
+    pop_plot_stratum_assgn <- xydat$pop_plot_stratum_assgn
   }
 
   if (clipxy) {
@@ -486,6 +492,18 @@ spGetXY <- function(bnd,
 
 
   #############################################################################
+  ## Endyr.filter
+  #############################################################################
+  if (!is.null(Endyr.filter)) {
+    filternames <- check.logic(bnd, Endyr.filter, returnvar=TRUE)
+    if (length(filternames) > 0) {
+      spxy <- spExtractPoly(spxy, polyvlst=bndx, polyvarlst=filternames)$spxyext
+    } else {
+      spxy <- spExtractPoly(spxy, polyvlst=bndx)$spxyext
+    }
+  }
+
+  #############################################################################
   ## Save tables
   #############################################################################
   pltids <- sf::st_drop_geometry(spxy)
@@ -494,39 +512,39 @@ spGetXY <- function(bnd,
   if (savedata) {
     if (returnxy) {
       datExportData(sf::st_drop_geometry(spxy), 
-         savedata_opts=list(outfolder=outfolder, 
-                            out_fmt=out_fmt, 
-                            out_dsn=out_dsn, 
-                            out_layer="xyplt",
-                            outfn.pre=outfn.pre, 
-                            outfn.date=outfn.date, 
-                            overwrite_layer=overwrite_layer,
-                            append_layer=append_layer,
-                            add_layer=TRUE)) 
+         savedata_opts=list(outfolder = outfolder, 
+                            out_fmt = out_fmt, 
+                            out_dsn = out_dsn, 
+                            out_layer = "xyplt",
+                            outfn.pre = outfn.pre, 
+                            outfn.date = outfn.date, 
+                            overwrite_layer = overwrite_layer,
+                            append_layer = append_layer,
+                            add_layer = TRUE)) 
    
       if (exportsp) {
         spExportSpatial(spxy, 
             savedata_opts=list(outfolder=outfolder, 
-                            out_fmt=out_fmt, 
-                            out_dsn=out_dsn, 
-                            out_layer="spxyplt",
-                            outfn.pre=outfn.pre, 
-                            outfn.date=outfn.date, 
-                            overwrite_layer=overwrite_layer,
-                            append_layer=append_layer, 
+                            out_fmt = out_fmt, 
+                            out_dsn = out_dsn, 
+                            out_layer = "spxyplt",
+                            outfn.pre = outfn.pre, 
+                            outfn.date = outfn.date, 
+                            overwrite_layer = overwrite_layer,
+                            append_layer = append_layer, 
                             add_layer=TRUE))
       }
     } else {
       datExportData(pltids, 
-            savedata_opts=list(outfolder=outfolder, 
-                            out_fmt=out_fmt, 
-                            out_dsn=out_dsn, 
-                            out_layer="pltids",
-                            outfn.pre=outfn.pre, 
-                            outfn.date=outfn.date, 
-                            overwrite_layer=overwrite_layer,
-                            append_layer=append_layer,
-                            add_layer=TRUE)) 
+            savedata_opts=list(outfolder = outfolder, 
+                            out_fmt = out_fmt, 
+                            out_dsn = out_dsn, 
+                            out_layer = "pltids",
+                            outfn.pre = outfn.pre, 
+                            outfn.date = outfn.date, 
+                            overwrite_layer = overwrite_layer,
+                            append_layer = append_layer,
+                            add_layer = TRUE)) 
     }
   }
 
@@ -559,5 +577,9 @@ spGetXY <- function(bnd,
   returnlst$xyjoinid <- xyjoinid
   returnlst$states <- statenames
   returnlst$countyfips <- countyfips
+
+  #if (!is.null(pop_plot_stratum_assgn)) {
+  #  returnlst$pop_plot_stratum_assgn <- pop_plot_stratum_assgn
+  #}
   return(returnlst)
 }

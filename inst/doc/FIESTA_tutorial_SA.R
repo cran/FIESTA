@@ -39,34 +39,27 @@ WYbhdist.att <- "DISTRICTNA"
 fornffn <- system.file("extdata", "sp_data/WYbighorn_forest_nonforest_250m.tif", package="FIESTA")
 demfn <- system.file("extdata", "sp_data/WYbighorn_dem_250m.img", package="FIESTA")
 
-# # Derive new layers from dem
-# aspfn <- file.path(outfolder, "WYbh_asp.img")
-# gdalUtils::gdaldem("aspect", input_dem=demfn, output=aspfn, of="GTiff")
-# 
-# slpfn <- file.path(outfolder, "WYbh_slp.img")
-# gdalUtils::gdaldem("slope", input_dem=demfn, output=slpfn, of="GTiff")
-
-
 # Derive new predictor layers from dem
-library(raster)
-dem <- raster(demfn)
-slp <- terrain(dem,
-               opt = "slope",
-               unit = "degrees",
-               filename = paste0(outfolder, "/WYbh_slp.img"), 
-               overwrite = TRUE)
-asp <- terrain(dem,
-               opt = "aspect",
-               unit = "degrees", 
-               filename = paste0(outfolder, "/WYbh_asp.img"),
-               overwrite = TRUE)
+library(terra)
+dem <- rast(demfn)
+slpfn <- paste0(outfolder, "/WYbh_slp.img")
+slp <- terra::terrain(dem,
+                      v = "slope",
+                      unit = "degrees",
+                      filename = slpfn, 
+                      overwrite = TRUE)
+aspfn <- paste0(outfolder, "/WYbh_asp.img")
+asp <- terra::terrain(dem,
+                      v = "aspect",
+                      unit = "degrees", 
+                      filename = aspfn,
+                      overwrite = TRUE)
 
 ## -----------------------------------------------------------------------------
 smallbnd <- WYbhdistfn
 smallbnd.domain <- "DISTRICTNA"
 
 ## -----------------------------------------------------------------------------
-
 SApltdat <- spGetPlots(bnd = WYbhdistfn,
                        xy_datsource = "obj",
                        xy = WYplt,
@@ -88,7 +81,7 @@ SApltdat <- spGetPlots(bnd = WYbhdistfn,
 str(SApltdat, max.level = 1)
 
 ## ---- results='hide'----------------------------------------------------------
-rastlst.cont <- c(dem, slp, asp)
+rastlst.cont <- c(demfn, slpfn, aspfn)
 rastlst.cont.name <- c("dem", "slp", "asp")
 rastlst.cat <- fornffn
 rastlst.cat.name <- "fornf"
@@ -108,7 +101,7 @@ auxdat <- spGetAuxiliary(
   rastlst.cat = rastlst.cat,
   rastlst.cat.name = rastlst.cat.name,
   asptransform = TRUE,
-  rast.asp = asp,
+  rast.asp = aspfn,
   keepNA = FALSE,
   showext = FALSE,
   savedata = FALSE

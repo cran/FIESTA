@@ -15,12 +15,9 @@ DBgetPlots(
   puniqueid = "CN",
   invtype = "ANNUAL",
   intensity1 = FALSE,
+  issubp = FALSE,
   istree = FALSE,
   isseed = FALSE,
-  isveg = FALSE,
-  issubp = FALSE,
-  ischng = FALSE,
-  isdwm = FALSE,
   biojenk = FALSE,
   greenwt = FALSE,
   plotgeom = FALSE,
@@ -51,7 +48,8 @@ DBgetPlots(
   savedata_opts = NULL,
   dbconn = NULL,
   dbconnopen = FALSE,
-  evalInfo = NULL
+  evalInfo = NULL,
+  ...
 )
 }
 \arguments{
@@ -86,23 +84,12 @@ for a list of options.}
 
 \item{intensity1}{Logical. If TRUE, includes only plots where INTENSITY = 1.}
 
-\item{istree}{Logical. If TRUE, tree data are extracted from TREE table in
-database.}
-
-\item{isseed}{Logical. If TRUE, seedling data are extracted from SEEDLING
-table in database.}
-
-\item{isveg}{Logical. If TRUE, understory vegetation tables are extracted
-from FIA database (P2VEG_SUBPLOT_SPP, P2VEG_SUBP_STRUCTURE, INVASIVE_SUBPLOT_SPP).}
-
 \item{issubp}{Logical. If TRUE, subplot tables are extracted from FIA
 database (SUBPLOT, SUBP_COND).}
 
-\item{ischng}{Logical. If TRUE, sccm (SUBP_COND_CHNG_MTRX) table is returned 
-that includes current and previous conditions.}
+\item{istree}{Logical. If TRUE, include tree data.}
 
-\item{isdwm}{Logical. If TRUE, summarized condition-level down woody debris
-data are extracted from FIA database (COND_DWM_CALC).}
+\item{isseed}{Logical. If TRUE, include seedling data.}
 
 \item{biojenk}{Logical. If TRUE, Jenkins biomass is calculated.}
 
@@ -196,16 +183,19 @@ of options. Only used when savedata = TRUE. If out_layer = NULL,}
 
 \item{dbconnopen}{Logical. If TRUE, the dbconn connection is not closed.}
 
-\item{evalInfo}{List. List object output from DBgetEvalid or DBgetXY 
+\item{evalInfo}{List. List object output from DBgetEvalid or DBgetXY}
+
+\item{...}{For extendibility.
 FIESTA functions.}
 }
 \value{
 if returndata=TRUE, a list of the following objects: 
 \item{states}{ Vector. Input state(s) (full state names: Arizona). } 
 \item{tabs}{ List. A list of data frames from FIA database, including 
-plt and cond; and tree (if istree=TRUE); seed (if isseed=TRUE), p2veg_subplot_spp,
-p2veg_subp_structure, and invsubp (if isveg=TRUE), lulc (if islulc=TRUE). See below 
-'Output Tables - FIA Table Names' for reference to FIA database tables. 
+plt and cond; and tree (if Type='VOL'); seed (if isseed=TRUE), 
+p2veg_subplot_spp, p2veg_subp_structure, and invasive_subplot_spp 
+(if Type='P2VEG'). See below 'Output Tables - FIA Table Names' 
+for reference to FIA database tables.
 See FIESTA:ref_* for variable descriptions (e.g., FIESTA::ref_tree). 
 If istree and the number of states > 3, tree data are saved to outfolder 
 and not returned to accommodate R memory issues. } 
@@ -224,9 +214,9 @@ Evalidation ID from the FIA database used to define the output data. }
 inventory year, and plot status. }
 \item{pop_plot_stratum_assgn}{ Data frame. If savePOP=TRUE, and FIA Evaluations
 are used to extract data from database, return the POP_PLOT_STRATUM_ASSGN
-table or, if more than one evalType and savePOP=FALSE. If more than one
-evalType, only the records for the evalTypes are returned, otherwise all
-evalTypes for the state evaluation are returned. }
+table or, if more than one Type and savePOP=FALSE. If more than one
+Type, only the records for the evalTypes are returned, otherwise all
+Types for the state evaluation are returned. }
 
 *Output Tables - FIA Table Names*\cr \tabular{lll}{ 
 \tab \bold{tab} \tab \bold{FIA Table}\cr 
@@ -302,21 +292,12 @@ of >= 10 percent cover...\cr
 of Other Wooded Land (OWL), including >= 5 percent cover...\cr
 }
 
-*FIADB Table Extraction*\cr \tabular{lll}{ 
-\tab \bold{Argument} \tab \bold{Table Name(s)}\cr 
-\tab istree \tab TREE\cr 
-\tab isveg \tab P2VEG_SUBPLOT_SPP, P2VEG_SUBP_STRUCTURE, INVASIVE_SUBPLOT_SPP\cr 
-\tab issubp \tab SUBPLOT, SUBP_COND\cr 
-\tab isdwm \tab COND_DWM_CALC\cr 
-\tab isgrm \tab TREE_GRM_COMPONENT\cr 
-\tab issccm \tab SUBP_COND_CHNG_MTRX\cr }
-
 \bold{FIA Evaluations}
 
 An evaluation is a group of plots within the FIA database that is used for
 generating population estimates, representing different inventory spans of
 data with different stratification or area adjustments. Each evaluation is
-determined by the type of estimation (evalType) including: area and tree
+determined by the type of estimation (Type) including: area and tree
 estimates; growth, removal, and mortality estimates; and area change
 estimates (EVAL_TYPE). These plots are identified by an evalid, which is a
 unique identifier in the format of a 2-digit State code, a 2-digit year
@@ -325,10 +306,10 @@ represents the Utah 2016 evaluation for current area estimates.
 
 \bold{FIA Evaluation Types}
 
-Define one or more Evaluation Type for evalCur=TRUE or evalEndyr=YYYY. An
+Define one or more Evaluation Type for Cur=TRUE or Endyr=YYYY. An
 Evaluation type is used to identify a specific set of plots for a particular
 response that can be used to a make a statistically valid sample-based
-estimate. If evalType="ALL", the evaluation includes all sampled and
+estimate. If Type='CURR', the evaluation includes all sampled and
 nonsampled plots or plots that were missed in an inventory year.
 
 Regional differences may occur on how missed plots are represented in a FIA
@@ -337,7 +318,7 @@ included in an Evaluation as nonsampled, and when measured, are included in
 a following Evaluation.  Therefore, the number of nonsampled plots in
 previous Evaluations may change, depending on when missed plot are measured.
 In the PNW Research Station, plots are brought forward to replace missed
-plots in an evaluation, depending on the evalType.
+plots in an evaluation, depending on the Type.
 
 EVAL_TYP\cr 
 \tabular{llll}{ 
@@ -356,20 +337,21 @@ Data can be extracted using FIA Evaluations or a custom-defined Evaluation
 for one or more states, one or more FIA Research Stations (RS), or all
 available states in database (states=NULL, RS=NULL).
 
-*FIA Evaluation*\cr 
-\tabular{lll}{ \tab \bold{Argument} \tab \bold{Description}\cr 
-\tab EVALID \tab Specified FIA EVALID (e.g., 491801)\cr 
-\tab evalCur \tab Most current FIA Evaluation\cr 
-\tab evalEndyr \tab End year of an FIA Evaluation (e.g., 2018)\cr 
-\tab evalAll \tab All evaluations in database\cr 
-\tab evalType \tab Type of FIA Evaluation (response)\cr }
+*FIA Evaluation (eval=FIA)*\cr
+\tabular{lll}{ \tab \bold{eval_option} \tab \bold{Description}\cr
+\tab evalid \tab Specified FIA EVALID (e.g., 491801)\cr
+\tab Cur \tab Most current FIA Evaluation\cr
+\tab Endyr \tab End year of an FIA Evaluation (e.g., 2018)\cr
+\tab All \tab All evaluations in database\cr
+\tab Type \tab Type of FIA Evaluation (response)\cr }
 
-*Custom evaluation*\cr 
-\tabular{lll}{ \tab \bold{Argument} \tab \bold{Description}\cr 
-\tab measCur \tab Most current measurement of plot in database\cr 
-\tab measEndyr \tab Most current measurement of plot in database in or 
-before year\cr 
-\tab allyrs \tab All years for invtype (ANNUAL/PERIODIC)\cr 
+*Custom evaluation (eval="custom")*\cr
+\tabular{lll}{ \tab \bold{eval_option} \tab \bold{Description}\cr
+\tab Cur \tab Most current measurement of plot in database\cr
+\tab Endyr \tab Most current measurement of plot in database in or
+before year\cr
+\tab All \tab All years for invtype (ANNUAL or PERIODIC)\cr
+\tab Type \tab Type of custom Evaluation (response)\cr 
 \tab invyrs \tab Specified inventory years (e.g., 2015:2018)\cr }
 
 \bold{Spatial data}

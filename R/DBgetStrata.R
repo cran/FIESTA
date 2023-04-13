@@ -6,10 +6,8 @@
 #' strata/estimation unit. Include a data frame of plots, states, or evaluation
 #' information.
 #' 
-#' Dependent packages: DBI, rgdal
-#' 
 #' The following variables must be present in dat: STATECD, UNITCD, INVYR, a
-#' uniqueid (ex. "PLT_CN"), and PLOT_STATUS_CD (if nonsampled plots in
+#' uniqueid (e.g. "PLT_CN"), and PLOT_STATUS_CD (if nonsampled plots in
 #' dataset).
 #' 
 #' FIADB TABLES USED: \tabular{lll}{ \tab FS_FIADB.SURVEY \tab To get latest
@@ -20,7 +18,7 @@
 #' FS_FIADB.POP_PLOT_STRATUM_ASSGN \tab To get estimation unit & stratum
 #' assignment for each plot.\cr }
 #' 
-#' Area by estimation unit includes total area for all plots (evaltype="all").
+#' Area by estimation unit includes total area for all plots (Type="CURR").
 #' 
 #' @param dat Data frame, comma-delimited file (*.csv), or shapefile (*.shp).
 #' The strata value is merged to this table and returned as a data frame. See
@@ -44,6 +42,7 @@
 #' @param dbconn Open database connection.
 #' @param dbconnopen Logical. If TRUE, the dbconn connection is not closed. 
 #' @param evalInfo List. List object output from DBgetEvalid or DBgetXY 
+#' @param ... For extendibility.
 #' FIESTA functions.   
 #' 
 #' @return FIAstrata - a list of the following objects: \item{pltassgn}{ Data
@@ -127,8 +126,9 @@ DBgetStrata <- function(dat = NULL,
                         savedata_opts = NULL,
                         dbconn = NULL,
                         dbconnopen = FALSE,
-                        evalInfo = NULL
-                        ){
+                        evalInfo = NULL,
+                        ...
+                        ) {
   ######################################################################################
   ## DESCRIPTION: This function gets the strata info and area by estimation unit from 
   ##		FIA Database, extracts and merges plot-level assignments to data file, and 
@@ -162,10 +162,17 @@ DBgetStrata <- function(dat = NULL,
   ##################################################################
   ## CHECK INPUT PARAMETERS
   ##################################################################
+  matchargs <- as.list(match.call()[-1])
+
+  dotargs <- c(list(...))
+  args <- as.list(environment())
+  args <- args[!names(args) %in% names(dotargs)]
+  args <- args[names(args) %in% names(matchargs)]
+  args <- append(args, dotargs)
   
   ## Check arguments
   input.params <- names(as.list(match.call()))[-1]
-  if (!all(input.params %in% names(formals(DBgetStrata)))) {
+  if (!all(input.params %in% c(names(formals(DBgetStrata)), "istree", "isseed", "isveg"))) {
     miss <- input.params[!input.params %in% formals(DBgetStrata)]
     stop("invalid parameter: ", toString(miss))
   } 
@@ -192,6 +199,19 @@ DBgetStrata <- function(dat = NULL,
     message("no evaluation timeframe specified...")
     message("see eval and eval_opts parameters (e.g., eval='custom', eval_opts=eval_options(Cur=TRUE))\n")
     stop()
+  }
+
+
+  if ("istree" %in% names(args)) {
+    message("the parameter istree is deprecated... use eval_options(Type='VOL')\n")
+    istree <- args$istree
+    if (!istree) {
+      Type <- c("ALL", Type[!Type %in% c("CURR", "VOL")])
+    } 
+  }
+  if ("isveg" %in% names(args)) {
+    message("the parameter isveg is deprecated... use eval_options(Type='P2VEG'))\n")
+    isveg <- args$isveg
   }
 
   
@@ -222,12 +242,16 @@ DBgetStrata <- function(dat = NULL,
   datsourcelst <- c("datamart", "sqlite")
   datsource <- pcheck.varchar(var2check=datsource, varnm="datsource", 
 		checklst=datsourcelst, gui=gui, caption="Data source?") 
-  if (!is.null(data_dsn)) {
-    if (getext(data_dsn) %in% c("sqlite", "db", "db3")) {
-      dbconn <- DBtestSQLite(data_dsn, dbconnopen=TRUE, showlist=FALSE)
-      dsn_tables <- DBI::dbListTables(dbconn)
+  if (datsource == "sqlite") {
+    if (!is.null(data_dsn)) {
+      if (getext(data_dsn) %in% c("sqlite", "db", "db3")) {
+        dbconn <- DBtestSQLite(data_dsn, dbconnopen=TRUE, showlist=FALSE)
+        dsn_tables <- DBI::dbListTables(dbconn)
+      } else {
+        stop("only sqlite databases available currently")
+      }
     } else {
-      stop("only sqlite databases available currently")
+      stop("invalid data_dsn")
     }     
   }
   
@@ -341,13 +365,13 @@ DBgetStrata <- function(dat = NULL,
     saveSURVEY <- TRUE
   }
 
-
-  ## Get Evalid
+  ## Get states, Evalid and/or invyrs info
   ##########################################################
-  if (is.null(evalInfo)) {
-
+  if (!is.null(evalInfo)) {
     list.items <- c("states", "evalidlist", "invtype", "invyrtab")
     evalInfo <- pcheck.object(evalInfo, "evalInfo", list.items=list.items)
+
+  } else {
     evalInfo <- tryCatch( DBgetEvalid(states = states, 
                           datsource = datsource, 
                           data_dsn = data_dsn, 
@@ -384,11 +408,6 @@ DBgetStrata <- function(dat = NULL,
   ###########################################################
   savedata <- pcheck.logical(savedata, varnm="savedata", 
 		title="Save data to outfolder?", first="YES", gui=gui)
-
-  ## Check parameters
-  ###########################################################
-  parameters <- pcheck.logical(parameters, varnm="parameters", 
-		title="Save parameters", first="YES", gui=gui)
 
   ## Check outfolder/outfn
   if (savedata) {

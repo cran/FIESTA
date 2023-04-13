@@ -15,11 +15,20 @@
 #' @param plt Data frame, comma-delimited file (*.csv), shapefile (*.shp), or
 #' database file. Plot-level table to join the aggregated tree data to (if
 #' bycond=FALSE). Nonsampled plots (PLOT_STATUS_CD = 3) are removed. Optional.
-#' @param plt_dsn String. The data source name (dsn; i.e., folder or database
-#' name) of plt. The dsn varies by driver. See gdal OGR vector formats
-#' (https://www.gdal.org/ogr_formats.html). Optional.
+#' @param subp_cond Dataframe, comma-delimited file (*.csv), or shapefile (*.shp).
+#' Subplot condition-level table to use to sum condition proportions, 
+#' if bysubp=TRUE. 
+#' @param subplot Dataframe, comma-delimited file (*.csv), or shapefile (*.shp).
+#' Subplot-level table to used to calculate adjustment factors, to remove 
+#' nonsampled conditions (SUBP_STATUS_CD = 3). This table is optional.
 #' @param cuniqueid String. Unique identifier of cond (default = "PLT_CN").
 #' @param puniqueid String. Unique identifier of plt (default = "CN").
+#' @param condid String. Unique identifier for conditions.
+#' @param bycond Logical. If TRUE, the data are aggregated to the condition
+#' level (by: cuniqueid, condid). If FALSE, the data are aggregated to the plot
+#' level (by: puniqueid). 
+#' @param bysubp Logical. If TRUE, data are aggregated to the subplot level.
+#' @param subpid String. Unique identifier of each subplot.
 #' @param csumvar String. One or more variable names to sum to plot level.
 #' @param csumvarnm String. Name of the resulting aggregated plot-level
 #' variable(s).  Default = csumvar + '_PLT'.
@@ -59,9 +68,14 @@ datSumCond <- function(cond = NULL,
                        datsource = "obj", 
                        data_dsn = NULL, 
                        plt = NULL, 
-                       plt_dsn = NULL, 
+                       subp_cond = NULL,  
+                       subplot = NULL, 
                        cuniqueid = "PLT_CN",
                        puniqueid = "CN", 
+                       condid = "CONDID", 
+                       bycond = FALSE,                        
+                       bysubp = FALSE, 
+                       subpid = "SUBP", 
                        csumvar = NULL, 
                        csumvarnm = NULL, 
                        cfilter = NULL, 
@@ -129,6 +143,8 @@ datSumCond <- function(cond = NULL,
   ##################################################################
   ## CHECK PARAMETER INPUTS
   ##################################################################
+  noplt <- TRUE
+  nocond=pltsp <- FALSE
 
   ## Set datsource
   ########################################################
@@ -149,7 +165,6 @@ datSumCond <- function(cond = NULL,
     }
   }
 
-
   ## Check cond table
   condx <- pcheck.table(cond, tab_dsn=data_dsn, caption="Condition table?", 
 			stopifnull=TRUE)
@@ -164,11 +179,77 @@ datSumCond <- function(cond = NULL,
   if (!"CONDPROP_UNADJ" %in% condnmlst) stop("CONDPROP_UNADJ not in cond")
 
 
-  ## Check plt table
-  noplt <- TRUE
-  pltsp <- FALSE
-  pltx <- pcheck.table(plt, tab_dsn=plt_dsn, gui=gui, tabnm="plt", 
+  ## Check condid in tree table and setkey to tuniqueid, condid
+  condid <- pcheck.varchar(var2check=condid, varnm="condid", 
+		checklst=names(condx), caption="cond ID - tree", 
+		warn=paste(condid, "not in tree table"))
+ 
+  if (is.null(condid)) {
+    message("assuming all 1 condition plots")
+    condx$CONDID <- 1
+    condid <- "CONDID"
+  }
+
+
+  ## Check bycond
+  ###################################################################################
+  bycond <- pcheck.logical(bycond, varnm="bycond", title="By condition?", 
+		first="YES", gui=gui, stopifnull=TRUE)
+
+  ## Check bysubp
+  ###################################################################################
+  bysubp <- pcheck.logical(bysubp, varnm="bysubp", title="By subplot?", 
+		first="YES", gui=gui, stopifnull=TRUE)
+
+  ## Check checkNA
+  ###################################################################################
+  NAto0 <- pcheck.logical(NAto0, varnm="NAto0", title="Convert NA to 0?", 
+		first="YES", gui=gui)
+  if (is.null(NAto0)) NAto0 <- FALSE
+
+
+  ## Check unique ids and set keys
+  if (bycond) {
+    csumuniqueid <- c(cuniqueid, condid)
+    setkeyv(condx, csumuniqueid)
+           
+  } else {
+    csumuniqueid <- cuniqueid
+  }
+
+
+  if (bysubp) {
+    subpuniqueid <- "PLT_CN"
+    subpids <- c(subpuniqueid, subpid)
+
+    ## Check subplot
+    subplotx <- pcheck.table(subplot, tab_dsn=data_dsn, tabnm="subplot", gui=gui, 
+			caption="Subplot table?")
+  
+    ## Check subpid
+    if (!is.null(subplotx)) {
+      if (!all(subpids %in% names(subplotx))) {
+        stop("uniqueids not in subplot: ", toString(subpids))
+      }
+      setkeyv(subplotx, subpids)
+    }
+
+    ## Check subplot
+    subpcondx <- pcheck.table(subp_cond, tab_dsn=data_dsn, tabnm="subp_cond", gui=gui, 
+			caption="Subp_cond table?", stopifnull=TRUE)
+    if (!all(subpids %in% names(subpcondx))) {
+      stop("uniqueids not in subp_cond: ", toString(subpids))
+    }
+    setkeyv(subpcondx, subpids)
+
+    ## Set pltx to NULL   
+    pltx <- NULL
+  } else {
+
+    pltx <- pcheck.table(plt, tab_dsn=data_dsn, gui=gui, tabnm="plt", 
 			caption="Plot table?")
+  }
+
   if (!is.null(pltx)) {
     noplt <- FALSE
 
@@ -209,7 +290,6 @@ datSumCond <- function(cond = NULL,
     csumvar[csumvar == "CONDPROP_UNADJ"] <- "CONDPROP"
   }
 
-
   ## Check csumvarnm
   if (is.null(csumvarnm)) csumvarnm <- paste(csumvar, "PLT", sep="_")
   condnmlst <- sapply(csumvarnm, checknm, condnmlst)
@@ -223,6 +303,14 @@ datSumCond <- function(cond = NULL,
   ## Check adjcond
   adjcond <- pcheck.logical(adjcond, varnm="adjcond", 
 		title="Adjust conditions?", first="NO", gui=gui)
+
+
+  ### Filter cond data 
+  ###########################################################  
+  cdat <- datFilter(x=condx, xfilter=cfilter, title.filter="cfilter",
+			 stopifnull=TRUE, gui=gui)
+  condf <- cdat$xf
+  cfilter <- cdat$xfilter
 
 
   ## Check savedata 
@@ -248,49 +336,75 @@ datSumCond <- function(cond = NULL,
   }
   
 
-
   ################################################################################  
   ### DO WORK
   ################################################################################  
 
   if (getadjplot) {
-    if ("COND_STATUS_CD" %in% names(condx)) {
-      condx <- condx[condx$COND_STATUS_CD != 5,]
-    } else {
-      message("assuming no nonsampled condition in dataset")
-    }
-    adjfacdata <- getadjfactorVOL(condx=condx, cuniqueid=cuniqueid, adj="plot")
-    condx <- adjfacdata$condx
-  }
 
-  ## Filter cond
-  cdat <- FIESTA::datFilter(x=condx, xfilter=cfilter, title.filter="tfilter",
-			 stopifnull=TRUE, gui=gui)
-  condf <- cdat$xf
-  cfilter <- cdat$xfilter
+    if (bysubp) {
+      ## Remove nonsampled conditions by subplot and summarize to condition-level
+      subpcx <- subpsamp(cond = condx, 
+                         subp_cond = subpcondx, 
+                         subplot = subplotx, 
+                         subpuniqueid = subpuniqueid, 
+                         subpid = subpid)
+
+      adjfacdata <- getadjfactorPLOT(condx=subpcx, 
+		    cuniqueid=c(subpuniqueid, subpid), areawt="CONDPROP_UNADJ")
+      condf <- adjfacdata$condx
+      cuniqueid <- c(subpuniqueid, subpid)
+
+    } else {
+
+      if ("COND_STATUS_CD" %in% names(condx)) {
+        condx <- condx[condx$COND_STATUS_CD != 5,]
+      } else {
+        message("assuming no nonsampled condition in dataset")
+      }
+      adjfacdata <- getadjfactorPLOT(condx=condx, cuniqueid=cuniqueid, 
+                areawt="CONDPROP_UNADJ")
+      condx <- adjfacdata$condx
+    }
+  }
+ 
 
   if (getadjplot) {
     if ("cadjcnd" %in% names(condf))
       stop("cadjcnd not in cond... must get adjustment factor")
     csumvarnm <- paste0(csumvarnm, "_ADJ")
     condf.sum <- condf[, lapply(.SD, function(x) sum(x * CONDPROP_ADJ, na.rm=TRUE)),
- 		by=cuniqueid, .SDcols=csumvar]
+ 		by=csumuniqueid, .SDcols=csumvar]
   } else {
     condf.sum <- condf[, lapply(.SD, function(x) sum(x * CONDPROP_UNADJ, na.rm=TRUE)),
- 		by=cuniqueid, .SDcols=csumvar]
+ 		by=csumuniqueid, .SDcols=csumvar]
   }
-  names(condf.sum) <- c(cuniqueid, csumvarnm)
+  names(condf.sum) <- c(csumuniqueid, csumvarnm)
 
-  ## Merge to plt
-  if (!noplt) {
+
+  ######################################################################## 
+  ######################################################################## 
+ 
+  ## Merge to cond or plot
+  ###################################
+  if (bycond && !nocond) {
+    ## Merge to cond
+    sumdat <- merge(condx, condf.sum, by=csumuniqueid, all.x=TRUE)
+  } else if (!noplt) {
     if (is.data.table(pltx)) {
       setkeyv(condf.sum, cuniqueid)
       setkeyv(pltx, puniqueid)
     }
-    condf.sum <- merge(pltx, condf.sum, by.x=puniqueid, by.y=cuniqueid, all.x=TRUE)
-    if (NAto0) {
-      for (col in csumvarnm) set(condf.sum, which(is.na(condf.sum[[col]])), col, 0)
-    }
+    sumdat <- merge(pltx, condf.sum, by.x=puniqueid, by.y=cuniqueid, all.x=TRUE)
+  } else if (bysubp && !is.null(subplotx)) {
+    sumdat <- merge(subplotx, condf.sum, by=csumuniqueid, all.x=TRUE)
+  } else {
+    sumdat <- condf.sum
+  }
+
+  ## Change NA values TO 0
+  if (NAto0) {
+    for (col in csumvarnm) set(sumdat, which(is.na(sumdat[[col]])), col, 0)
   }
 
 
@@ -298,36 +412,36 @@ datSumCond <- function(cond = NULL,
   #############################################################
   if (savedata) {
     if (pltsp) {
-      spExportSpatial(condf.sum, 
-              savedata_opts=list(outfolder=outfolder, 
-                                  out_fmt=out_fmt, 
-                                  out_dsn=out_dsn, 
-                                  out_layer=out_layer,
-                                  outfn.pre=outfn.pre, 
-                                  outfn.date=outfn.date, 
-                                  overwrite_layer=overwrite_layer,
-                                  append_layer=append_layer, 
-                                  add_layer=TRUE))
+      spExportSpatial(sumdat, 
+              savedata_opts=list(outfolder = outfolder, 
+                                  out_fmt = out_fmt, 
+                                  out_dsn = out_dsn, 
+                                  out_layer = out_layer,
+                                  outfn.pre = outfn.pre, 
+                                  outfn.date = outfn.date, 
+                                  overwrite_layer = overwrite_layer,
+                                  append_layer = append_layer, 
+                                  add_layer = TRUE))
     } else {
-      datExportData(condf.sum, 
-              savedata_opts=list(outfolder=outfolder, 
-                                  out_fmt=out_fmt, 
-                                  out_dsn=out_dsn, 
-                                  out_layer=out_layer,
-                                  outfn.pre=outfn.pre, 
-                                  outfn.date=outfn.date, 
-                                  overwrite_layer=overwrite_layer,
-                                  append_layer=append_layer,
-                                  add_layer=TRUE)) 
+      datExportData(sumdat, 
+              savedata_opts=list(outfolder = outfolder, 
+                                  out_fmt = out_fmt, 
+                                  out_dsn = out_dsn, 
+                                  out_layer = out_layer,
+                                  outfn.pre = outfn.pre, 
+                                  outfn.date = outfn.date, 
+                                  overwrite_layer = overwrite_layer,
+                                  append_layer = append_layer,
+                                  add_layer = TRUE)) 
     }
   }  
 
   if (!returnDT) {     
-    condf.sum <- setDF(condf.sum)
+    sumdat <- data.frame(sumdat)
   }
-  sumcondlst <- list(condsum=condf.sum, csumvarnm=csumvarnm)
-  if (!is.null(cfilter))
+  sumcondlst <- list(condsum=sumdat, csumvarnm=csumvarnm)
+  if (!is.null(cfilter)) {
     sumcondlst$cfilter <- cfilter
-
+  }
   return(sumcondlst)
 } 

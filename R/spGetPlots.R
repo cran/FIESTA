@@ -69,18 +69,10 @@
 #' 'ANNUAL').  Only one inventory type (PERIODIC/ANNUAL) at a time.
 #' @param intensity1 Logical. If TRUE, includes only XY coordinates where 
 #' INTENSITY = 1 (FIA base grid).
-#' @param istree Logical. If TRUE, tree data are extracted from TREE table in
-#' database.
-#' @param isseed Logical. If TRUE, seedling data are extracted from SEEDLING
-#' table in database.
-#' @param isveg Logical. If TRUE, understory vegetation tables are extracted
-#' from FIA database (P2VEG_SUBPLOT_SPP, P2VEG_SUBP_STRUCTURE, INVASIVE_SUBPLOT_SPP).
 #' @param issubp Logical. If TRUE, subplot tables are extracted from FIA
 #' database (SUBPLOT, SUBP_COND).
-#' @param ischng Logical. If TRUE, sccm (SUBP_COND_CHNG_MTRX) table is returned 
-#' that includes current and previous conditions. 
-#' @param isdwm Logical. If TRUE, summarized condition-level down woody debris
-#' data are extracted from FIA database (COND_DWM_CALC).
+#' @param istree Logical. If TRUE, include tree data.
+#' @param isseed Logical. If TRUE, include seedling data.
 #' @param biojenk Logical. If TRUE, Jenkins biomass is calculated.
 #' @param greenwt Logical. If TRUE, green weight biomass is calculated.
 #' @param plotgeom Logical. If TRUE, variables from the PLOTGEOM table are
@@ -97,8 +89,6 @@
 #' @param showsteps Logical. If TRUE, display data in device window.
 #' @param returndata Logical. If TRUE, returns data objects.
 #' @param savedata Logical. If TRUE, saves data to outfolder.
-#' @param savePOP Logical. If TRUE, save and return the POP_PLOT_STRATUM_ASSGN
-#' table.
 #' @param savebnd Logical. If TRUE, saves bnd. If out_fmt='sqlite', saves to a
 #' SpatiaLite database.
 #' @param returnxy Logical. If TRUE, save xy coordinates to outfolder.
@@ -120,7 +110,7 @@
 #' If savedata=TRUE, outdat data frame is saved to outfolder.
 #' @note
 #' 
-#' If savebnd=TRUE:\cr If out_fmt=c('csv','shp'), the writeOGR (rgdal) function
+#' If savebnd=TRUE:\cr If out_fmt=c('csv','shp'), the st_write (sf) function
 #' is called. The ArcGIS driver truncates variable names to 10 characters or
 #' less. Variable names are changed before export using an internal function
 #' (trunc10shp). If Spatial object has more than 1 record, it will be returned
@@ -183,12 +173,9 @@ spGetPlots <- function(bnd = NULL,
                        puniqueid = "CN", 
                        invtype = "ANNUAL", 
                        intensity1 = FALSE, 
-                       istree = FALSE, 
-                       isseed = FALSE, 
-                       isveg = FALSE, 
                        issubp = FALSE, 
-                       ischng = FALSE,
-                       isdwm = FALSE, 
+                       istree = FALSE,
+                       isseed = TRUE,
                        biojenk = FALSE,
                        greenwt = FALSE,
                        plotgeom = FALSE, 
@@ -199,7 +186,6 @@ spGetPlots <- function(bnd = NULL,
                        showsteps = FALSE, 
                        returndata = TRUE,
                        savedata = FALSE,
-                       savePOP = FALSE, 
                        savebnd = FALSE, 
                        returnxy = TRUE, 
                        exportsp = FALSE, 
@@ -225,9 +211,10 @@ spGetPlots <- function(bnd = NULL,
   ##############################################################################
 
   ## Set global variables
-  xydat=stateFilter=countyfips=xypltx=tabs2save=evalidst=PLOT_ID=INVYR=
+  xydat=stateFilter=countyfips=xypltx=evalidst=PLOT_ID=INVYR=
 	othertabnms=stcds=spxy=stbnd=invasive_subplot_spp=subp=subpc=dbconn=
 	bndx=evalInfo <- NULL
+  istree=isveg=ischng=isdwm <- FALSE
   cuniqueid=tuniqueid=duniqueid <- "PLT_CN"
   stbnd.att <- "COUNTYFIPS"
   returnlst <- list()
@@ -236,20 +223,22 @@ spGetPlots <- function(bnd = NULL,
   gui <- FALSE
   coordtype <- "public"
   iseval <- FALSE 
-  pltassgnid = "PLT_CN"
+  pltassgnid <- "PLT_CN"
+  savePOP <- FALSE
 
   ##################################################################
   ## CHECK PARAMETER NAMES
   ##################################################################
+  args <- as.list(match.call()[-1])
 
   ## Check input parameters
   input.params <- names(as.list(match.call()))[-1]
-  formallst <- unique(names(formals(spGetPlots)))
+  formallst <- unique(c(names(formals(spGetPlots)), "isveg", "ischng", "isdwm"))
   if (!all(input.params %in% formallst)) {
     miss <- input.params[!input.params %in% formallst]
     stop("invalid parameter: ", toString(miss))
   }
-  
+
   ## Check parameter lists
   pcheck.params(input.params, savedata_opts=savedata_opts, eval_opts=eval_opts,
 			xy_opts=xy_opts)
@@ -293,6 +282,11 @@ spGetPlots <- function(bnd = NULL,
     message("no evaluation timeframe specified...")
     message("see eval and eval_opts parameters (e.g., eval='custom', eval_opts=eval_options(Cur=TRUE))\n")
     stop()
+  }
+
+  if ("isveg" %in% names(args)) {
+    message("the parameter isveg is deprecated... use eval_options(Type='P2VEG'))\n")
+    isveg <- args$isveg
   }
 
   ## Set xy_options defaults
@@ -408,6 +402,48 @@ spGetPlots <- function(bnd = NULL,
       stop("no data in ", datsource)
     }
   }
+
+  ## GETS DATA TABLES (OTHER THAN PLOT/CONDITION) IF NULL
+  ###########################################################
+  if (gui) {
+    Typelst <- c("ALL", "CURR", "VOL", "P2VEG", "DWM", "INV", "GROW", "MORT", "REMV", "GRM")
+    Type <- select.list(Typelst, title="eval type", 
+		preselect="VOL", multiple=TRUE)
+    if (length(Type)==0) Type <- "VOL"
+  } 
+
+  if (any(Type %in% c("CURR", "VOL"))) {
+    istree <- TRUE
+  } 
+  if (any(Type == "P2VEG")) {
+    # understory vegetation tables 
+    # (P2VEG_SUBPLOT_SPP, P2VEG_SUBP_STRUCTURE)
+    isveg=issubp <- TRUE
+  } 
+  if (any(Type == "INV")) {
+    # understory vegetation tables 
+    # (INVASIVE_SUBPLOT_SPP)
+    isinv=issubp <- TRUE
+  } 
+  if (any(Type == "DWM")) {
+    # summarized condition-level down woody debris table (COND_DWM_CALC)
+    isdwm <- TRUE
+  }
+  if (any(Type == "CHNG")) {
+    # current and previous conditions, subplot-level - sccm (SUBP_COND_CHNG_MTRX) 
+    ischng=issubp <- TRUE
+  }
+  if (any(Type %in% c("GROW", "MORT", "REMV"))) {
+    Type <- "GRM"
+  }
+  if (any(Type == "GRM")) {
+    ischng=issubp=isgrm <- TRUE
+  }
+  if (isveg && invtype == "PERIODIC") {
+    message("understory vegetation data only available for annual data\n")
+    isveg <- FALSE
+  } 
+
 
   ## Get DBgetEvalid parameters from eval_opts
   ################################################
@@ -583,6 +619,7 @@ spGetPlots <- function(bnd = NULL,
           xyjoinid = xydat1$xyjoinid       
           bndx1 <- xydat1$bndx
           evalInfo1 <- xydat1$evalInfo
+          #pop_plot_stratum_assgn1 <- xydat1$pop_plot_stratum_assgn
 
           ## Get plots outside filter
           #######################################
@@ -610,6 +647,7 @@ spGetPlots <- function(bnd = NULL,
           countyfips2 <- xydat2$countyfips
           bndx2 <- xydat2$bndx
           evalInfo2 <- xydat2$evalInfo
+          #pop_plot_stratum_assgn2 <- xydat1$pop_plot_stratum_assgn
 
           ## Combine XYdata inside and outside filter
           spxy <- rbind(spxy1, spxy2)
@@ -617,6 +655,7 @@ spGetPlots <- function(bnd = NULL,
           states <- unique(states1, states2)
           countyfips <- unique(countyfips1, countyfips2)
           bndx <- rbind(bndx1, bndx2)
+          #pop_plot_stratum_assgn <- rbind(pop_plot_stratum_assgn1, pop_plot_stratum_assgn2)
 
         } else {
           xydat <- spGetXY(bnd = bndx, 
@@ -646,7 +685,8 @@ spGetPlots <- function(bnd = NULL,
           xy.uniqueid <- xydat$xy.uniqueid
           pjoinid = xydat$pjoinid 
           xyjoinid = xydat$xyjoinid 
-          evalInfo <- xydat$evalInfo             
+          evalInfo <- xydat$evalInfo  
+          #pop_plot_stratum_assgn <- xydat$pop_plot_stratum_assgn           
         }
  
         ## Check xyjoinid
@@ -904,8 +944,9 @@ spGetPlots <- function(bnd = NULL,
                          pjoinid = pjoinid, 
                          istree = istree,
                          isseed = isseed,
-                         issubp = issubp,
                          isveg = isveg,
+                         issubp = issubp,
+                         ischng = ischng,
                          isdwm = isdwm,
                          plotgeom = plotgeom, 
                          othertables = othertables, 
@@ -990,8 +1031,9 @@ spGetPlots <- function(bnd = NULL,
                          pjoinid = pjoinid, 
                          istree = istree,
                          isseed = isseed,
-                         issubp = issubp,
                          isveg = isveg,
+                         issubp = issubp,
+                         ischng = ischng,
                          isdwm = isdwm,
                          plotgeom = plotgeom, 
                          othertables = othertables, 
@@ -1079,8 +1121,9 @@ spGetPlots <- function(bnd = NULL,
                          pjoinid = pjoinid, 
                          istree = istree,
                          isseed = isseed,
-                         issubp = issubp,
                          isveg = isveg,
+                         issubp = issubp,
+                         ischng = ischng,
                          isdwm = isdwm,
                          plotgeom = plotgeom, 
                          othertables = othertables, 
@@ -1106,16 +1149,6 @@ spGetPlots <- function(bnd = NULL,
         break
       }
 
-      ## If duplicate plots, sort descending based on INVYR or CN and select 1st row
-      if (nrow(PLOT) > length(unique(PLOT[[puniqueid]]))) {
-        if ("INVYR" %in% names(PLOT)) {
-          setorder(PLOT, -INVYR)
-        } else {
-          setorderv(PLOT, -puniqueid)
-        }
-        PLOT <- PLOT[, head(.SD, 1), by=pjoinid]
-      }
-
       ## Check pjoinid
       ##############################################
       pltfields <- names(PLOT)
@@ -1133,6 +1166,16 @@ spGetPlots <- function(bnd = NULL,
             stop(xyjoinid, " not in plt")
           }
         }
+      }
+
+      ## If duplicate plots, sort descending based on INVYR or CN and select 1st row
+      if (nrow(PLOT) > length(unique(PLOT[[puniqueid]]))) {
+        if ("INVYR" %in% names(PLOT)) {
+          setorder(PLOT, -INVYR)
+        } else {
+          setorderv(PLOT, -puniqueid)
+        }
+        PLOT <- PLOT[, head(.SD, 1), by=pjoinid]
       }
 
       if (nrow(stpltids) > 0) {
@@ -1328,13 +1371,17 @@ spGetPlots <- function(bnd = NULL,
       }
     }
  
-    if (savePOP) {
-      returnlst$pop_plot_stratum_assgn <- pop_plot_stratum_assgn
-    }
+    #if (savePOP && !is.null(pop_plot_stratum_assgn)) {
+    #  returnlst$pop_plot_stratum_assgn <- get(ppsanm)
+    #}
     if (iseval) {
       returnlst$evalid <- evalid
     }
-    return(returnlst)
+    
+    if (returndata) {
+      returnlst$args <- args
+      return(returnlst)
+    }
   } 
 }
 

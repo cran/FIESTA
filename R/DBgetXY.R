@@ -61,6 +61,11 @@
 #' @param SURVEY Data frame. The name of the SURVEY data frame object
 #' if it has been already downloaded and stored in environment.
 #' @param POP_PLOT_STRATUM_ASSGN Data frame. The name of the 
+#' PLOT data frame object if it is already downloaded and stored in
+#' environment. 
+#' @param PLOT Data frame. The name of the PLOT data frame object if 
+#' it is already downloaded and stored in environment. 
+#' @param POP_PLOT_STRATUM_ASSGN Data frame. The name of the 
 #' POP_PLOT_STRATUM_ASSGN data frame object if it is already downloaded 
 #' and stored in environment. 
 #' @param dbconnopen Logical. If TRUE, the dbconn connection is not closed. 
@@ -120,6 +125,7 @@ DBgetXY <- function (states = NULL,
                      savedata = FALSE, 
                      exportsp = FALSE,
                      savedata_opts = NULL,
+                     PLOT = NULL,
                      POP_PLOT_STRATUM_ASSGN = NULL,
                      SURVEY = NULL,
                      dbconnopen = FALSE,
@@ -129,6 +135,7 @@ DBgetXY <- function (states = NULL,
   ## DESCRIPTION: Get the most current coordinates in the FIA database
   
   gui <- FALSE
+  istree=isseed=isveg=ischng=isdwm <- FALSE
   if (gui) {
     intensity1=savedata=parameters=out_fmt=overwrite <- NULL
   }
@@ -145,7 +152,7 @@ DBgetXY <- function (states = NULL,
 
   ## Check arguments
   input.params <- names(as.list(match.call()))[-1]
-  if (!all(input.params %in% names(formals(DBgetXY)))) {
+  if (!all(input.params %in% c(names(formals(DBgetXY)), "istree", "isseed", "isveg"))) {
     miss <- input.params[!input.params %in% formals(DBgetXY)]
     stop("invalid parameter: ", toString(miss))
   } 
@@ -241,7 +248,6 @@ DBgetXY <- function (states = NULL,
   nbrstates <- length(states)
 
 
-
   ###########################################################################
   ## Check XY database 
   ###########################################################################
@@ -257,12 +263,13 @@ DBgetXY <- function (states = NULL,
     }
   }
 
-
   ## Check xy database
   ####################################################################
   if (all(list(class(xy), class(plot_layer)) == "character") && 
 		(is.null(datsource) || xy_datsource == datsource)) {
     xyisplot <- ifelse (identical(tolower(xy), tolower(plot_layer)), TRUE, FALSE)
+  } else if (!identical(xy_datsource, datsource)) {
+    xyisplot <- FALSE
   } else {
     xyisplot <- ifelse (identical(xy, plot_layer), TRUE, FALSE)
   }
@@ -361,6 +368,48 @@ DBgetXY <- function (states = NULL,
   } 
 
 
+  ## GETS DATA TABLES (OTHER THAN PLOT/CONDITION) IF NULL
+  ###########################################################
+  if (gui) {
+    Typelst <- c("CURR", "VOL", "P2VEG", "DWM", "GRM")
+    Type <- select.list(Typelst, title="eval type", 
+		preselect="VOL", multiple=TRUE)
+    if (length(Type)==0) Type <- "VOL"
+  } 
+
+  if (any(Type == "VOL")) {
+    istree=isseed <- TRUE
+  } 
+  if (any(Type == "P2VEG")) {
+    # understory vegetation tables 
+    # (P2VEG_SUBPLOT_SPP, P2VEG_SUBP_STRUCTURE, INVASIVE_SUBPLOT_SPP)
+    isveg=issubp <- TRUE
+  } 
+  if (any(Type == "DWM")) {
+    # summarized condition-level down woody debris table (COND_DWM_CALC)
+    isdwm <- TRUE
+  }
+  if (any(Type == "CHNG")) {
+    # current and previous conditions, subplot-level - sccm (SUBP_COND_CHNG_MTRX) 
+    ischng=issubp <- TRUE
+  }
+  if (any(Type == "GRM")) {
+    ischng=issubp=isgrm <- TRUE
+  }
+  if (isveg && invtype == "PERIODIC") {
+    message("understory vegetation data only available for annual data\n")
+    isveg <- FALSE
+  } 
+
+  if (isveg && invtype == "PERIODIC") {
+    message("understory vegetation data only available for annual data\n")
+    isveg <- FALSE
+  } 
+
+  ########################################################################
+  ### DBgetEvalid()
+  ########################################################################
+
   ## Get DBgetEvalid parameters from eval_opts
   ####################################################################
   if (eval == "FIA") {
@@ -380,11 +429,17 @@ DBgetXY <- function (states = NULL,
     evalCur=evalAll <- FALSE
     evalEndyr <- NULL
   }
-
+ 
   ####################################################################
   ## Get states, Evalid and/or invyrs info
   ####################################################################
-  if (is.null(evalInfo)) {
+  ## Get states, Evalid and/or invyrs info
+  ##########################################################
+  if (!is.null(evalInfo)) {
+    list.items <- c("states", "evalidlist", "invtype", "invyrtab")
+    evalInfo <- pcheck.object(evalInfo, "evalInfo", list.items=list.items)
+
+  } else {
     evalInfo <- tryCatch( DBgetEvalid(states = states, 
                           RS = RS, 
                           datsource = datsource,
@@ -417,18 +472,26 @@ DBgetXY <- function (states = NULL,
     iseval <- TRUE
     savePOP <- TRUE
   }
-  ppsanm <- evalInfo$ppsanm
   dbconn <- evalInfo$dbconn
   SURVEY <- evalInfo$SURVEY
-  PLOT <- evalInfo$PLOT
-  POP_PLOT_STRATUM_ASSGN <- evalInfo$POP_PLOT_STRATUM_ASSGN
   if (!is.null(SURVEY)) {
     surveynm <- "SURVEY"
   }
+
   if (!is.null(PLOT)) {
     plotnm <- "PLOT"
+  } else if (!is.null(evalInfo$PLOT)) {
+    PLOT <- evalInfo$PLOT
+    plotnm <- "PLOT"
   }
- 
+
+  if (!is.null(POP_PLOT_STRATUM_ASSGN)) {
+    ppsanm <- "POP_PLOT_STRATUM_ASSGN"
+  } else if (!is.null(evalInfo$POP_PLOT_STRATUM_ASSGN)) {
+    POP_PLOT_STRATUM_ASSGN <- evalInfo$POP_PLOT_STRATUM_ASSGN
+    ppsanm <- "POP_PLOT_STRATUM_ASSGN"
+  }
+
   ####################################################################
   ## Check custom Evaluation data
   ####################################################################
@@ -477,16 +540,31 @@ DBgetXY <- function (states = NULL,
   ## Check xy table
   ####################################################################
   if (xy_datsource == "datamart") {
-    XYdf <- pcheck.table(xy, stopifnull=FALSE)
-    if (is.null(XYdf)) {
-      XYdf <- tryCatch( DBgetCSV(xy, 
+    if (iseval && is.null(POP_PLOT_STRATUM_ASSGN)) {
+      POP_PLOT_STRATUM_ASSGN <- tryCatch( DBgetCSV("POP_PLOT_STRATUM_ASSGN", 
                              stabbrlst,
                              returnDT = TRUE, 
                              stopifnull = FALSE),
 			error = function(e) {
                   message(e, "\n")
                   return(NULL) })
+      ppsanm <- "POP_PLOT_STRATUM_ASSGN"
     }
+
+    XYdf <- pcheck.table(xy, stopifnull=FALSE)
+    if (is.null(XYdf)) {
+      if (is.character(xy) && exists(xy) && !is.null(get(xy))) {
+        XYdf <- get(xy)
+      } else { 
+        XYdf <- tryCatch( DBgetCSV(xy, 
+                             stabbrlst,
+                             returnDT = TRUE, 
+                             stopifnull = FALSE),
+			error = function(e) {
+                  message(e, "\n")
+                  return(NULL) })
+      }
+    } 
     if (!is.null(XYdf)) {
       xynm <- "XYdf"
       xyflds <- names(XYdf)
@@ -572,14 +650,15 @@ DBgetXY <- function (states = NULL,
           xy_datsource <- "datamart"
         }
       }
- 
-      PLOT <- tryCatch( DBgetCSV("PLOT", 
+      if (is.null(PLOT)) {
+        PLOT <- tryCatch( DBgetCSV("PLOT", 
                              stabbrlst,
                              returnDT = TRUE, 
                              stopifnull = FALSE),
 			error = function(e) {
                   message(e, "\n")
                   return(NULL) })
+      }
       if (!is.null(PLOT)) {
         plotnm <- "PLOT"
         pltflds <- names(PLOT)
@@ -699,7 +778,7 @@ DBgetXY <- function (states = NULL,
       xyvarsA <- paste0("xy.", unique(xyvars)) 
     }
   }
-
+ 
   ###########################################################################
   ## Build filter
   ###########################################################################
@@ -748,7 +827,6 @@ DBgetXY <- function (states = NULL,
           stop(ppsa_layer, " is missing evalids: ", toString(missevalid))
           ppsanm <- NULL
         }
-
       } else if (datsource == "datamart") {
         POP_PLOT_STRATUM_ASSGN <- DBgetCSV("POP_PLOT_STRATUM_ASSGN", stabbrlst, 
 			returnDT=TRUE, stopifnull=FALSE)
@@ -770,7 +848,9 @@ DBgetXY <- function (states = NULL,
         }
         ppsaflds <- names(POP_PLOT_STRATUM_ASSGN)
       }
-    } 
+    } else {
+      ppsaflds <- names(POP_PLOT_STRATUM_ASSGN)
+    }
     
     pfromqry <- paste0(SCHEMA., ppsanm, " ppsa")
     xyfromqry <- paste0(pfromqry, " JOIN ", SCHEMA., xynm, 
@@ -924,7 +1004,7 @@ DBgetXY <- function (states = NULL,
 				" GROUP BY statecd, ", yrvar, 
 				" ORDER BY statecd, ", yrvar) 
   }
-
+ 
   ## Create invyrtab query 
   ###########################################################
   xycoords.qry <- paste0("select distinct ", toString(xyvarsA), 
@@ -933,6 +1013,7 @@ DBgetXY <- function (states = NULL,
   message(xycoords.qry)
 
   if (xy_datsource == "sqlite") {
+    if (is.null(dbconn)) dbconn <- xyconn
     xyx <- tryCatch( DBI::dbGetQuery(dbconn, xycoords.qry),
 			error = function(e) {
                   message(e, "\n")
@@ -1050,6 +1131,11 @@ DBgetXY <- function (states = NULL,
                               add_layer = TRUE))
   }
 
+  ## Set xyjoinid
+  if (is.null(xyjoinid)) {
+    xyjoinid <- xy.uniqueid
+  }
+ 
   ## GENERATE RETURN LIST
   ###########################################################
   if (returndata) {
@@ -1069,6 +1155,10 @@ DBgetXY <- function (states = NULL,
       returnlst$dbconn <- dbconn
     }
     returnlst$evalInfo <- evalInfo
+ 
+    if (!is.null(ppsanm) && exists(ppsanm)) {
+      returnlst$pop_plot_stratum_assgn <- get(ppsanm)
+    }
 
     ## Return data list
     return(returnlst)
