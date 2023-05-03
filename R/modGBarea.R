@@ -252,7 +252,7 @@
 #' )
 #' str(forest_area_by_forest_type, max.level = 1)
 #' @export modGBarea
-modGBarea <- function(GBpopdat, 
+modGBarea <- function(GBpopdat,
                       landarea = "FOREST", 
                       pcfilter = NULL, 
                       rowvar = NULL, 

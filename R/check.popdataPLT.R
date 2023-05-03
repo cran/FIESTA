@@ -275,7 +275,14 @@ check.popdataPLT <- function(dsn, tabs, tabIDs, pltassgn, pltassgnid,
 
       ## Check for NA values in necessary variables in plt table
       pltx.na <- sum(is.na(pltx[[puniqueid]]))
-      if (pltx.na > 0) stop("NA values in ", puniqueid)
+      if (pltx.na > 0) {
+        if (length(pltx.na) == 1) {
+          message("1 NA value in ", puniqueid)
+        } else {
+          message(pltx.na, " NA values in ", puniqueid)
+        }
+        pltx <- pltx[!is.na(pltx[[puniqueid]]), ]
+      }
 
       ## Set key
       setkeyv(pltx, puniqueid)
@@ -431,9 +438,10 @@ check.popdataPLT <- function(dsn, tabs, tabIDs, pltassgn, pltassgnid,
       ##################################################################################
       designcd <- unique(na.omit(pltx[["DESIGNCD"]]))
       if (length(designcd) > 1) {
-        if (any(!designcd %in% c(1, 501:505, 230:242, 328))) {
+        if (any(!designcd %in% c(1, 501:505, 230:242, 311:323, 328))) {
           if (adj == "samp") {
-            message("samp adjustment for trees is only for annual inventory")
+            message("designcds include: ", toString(sort(designcd)))
+            message("samp adjustment for trees is only for annual inventory designs... see FIA database manual")
           } else {
             warning("more than 1 plot design, calculate separate estimates by design")
           }
@@ -511,7 +519,7 @@ check.popdataPLT <- function(dsn, tabs, tabIDs, pltassgn, pltassgnid,
 
   ## Remove plots that have no remeasurement data
   ######################################################################################
-  if (popType %in% c("GRM", "CHNG", "LULC")) {
+  if (popType %in% c("GRM", "CHNG", "LULC") && "REMPER" %in% names(pltx)) {
     ## Remove plots that have no remeasurement data
     pltx <- pltx[!is.na(pltx$REMPER), ]
   }

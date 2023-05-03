@@ -729,8 +729,10 @@ DBgetPlots <- function (states = NULL,
     if (length(Type)==0) Type <- "VOL"
   } 
 
-  if (any(Type %in% c("CURR", "VOL"))) {
-    istree <- TRUE
+  if (any(Type %in% c("VOL"))) {
+    if (!istree) {
+      message("eval Type includes 'VOL', but istree = FALSE... not trees are included")
+    }
   } 
   if (any(Type == "P2VEG")) {
     # understory vegetation tables 
@@ -777,7 +779,6 @@ DBgetPlots <- function (states = NULL,
   coordType <- pcheck.varchar(var2check=coordType, varnm="coordType", 
 		gui=gui, checklst=coordTypelst, caption="Coordinate Type?")
 
-
   ########################################################################
   ### DBgetEvalid()
   ########################################################################
@@ -813,7 +814,7 @@ DBgetPlots <- function (states = NULL,
   ## Get states, Evalid and/or invyrs info
   ##########################################################
   if (!is.null(evalInfo)) {
-    list.items <- c("states", "evalidlist", "invtype", "invyrtab")
+    list.items <- c("states", "invtype", "invyrtab")
     evalInfo <- pcheck.object(evalInfo, "evalInfo", list.items=list.items)
 
   } else {
@@ -865,7 +866,9 @@ DBgetPlots <- function (states = NULL,
   if (!is.null(evalTypelist)) {
     Typelist <- sub("EXP", "", evalTypelist)
     if (any(c("VOL","CURR") %in% Typelist)) {
-      istree <- TRUE
+      if (!istree) {
+        message("istree is set to FALSE... not including tree data")
+      }
     }
     if ("P2VEG" %in% Typelist) {
       isveg=issubp <- TRUE
@@ -2368,7 +2371,7 @@ DBgetPlots <- function (states = NULL,
 
       if (datsource == "sqlite") {
         seednm <- chkdbtab(dbtablst, seed_layer)
-        if (!is.null(seednm)) {
+        if (is.null(seednm)) {
           stest <- dbtablst[grepl("seed", dbtablst)]
           if (length(stest) == 1) {
             seednm <- stest
@@ -2380,6 +2383,8 @@ DBgetPlots <- function (states = NULL,
             isseed <- FALSE 
             seednm <- NULL
           }
+        } else {
+          seedflds <- DBI::dbListFields(dbconn, seednm)
         }
       } else if (datsource == "datamart") {
         SEEDLING <- DBgetCSV("SEEDLING", stabbr, returnDT=TRUE, 

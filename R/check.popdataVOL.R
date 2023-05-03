@@ -1,6 +1,6 @@
 check.popdataVOL <- function(tabs, tabIDs, pltassgnx, pltassgnid,
 	pfromqry, palias, pjoinid, whereqry, adj, ACI, pltx=NULL, puniqueid="CN", 
-	dsn=NULL, dbconn=NULL, condid="CONDID", areawt="CONDPROP_UNADJ", 
+	dsn=NULL, dbconn=NULL, condid="CONDID", areawt="CONDPROP_UNADJ", areawt2 = NULL,
 	MICRO_BREAKPOINT_DIA=5, MACRO_BREAKPOINT_DIA=NULL, diavar="DIA",
 	areawt_micr="MICRPROP_UNADJ", areawt_subp="SUBPPROP_UNADJ", areawt_macr="MACRPROP_UNADJ",
 	nonsamp.cfilter=NULL, nullcheck=FALSE, cvars2keep=NULL, gui=FALSE){
@@ -40,7 +40,7 @@ check.popdataVOL <- function(tabs, tabIDs, pltassgnx, pltassgnid,
   ## Set global variables
   COND_STATUS_CD=CONDID=CONDPROP_UNADJ=SUBPPROP_UNADJ=MICRPROP_UNADJ=MACRPROP_UNADJ=
 	STATECD=cndnmlst=PROP_BASIS=ACI.filter=condsampcnt=
-	NF_COND_STATUS_CD=TPA_UNADJ=condqry=treeqry=cfromqry=tfromqry=
+	NF_COND_STATUS_CD=TPA_UNADJ=condqry=treeqry=seedqry=cfromqry=tfromqry=
 	tpropvars=treex <- NULL
 
   ###################################################################################
@@ -56,7 +56,6 @@ check.popdataVOL <- function(tabs, tabIDs, pltassgnx, pltassgnid,
     assign(tabnm, tabs[[tabnm]])
   }
   cuniqueid <- tabIDs[["cond"]]
-
 
   ###################################################################################
   ## Database queries
@@ -76,7 +75,7 @@ check.popdataVOL <- function(tabs, tabIDs, pltassgnx, pltassgnid,
     ## Create query for cond
     #########################################
     if (all(!is.null(cond), is.character(cond), cond %in% tablst)) {
-      #condvars <-  DBvars.default()$condvarlst
+      condvars <-  DBvars.default()$condvarlst
 
       if (is.null(pfromqry)) {
         cfromqry <- paste0(SCHEMA., cond, " c")
@@ -84,22 +83,26 @@ check.popdataVOL <- function(tabs, tabIDs, pltassgnx, pltassgnid,
         cfromqry <- paste0(pfromqry, " JOIN ", SCHEMA., cond,
 				" c ON (c.", cuniqueid, " = ", palias, ".", pjoinid, ")")
       }
-#      condqry <- paste("select distinct", toString(paste0("c.", condvars)), 
-#				"from", cfromqry, whereqry)
-      condqry <- paste("select distinct c.* from", cfromqry, whereqry)
+      condqry <- paste("select distinct", toString(paste0("c.", condvars)), 
+				"from", cfromqry, whereqry)
+      #condqry <- paste("select distinct c.* from", cfromqry, whereqry)
       dbqueries$cond <- condqry   
     }
 
     ## Create query for tree
     #########################################
     if (all(!is.null(tree), is.character(tree), tree %in% tablst)) {
+      treevars <-  DBvars.default(istree=TRUE)$treevarlst
+      tsumvars <-  DBvars.default(istree=TRUE)$tsumvarlst
       if (!is.null(pfromqry)) {
         tfromqry <- paste0(pfromqry, " JOIN ", SCHEMA., tree,
 				" t ON (t.PLT_CN = ", palias, ".", pjoinid, ")")
       } else {
         tfromqry <- paste(tree, "t")
       }
-      treeqry <- paste("select distinct t.* from", tfromqry, whereqry)
+      treeqry <- paste("select distinct", toString(paste0("t.", unique(c(treevars, tsumvars)))), 
+				"from", tfromqry, whereqry)
+      #treeqry <- paste("select distinct t.* from", tfromqry, whereqry)
       dbqueries$tree <- treeqry
     }
 
@@ -336,6 +339,11 @@ check.popdataVOL <- function(tabs, tabIDs, pltassgnx, pltassgnid,
   }
   pltcondx[[areawt]] <- check.numeric(pltcondx[[areawt]])
 
+  if (!is.null(areawt2)) {
+    pltcondx[, areawt2 := eval(parse(text=areawt2))]
+    cvars2keep <- c(cvars2keep, "areawt2")
+  }
+
   ###################################################################################
   ###################################################################################
   ## Check tree data
@@ -419,7 +427,6 @@ check.popdataVOL <- function(tabs, tabIDs, pltassgnx, pltassgnid,
       cvars2keep <- unique(c(cvars2keep, unlist(tpropvars)))
     }
   }
-
 
   ###################################################################################
   ## Check seedling data
@@ -506,6 +513,10 @@ check.popdataVOL <- function(tabs, tabIDs, pltassgnx, pltassgnid,
   returnlst <- list(condx=condx, pltcondx=pltcondx, cuniqueid=cuniqueid, 
 	condid=condid, condsampcnt=as.data.frame(condsampcnt),
 	ACI.filter=ACI.filter, areawt=areawt)
+
+  if (!is.null(areawt2)) {
+    returnlst$areawt2 <- "areawt2"
+  }
 
   if (!is.null(treex)) {
     ## Check that the values of tuniqueid in treex are all in cuniqueid in pltcondx
