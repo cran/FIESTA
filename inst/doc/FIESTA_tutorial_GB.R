@@ -259,7 +259,6 @@ DBI::dbDisconnect(conn)
 
 
 ## ---- results = FALSE, message = F--------------------------------------------
-
 GBpopdat.RI <- modGBpop(popTabs = list(plt="plot", cond="cond", tree="tree", seed="seed"),
                   dsn = SQLitefn,
                   pltassgn = "pop_plot_stratum_assgn",
@@ -1334,7 +1333,6 @@ head(ratio3.2$est)
 ##    by forest type, Wyoming, 2011-2013
 ratio1.4 <- modGBratio(
     GBpopdat = GBpopdat,         # pop - population calculations for WY, post-stratification
-    estseed = "add",             # est - add seedling data
     landarea = "FOREST",         # est - forest land filter
     sumunits = TRUE,             # est - sum estimation units to population
     estvarn = "VOLCFNET",                # est - net cubic-foot volume, numerator

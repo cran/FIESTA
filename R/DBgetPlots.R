@@ -324,7 +324,7 @@
 #' p2veg_subplot_spp, p2veg_subp_structure, and invasive_subplot_spp 
 #' (if Type='P2VEG'). See below 'Output Tables - FIA Table Names' 
 #' for reference to FIA database tables.
-#' See FIESTA:ref_* for variable descriptions (e.g., FIESTA::ref_tree). 
+#' See FIESTA:ref_* for variable descriptions (e.g., FIESTAutils::ref_tree). 
 #' If istree and the number of states > 3, tree data are saved to outfolder 
 #' and not returned to accommodate R memory issues. } 
 #' \item{xy*_PUBLIC}{ Data frame. XY data from FIA's public database. If 
@@ -426,7 +426,7 @@
 #' # Look at number of plots by inventory year
 #' table(UTdat$plot$INVYR)
 #' 
-#' # Note: see FIESTA::ref_plot and FIESTA::ref_cond for variable descriptions
+#' # Note: see FIESTAutils::ref_plot and FIESTAutils::ref_cond for variable descriptions
 #' # Or consult FIA Database documentation
 #' # \link{https://www.fia.fs.fed.us/library/database-documentation/index.php}
 #' 
@@ -464,7 +464,7 @@ DBgetPlots <- function (states = NULL,
                         invtype = "ANNUAL", 
                         intensity1 = FALSE, 
                         issubp = FALSE, 
-                        istree = FALSE,
+                        istree = TRUE,
                         isseed = FALSE,                      
                         biojenk = FALSE,
                         greenwt = FALSE,
@@ -535,7 +535,7 @@ DBgetPlots <- function (states = NULL,
 	FORNONSAMP=PLOT_ID=sppvarsnew=STATECD=UNITCD=COUNTYCD=SEEDSUBP6=
 	PREV_PLT_CN=dbqueries=REF_SPECIES=PLOT=PLOTe=POP_PLOT_STRATUM_ASSGNe <- NULL
   plotnm=plotgeomnm=ppsanm=condnm=treenm=seednm=vsubpsppnm=vsubpstrnm=invsubpnm=
-	subplotnm=subpcondnm=sccmnm=grmnm=dwmnm=othertablenm=surveynm=evalidnm=
+	subplotnm=subpcondnm=sccmnm=grmnm=dwmnm=surveynm=evalidnm=
      pltcondx <- NULL
 
 
@@ -728,10 +728,9 @@ DBgetPlots <- function (states = NULL,
 		preselect="VOL", multiple=TRUE)
     if (length(Type)==0) Type <- "VOL"
   } 
-
   if (any(Type %in% c("VOL"))) {
     if (!istree) {
-      message("eval Type includes 'VOL', but istree = FALSE... not trees are included")
+      message("eval Type includes 'VOL', but istree = FALSE... no trees included")
     }
   } 
   if (any(Type == "P2VEG")) {
@@ -814,7 +813,7 @@ DBgetPlots <- function (states = NULL,
   ## Get states, Evalid and/or invyrs info
   ##########################################################
   if (!is.null(evalInfo)) {
-    list.items <- c("states", "invtype", "invyrtab")
+    list.items <- c("states", "invtype")
     evalInfo <- pcheck.object(evalInfo, "evalInfo", list.items=list.items)
 
   } else {
@@ -863,31 +862,37 @@ DBgetPlots <- function (states = NULL,
     plotnm <- "PLOTe"
   }
 
-  if (!is.null(evalTypelist)) {
-    Typelist <- sub("EXP", "", evalTypelist)
-    if (any(c("VOL","CURR") %in% Typelist)) {
-      if (!istree) {
-        message("istree is set to FALSE... not including tree data")
-      }
+#  if (!is.null(evalTypelist)) {
+#    #Typelist <- unlist(evalTypelist)
+#    #Typelist <- sub("EXP", "", evalTypelist)
+#    Typelist <- lapply(evalTypelist, function(x) sub("EXP", "", x))
+
+#    if (any(c("VOL","CURR") %in% Typelist)) {
+#      if (!istree) {
+#        message("istree is set to FALSE... not including tree data")
+#      }
+#    }
+#    if ("P2VEG" %in% Typelist) {
+#      isveg=issubp <- TRUE
+#    } 
+#    if ("INV" %in% Typelist) {
+#      isinv=issubp <- TRUE
+#    } 
+#    if ("DWM" %in% Typelist) {
+#      isdwm <- TRUE
+#    }
+#    if ("CHNG" %in% Typelist) {
+#      ischng=issubp <- TRUE
+#    }
+#    if (any(c("GRM","GROW","MORT","REMV") %in% Typelist)) {
+#      ischng=issubp=isgrm=istree <- TRUE
+#    }
+#  } else {
+    if (!is.list(Type)) {
+      Typelist <- as.list(rep(Type, length(states)))
+      names(Typelist) <- states
     }
-    if ("P2VEG" %in% Typelist) {
-      isveg=issubp <- TRUE
-    } 
-    if ("INV" %in% Typelist) {
-      isinv=issubp <- TRUE
-    } 
-    if ("DWM" %in% Typelist) {
-      isdwm <- TRUE
-    }
-    if ("CHNG" %in% Typelist) {
-      ischng=issubp <- TRUE
-    }
-    if (any(c("GRM","GROW","MORT","REMV") %in% Typelist)) {
-      ischng=issubp=isgrm=istree <- TRUE
-    }
-  } else {
-    Typelist <- unlist(Type)
-  }
+#  }
  
   ## Get state abbreviations and codes 
   ###########################################################
@@ -1129,6 +1134,16 @@ DBgetPlots <- function (states = NULL,
   ## Loop through states
   ###################################################################################
   for (i in 1:length(states)) {
+
+    if (savedata) {
+      if (i > 1) { 
+        append_layer <- TRUE
+      }
+      if (append_layer && overwrite_layer) {
+        overwrite_layer <- FALSE
+      }
+    }
+
     if (!is.null(PLOTe)) {
       PLOT <- PLOTe
     } else {
@@ -1194,7 +1209,19 @@ DBgetPlots <- function (states = NULL,
           plotgeomflds <- DBI::dbListFields(dbconn, plotgeomnm)
           pltcondflds <- c(pltcondflds, plotgeomflds)
         }
-      }        
+      } 
+
+      ## Other tables
+      if (!is.null(othertables)) {
+        for (othertable in othertables) {
+          othertable <- chkdbtab(dbtablst, othertable)
+          if (is.null(othertable)) {
+            othertables <- othertables[othertables != othertable]
+            othertables2 <- othertables
+          }
+        }
+      }
+       
     } else if (datsource == "datamart") {
 
       ## PLOT table
@@ -1254,7 +1281,10 @@ DBgetPlots <- function (states = NULL,
         for (othertable in othertables) {
           assign(othertable, 
  		        DBgetCSV(othertable, stabbr, returnDT=TRUE, stopifnull=FALSE))
-          if (!is.null(othertable)) othertablenm <- othertable
+          if (is.null(get(othertable))) {
+            othertables <- othertables[othertables != othertable]
+            othertables2 <- othertables
+          }
         }
       }
     } else if (datsource %in% c("csv", "obj")) {
@@ -1372,30 +1402,31 @@ DBgetPlots <- function (states = NULL,
     ## If FIA evaluation, get all plot from all evaluations.
     if (iseval) {
       evalid <- evalidlist[[state]]
+      Types <- Typelist[[state]]
       evalFilter <- paste0("ppsa.EVALID IN(", toString(evalid), ")")
 
-      if ("P2VEG" %in% Typelist) {
+      if ("P2VEG" %in% Types) {
         evalid.veg <- evalid[endsWith(as.character(evalid), "10")]
         if (length(evalid.veg) == 0) stop("must include evaluation ending in 10")
         evalFilter.veg <- paste("ppsa.EVALID =", evalid.veg)
       } else {
         evalFilter.veg <- evalFilter
       }
-      if ("INV" %in% Typelist) {
+      if ("INV" %in% Types) {
         evalid.inv <- evalid[endsWith(as.character(evalid), "09")]
         if (length(evalid.inv) == 0) stop("must include evaluation ending in 09")
         evalFilter.inv <- paste("ppsa.EVALID =", evalid.inv)
       } else {
         evalFilter.inv <- evalFilter
       }
-      if ("DWM" %in% Typelist) {
+      if ("DWM" %in% Types) {
         evalid.dwm <- evalid[endsWith(as.character(evalid), "07")]
         if (length(evalid.dwm) == 0) stop("must include evaluation ending in 07")
         evalFilter.dwm <- paste("ppsa.EVALID =", evalid.dwm)
       } else {
         evalFilter.dwm <- evalFilter
       }
-      if (any(c("GROW", "MORT", "REMV", "GRM") %in% Typelist)) {
+      if (any(c("GROW", "MORT", "REMV", "GRM") %in% Types)) {
         evalid.grm <- evalid[endsWith(as.character(evalid), "03")]
         if (length(evalid.grm) == 0) stop("must include evaluation ending in 03")
         evalFilter.grm <- paste("ppsa.EVALID =", evalid.grm)
@@ -1438,7 +1469,7 @@ DBgetPlots <- function (states = NULL,
         message("the INTENSITY variable is not in dataset")
       }
     }
- 
+
     ####################################################################################
     #############################  ADDS FILTER (OPTIONAL)  #############################
     ####################################################################################
@@ -2094,7 +2125,7 @@ DBgetPlots <- function (states = NULL,
         gc()   
       } 
     }
- 
+
     ##############################################################
     ## Tree data
     ##############################################################
@@ -2139,8 +2170,8 @@ DBgetPlots <- function (states = NULL,
 
         ## Check if sppvars are in ref_species table
         if (!is.null(sppvars)) {
-          if (!all(sppvars %in% names(FIESTA::ref_species))) {
-            missvars <- sppvars[!sppvars %in% names(FIESTA::ref_species)]
+          if (!all(sppvars %in% names(FIESTAutils::ref_species))) {
+            missvars <- sppvars[!sppvars %in% names(FIESTAutils::ref_species)]
             message("variables are not in ref_species table: ", toString(missvars))
             sppvars <- NULL
           } else {
@@ -2307,7 +2338,7 @@ DBgetPlots <- function (states = NULL,
           xy_datsource <- datsource
           xy_dsn <- data_dsn
         }
-        if (exists(plotnm)) {
+        if (exists(plotnm) && !is.function(get(plotnm))) {
           dbTabs$plot_layer <- get(plotnm)
         } else {
           dbTabs$plot_layer <- plotnm
@@ -2361,7 +2392,7 @@ DBgetPlots <- function (states = NULL,
         dbqueries$xy <- xydat$xyqry
       }
     }
- 
+
     ##############################################################
     ## Seedling data (SEEDLING)
     ##############################################################
@@ -2944,15 +2975,15 @@ DBgetPlots <- function (states = NULL,
             if (!append_layer) index.unique.subpx <- "PLT_CN"
             datExportData(subpx, 
                 index.unique = index.unique.subpx,
-                savedata_opts = list(outfolder=outfolder, 
-                                out_fmt=out_fmt, 
-                                out_dsn=out_dsn, 
-                                out_layer="subplot",
-                                outfn.pre=outfn.pre, 
-                                overwrite_layer=overwrite_layer,
-                                append_layer=append_layer,
-                                outfn.date=outfn.date, 
-                                add_layer=TRUE)) 
+                savedata_opts = list(outfolder = outfolder, 
+                                out_fmt = out_fmt, 
+                                out_dsn = out_dsn, 
+                                out_layer = "subplot",
+                                outfn.pre = outfn.pre, 
+                                overwrite_layer = overwrite_layer,
+                                append_layer = append_layer,
+                                outfn.date = outfn.date, 
+                                add_layer = TRUE)) 
             index.unique.subpcx <- NULL
             rm(subpx)
             gc()
@@ -3008,15 +3039,15 @@ DBgetPlots <- function (states = NULL,
             if (!append_layer) index.unique.subpcx <- c("PLT_CN", "CONDID")
             datExportData(subpcx, 
                 index.unique = index.unique.subpcx,
-                savedata_opts = list(outfolder=outfolder, 
-                                out_fmt=out_fmt, 
-                                out_dsn=out_dsn, 
-                                out_layer="subp_cond",
-                                outfn.pre=outfn.pre, 
-                                overwrite_layer=overwrite_layer,
-                                append_layer=append_layer,
-                                outfn.date=outfn.date, 
-                                add_layer=TRUE)) 
+                savedata_opts = list(outfolder = outfolder, 
+                                out_fmt = out_fmt, 
+                                out_dsn = out_dsn, 
+                                out_layer = "subp_cond",
+                                outfn.pre = outfn.pre, 
+                                overwrite_layer = overwrite_layer,
+                                append_layer = append_layer,
+                                outfn.date = outfn.date, 
+                                add_layer = TRUE)) 
             rm(subpcx)
             gc() 
           } 
@@ -3403,7 +3434,6 @@ DBgetPlots <- function (states = NULL,
 						and x.UNITCD = p.UNITCD
 						and x.COUNTYCD = p.COUNTYCD
 						and x.PLOT = p.PLOT)")
-
       for (j in 1:length(othertables2)) {
         isref <- FALSE
         othertable <- othertables[j]
@@ -3468,10 +3498,10 @@ DBgetPlots <- function (states = NULL,
         if (!isref) {
           if (is.null(pcheck.varchar(othertable, checklst=pop_tables, stopifinvalid=FALSE))) {
             ## Subset overall filters from condx
-            if ("CONDID" %in% names(tab)) {
-              tab <- tab[paste(tab$PLT_CN, tab$CONDID) %in% pcondID,]
+            if ("CONDID" %in% names(otab)) {
+              otab <- otab[paste(otab$PLT_CN, otab$CONDID) %in% pcondID,]
             } else {
-              tab <- tab[tab[[joinid]] %in% unique(pltx$CN),]
+              otab <- otab[otab[[joinid]] %in% unique(pltx$CN),]
             }
           }
           if (nrow(otab) == 0) {
@@ -3495,9 +3525,6 @@ DBgetPlots <- function (states = NULL,
             tabs[[tolower(othertable)]] <- rbind(tabs[[tolower(othertable)]], get(othertablexnm))
           }
           if (savedata) {
-            other_overwrite <- ifelse (j == 1, TRUE, FALSE)
-            other_append <- ifelse (j == 1, TRUE, FALSE)
-
             index.unique.other <- NULL
             datExportData(get(othertablexnm),
                 index.unique = index.unique.other,
@@ -3506,8 +3533,8 @@ DBgetPlots <- function (states = NULL,
                                     out_dsn = out_dsn, 
                                     out_layer = tolower(othertable),
                                     outfn.pre = outfn.pre, 
-                                    overwrite_layer = other_overwrite,
-                                    append_layer = other_append,
+                                    overwrite_layer = overwrite_layer,
+                                    append_layer = append_layer,
                                     outfn.date = outfn.date, 
                                     add_layer = TRUE))
           }
@@ -3579,12 +3606,6 @@ DBgetPlots <- function (states = NULL,
     if ((savedata || !treeReturn) && !is.null(pltx)) {
       message("saving data...")
       col.names <- ifelse (i == 1, TRUE, FALSE)
-      if (i > 1) { 
-        append_layer <- TRUE
-      }
-      if (append_layer && overwrite_layer) {
-        overwrite_layer <- FALSE
-      }
 
       if (savedata && getxy && issp) {
         message("saving spatial xy data...")
@@ -3747,15 +3768,15 @@ DBgetPlots <- function (states = NULL,
   ## Write out plot/condition counts to comma-delimited file.
   if (savedata) {
     datExportData(pltcnt, 
-        savedata_opts=list(outfolder=outfolder, 
-                            out_fmt=out_fmt, 
-                            out_dsn=out_dsn, 
-                            out_layer="pltcnt",
-                            outfn.pre=outfn.pre, 
-                            overwrite_layer=overwrite_layer,
-                            append_layer=append_layer,
-                            outfn.date=outfn.date, 
-                            add_layer=TRUE)) 
+        savedata_opts=list(outfolder = outfolder, 
+                            out_fmt = out_fmt, 
+                            out_dsn = out_dsn, 
+                            out_layer = "pltcnt",
+                            outfn.pre = outfn.pre, 
+                            overwrite_layer = overwrite_layer,
+                            append_layer = append_layer,
+                            outfn.date = outfn.date, 
+                            add_layer = TRUE)) 
   }
 
   ## GENERATE RETURN LIST

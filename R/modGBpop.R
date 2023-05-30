@@ -107,6 +107,7 @@
 #' @param strvar String. If strata=TRUE, name of the strata variable in
 #' stratalut and cond or pltassgn data frame with stratum assignment for each
 #' plot (Default = 'STRATUMCD').
+#' @param returndata Logical. If TRUE, returns data objects.
 #' @param savedata Logical. If TRUE, saves table(s) to outfolder.
 #' @param saveobj Logical. If TRUE, saves returned list object to outfolder.
 #' @param objnm String. Name of *.rds object.
@@ -254,7 +255,8 @@ modGBpop <- function(popType = "VOL",
                      areavar = "ACRES", 
                      strata = TRUE, 
                      stratalut = NULL, 
-                     strvar = "STRATUMCD", 
+                     strvar = "STRATUMCD",
+                     returndata = TRUE, 
                      savedata = FALSE,
                      saveobj = FALSE, 
                      objnm = "GBpopdat",
@@ -476,7 +478,7 @@ modGBpop <- function(popType = "VOL",
   }
 
   if (saveobj) {
-    outobj_fmtlst <- c('rds', 'rda', 'llo')
+    outobj_fmtlst <- c('rds', 'rda')
     outobj_fmt <- pcheck.varchar(var2check=outobj_fmt, varnm="outobj_fmt", gui=gui,
 		checklst=outobj_fmtlst, caption="outobj_fmt", multiple=FALSE, stopifnull=TRUE)
 
@@ -499,7 +501,7 @@ modGBpop <- function(popType = "VOL",
   if (!is.null(evalid)) {
     popevalid <- as.character(evalid)
     substr(popevalid, nchar(popevalid)-1, nchar(popevalid)) <- 
-		FIESTA::ref_popType[FIESTA::ref_popType$popType %in% popType, "EVAL_TYP_CD"]
+		FIESTAutils::ref_popType[FIESTAutils::ref_popType$popType %in% popType, "EVAL_TYP_CD"]
     evalid <- as.character(evalid)
     substr(evalid, nchar(evalid)-1, nchar(evalid)) <- "01"
   } 
@@ -848,7 +850,12 @@ modGBpop <- function(popType = "VOL",
     areawtnm <- areawt
 
   } else {
+    if (adj == "samp") {
+      message("calculating adjustment factors...")
+    }      
+
     if (popType %in% c("ALL", "VOL", "CURR")) {
+      message("calculating adjustment factors...")
       adjfacdata <- getadjfactorVOL(adj=adj, 
                         condx = condx, 
                         treex = treef, 
@@ -868,7 +875,7 @@ modGBpop <- function(popType = "VOL",
       areaadj <- adjfacdata$areaadj
       varadjlst <- adjfacdata$varadjlst
       areawtnm <- adjfacdata$areawtnm
-      #stratalut <- adjfacdata$unitlut
+      stratalut <- adjfacdata$unitlut
       expcondtab <- adjfacdata$expcondtab
     }
 
@@ -1040,22 +1047,14 @@ modGBpop <- function(popType = "VOL",
   ## Save list object
   ##################################################################
   if (saveobj) {
-    if (getext(objfn) == "llo") {
-      if (append_layer) {
-        message("appending list object to: ", objfn)
-        largeList::saveList(returnlst, file=objfn, append=append_layer, compress=TRUE)
-      } else {
-        message("saving list object to: ", objfn)
-        largeList::saveList(returnlst, file=objfn, compress=TRUE)
-      }
-    } else if (getext(objfn) == "rds") {
+    if (getext(objfn) == "rds") {
       message("saving list object to: ", objfn)
       saveRDS(returnlst, objfn)
     } else if (getext(objfn) == "rda") {
       message("saving list object to: ", objfn)
       save(returnlst, objfn)
     } else {
-      message("invalid object name... must end in: ", toString(c("rds", "rda", "llo")))
+      message("invalid object name... must end in: ", toString(c("rds", "rda")))
     } 
   } 
 
@@ -1202,5 +1201,9 @@ modGBpop <- function(popType = "VOL",
 		                          add_layer=TRUE))
   }
 
-  return(returnlst)
+  if (returndata) {
+    return(returnlst)
+  } 
+  rm(returnlst)
+  gc()
 }

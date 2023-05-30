@@ -1,6 +1,6 @@
 ## ----setup, include = F-------------------------------------------------------
 library(knitr)
-knitr::opts_chunk$set(message = F, warning = F, eval = F)
+knitr::opts_chunk$set(message = F, warning = F, eval=F)
 
 ## ---- include=FALSE-----------------------------------------------------------
 #  # Sets up output folding
@@ -45,12 +45,11 @@ knitr::opts_chunk$set(message = F, warning = F, eval = F)
 #                       package = "FIESTA")
 #  
 #  
-#  # Other spatial layers used for examples, extracted using the raster package, getData function.
+#  # Other spatial layers used for examples, extracted using the geodata package, gadm function.
 #  # County-level boundaries for USA and subset for Wyoming (Note: must have internet connection)
-#  USAco <- raster::getData("GADM", country = "USA", level = 2)
+#  USAco <- geodata::gadm(country = "USA", level = 2, path=tempdir())
 #  WYco <- USAco[USAco$NAME_1 == "Wyoming",]
 #  
-#  head(USAco@data)
 
 ## ---- include = F-------------------------------------------------------------
 #  outfolder <- tempdir()
@@ -75,25 +74,12 @@ knitr::opts_chunk$set(message = F, warning = F, eval = F)
 #  
 
 ## -----------------------------------------------------------------------------
-#  head(WYplt)
-#  
-#  WYspplt <- spMakeSpatialPoints(xyplt = WYplt,
-#                                 xy.uniqueid = "CN",
-#                                 xvar = "LON_PUBLIC",
-#                                 yvar = "LAT_PUBLIC",
-#                                 prj = "longlat",
-#                                 datum = "NAD83")
-#  head(WYspplt)
-#  
-
-## -----------------------------------------------------------------------------
 #  WYspplt <- spMakeSpatialPoints(xyplt = WYplt,
 #                                 xy.uniqueid = "CN",
 #                                 xvar = "LON_PUBLIC",
 #                                 yvar = "LAT_PUBLIC",
 #                                 xy.crs = 4269
 #                                 )
-#  WYspplt
 #  
 
 ## -----------------------------------------------------------------------------
@@ -137,8 +123,7 @@ knitr::opts_chunk$set(message = F, warning = F, eval = F)
 #                            clippolyv = WYbh,
 #                            spMakeSpatial_opts=list(xvar = "LON_PUBLIC",
 #                                                    yvar = "LAT_PUBLIC",
-#                                                    prj = "longlat",
-#                                                    datum = "NAD83")
+#                                                    xy.crs = 4269)
 #                            )
 #  
 #  WYbhptslst <- spClipPoint(xyplt = WYplt,
@@ -148,8 +133,7 @@ knitr::opts_chunk$set(message = F, warning = F, eval = F)
 #                            exportsp = TRUE,
 #                            spMakeSpatial_opts=list(xvar = "LON_PUBLIC",
 #                                                    yvar = "LAT_PUBLIC",
-#                                                    prj = "longlat",
-#                                                    datum = "NAD83"),
+#                                                    xy.crs = 4269),
 #                            savedata_opts = list(outfolder=outfolder,
 #                                                 out_layer = "WYbh")
 #                            )
@@ -200,8 +184,7 @@ knitr::opts_chunk$set(message = F, warning = F, eval = F)
 #                            exportsp = TRUE,
 #                            spMakeSpatial_opts=list(xvar = "LON_PUBLIC",
 #                                          yvar = "LAT_PUBLIC",
-#                                          prj = "longlat",
-#                                          datum = "NAD83"),
+#                                          xy.crs = 4269),
 #                            savedata_opts = list(
 #                                          outfolder = outfolder,
 #                                          overwrite_layer = TRUE,
@@ -218,15 +201,15 @@ knitr::opts_chunk$set(message = F, warning = F, eval = F)
 ## -----------------------------------------------------------------------------
 #  head(WYbhco)
 #  plot(sf::st_geometry(WYbhco['NAME_2']), col = sf.colors(nrow(WYbhco)))
-#  coords <- st_coordinates(st_centroid(st_geometry(WYbhco)))
+#  coords <- sf::st_coordinates(st_centroid(sf::st_geometry(WYbhco)))
 #  text(coords[,"X"], coords[,"Y"], WYbhco[["NAME_2"]])
 
 ## -----------------------------------------------------------------------------
 #  WYbhdist
 #  WYbhMW <- WYbhdist[WYbhdist$DISTRICTNA == "Medicine Wheel Ranger District",]
 #  
-#  plot(st_geometry(WYbhdist))
-#  plot(st_geometry(WYbhMW), border="red", add=TRUE)
+#  plot(sf::st_geometry(WYbhdist))
+#  plot(sf::st_geometry(WYbhMW), border="red", add=TRUE)
 
 ## -----------------------------------------------------------------------------
 #  WYbhMW.fornf <- spClipRast(fornffn,
@@ -287,18 +270,20 @@ knitr::opts_chunk$set(message = F, warning = F, eval = F)
 #                                 xy.crs = 4269)
 
 ## -----------------------------------------------------------------------------
-#  library(raster)
-#  dem <- raster(demfn)
-#  slp <- raster::terrain(dem,
-#                         opt = "slope",
-#                         unit = "degrees",
-#                         filename = paste0(outfolder, "/WYbh_slp.img"),
-#                         overwrite = TRUE)
-#  asp <- raster::terrain(dem,
-#                         opt = "aspect",
-#                         unit = "degrees",
-#                         filename = paste0(outfolder, "/WYbh_asp.img"),
-#                         overwrite = TRUE)
+#  library(terra)
+#  dem <- rast(demfn)
+#  slpfn <- paste0(outfolder, "/WYbh_slp.img")
+#  slp <- terra::terrain(dem,
+#                        v = "slope",
+#                        unit = "degrees",
+#                        filename = slpfn,
+#                        overwrite = TRUE)
+#  aspfn <- paste0(outfolder, "/WYbh_asp.img")
+#  asp <- terra::terrain(dem,
+#                        v = "aspect",
+#                        unit = "degrees",
+#                        filename = aspfn,
+#                        overwrite = TRUE)
 
 ## -----------------------------------------------------------------------------
 #  rastlst.cont <- c(demfn, slp, asp)
@@ -344,7 +329,8 @@ knitr::opts_chunk$set(message = F, warning = F, eval = F)
 ## -----------------------------------------------------------------------------
 #  WYbhxy <- spGetXY(bnd = WYbhfn,
 #                    xy_datsource = "datamart",
-#                    evalCur = TRUE,
+#                    eval = "FIA",
+#                    eval_opts = eval_options(Cur = TRUE),
 #                    returnxy = TRUE)
 #  names(WYbhxy)
 #  
@@ -352,14 +338,15 @@ knitr::opts_chunk$set(message = F, warning = F, eval = F)
 #  head(pltids)
 #  
 #  spxy <- WYbhxy$spxy
-#  plot(st_geometry(spxy))
+#  plot(sf::st_geometry(spxy))
 #  
 
 ## -----------------------------------------------------------------------------
 #  
 #  WYbhxyids <- spGetXY(bnd = WYbhfn,
 #                       xy_datsource = "datamart",
-#                       evalCur = TRUE,
+#                       eval = "FIA",
+#                       eval_opts = eval_options(Cur = TRUE),
 #                       returnxy = FALSE)
 #  names(WYbhxyids)
 #  
@@ -372,7 +359,8 @@ knitr::opts_chunk$set(message = F, warning = F, eval = F)
 #  WYbhdat <- spGetPlots(bnd = WYbhfn,
 #                        states = "Wyoming",
 #                        datsource = "datamart",
-#                        evalCur = TRUE,
+#                        eval = "FIA",
+#                        eval_opts = eval_options(Cur = TRUE),
 #                        istree = FALSE)
 #  names(WYbhdat)
 
@@ -390,8 +378,7 @@ knitr::opts_chunk$set(message = F, warning = F, eval = F)
 #                             unit_layer = WYbhfn,
 #                             spMakeSpatial_opts=list(xvar = "LON_PUBLIC",
 #                                                     yvar = "LAT_PUBLIC",
-#                                                     prj = "longlat",
-#                                                     datum = "NAD83")
+#                                                     xy.crs = 4269)
 #                             )
 #  
 #  names(unitdat.bh)
@@ -411,8 +398,7 @@ knitr::opts_chunk$set(message = F, warning = F, eval = F)
 #                                 unitvar = "DISTRICTNA",
 #                                 spMakeSpatial_opts=list(xvar = "LON_PUBLIC",
 #                                                         yvar = "LAT_PUBLIC",
-#                                                         prj = "longlat",
-#                                                         datum = "NAD83")
+#                                                         xy.crs = 4269)
 #                                 )
 #  
 #  names(unitdat.bhdist)
@@ -446,7 +432,7 @@ knitr::opts_chunk$set(message = F, warning = F, eval = F)
 #  
 #  polyUnion <- spUnionPoly(polyv1 = USAco[USAco$NAME_1 == "Wyoming",],
 #                           polyv2 = WYbh,
-#                           areacalc=TRUE)
+#                           areacalc = TRUE)
 #  
 #  plot(st_geometry(polyUnion))
 #  head(polyUnion)

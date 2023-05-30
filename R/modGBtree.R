@@ -236,6 +236,7 @@
 #' Station, p.53-77.
 #' @keywords data
 #' @examples
+#' \donttest{
 #' GBpopdat <- modGBpop(
 #'   popTabs = list(cond = FIESTA::WYcond,  
 #'                  tree = FIESTA::WYtree,        
@@ -271,6 +272,7 @@
 #'   returntitle = TRUE           # out - return title information
 #' )
 #' str(tree1.2, max.level = 1)
+#' }
 #' @export modGBtree
 modGBtree <- function(GBpopdat, 
                       estvar, 
@@ -492,7 +494,7 @@ modGBtree <- function(GBpopdat,
   if ("INVYR" %in% names(pltcondf)) {
     invyr <- sort(unique(pltcondf$INVYR))
   }
-  
+ 
   ###################################################################################
   ### Check row and column data
   ###################################################################################
@@ -554,20 +556,12 @@ modGBtree <- function(GBpopdat,
     if (!row.add0) {
       if (any(is.na(tdomdat[[rowvar]]))) {
         tdomdat <- tdomdat[!is.na(tdomdat[[rowvar]]), ]
-      } else if (any(is.na(tdomdat[[rowvar]]))) {
-        tdomdat <- tdomdat[!is.na(tdomdat[[rowvar]]),]
-      } else if (any(as.character(tdomdat[[rowvar]]) == "0")) {
-        tdomdat <- tdomdat[tdomdat[[rowvar]] != 0,]
       }
     }
     if (colvar != "NONE") {
       if (!col.add0) {
         if (any(is.na(tdomdat[[colvar]]))) {
           tdomdat <- tdomdat[!is.na(tdomdat[[colvar]]), ]
-        } else if (any(is.na(tdomdat[[colvar]]))) {
-          tdomdat <- tdomdat[!is.na(tdomdat[[colvar]]),]
-        } else if (any(as.character(tdomdat[[colvar]]) == "0")) {
-          tdomdat <- tdomdat[tdomdat[[colvar]] != 0,]
         }
       }
     }

@@ -256,12 +256,7 @@ spGetStrata <- function(xyplt,
                                   xy.uniqueid=uniqueid, 
                                   xvar=xvar, 
                                   yvar=yvar,
-                                  xy.crs=xy.crs,
-                                  prj=prj,
-                                  datum=datum,
-                                  zone=zone,
-                                  zoneS=zoneS,
-                                  aea.param=aea.param)
+                                  xy.crs=xy.crs)
     sppltnames <- names(sppltx)
   } else {
     ## GET uniqueid
@@ -394,7 +389,7 @@ spGetStrata <- function(xyplt,
     ## if strattype == "RASTER"
     ##################################################################
     ## Check strat_layer
-    stratlayerfn <- suppressMessages(getrastlst.rgdal(strat_layer, rastfolder=strat_dsn,
+    stratlayerfn <- suppressMessages(getrastlst(strat_layer, rastfolder=strat_dsn,
  		stopifLonLat=TRUE))
 
     ## Get raster info

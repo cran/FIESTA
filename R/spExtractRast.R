@@ -230,12 +230,7 @@ spExtractRast <- function(xyplt,
                                   xy.uniqueid=xy.uniqueid, 
                                   xvar=xvar, 
                                   yvar=yvar,
-                                  xy.crs=xy.crs,
-                                  prj=prj,
-                                  datum=datum,
-                                  zone=zone,
-                                  zoneS=zoneS,
-                                  aea.param=aea.param)
+                                  xy.crs=xy.crs)
   } else {
     ## GET uniqueid
     sppltnames <- names(sppltx)
@@ -282,7 +277,7 @@ spExtractRast <- function(xyplt,
  
   ## Verify rasters
   ########################################################
-  rastfnlst <- suppressWarnings(getrastlst.rgdal(rastlst, rastfolder, gui=gui))
+  rastfnlst <- suppressWarnings(getrastlst(rastlst, rastfolder, gui=gui))
   #if (any(rastfnlst == "")) stop("must write raster to file")
   nrasts <- length(rastfnlst)
 

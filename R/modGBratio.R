@@ -249,6 +249,7 @@
 #' Station, p.53-77.
 #' @keywords data
 #' @examples
+#' \donttest{
 #' GBpopdat <- modGBpop(
 #' popTabs = list(cond = FIESTA::WYcond,  
 #'                tree = FIESTA::WYtree,        
@@ -285,6 +286,7 @@
 #' returntitle = TRUE           # out - return title information
 #' )
 #' str(ratio1.2, max.level = 1)
+#' }
 #' @export modGBratio
 modGBratio <- function(GBpopdat, 
                        estseed = "none", 
@@ -548,7 +550,8 @@ modGBratio <- function(GBpopdat,
   tdomvar <- rowcolinfo$tdomvar
   tdomvar2 <- rowcolinfo$tdomvar2
   grpvar <- rowcolinfo$grpvar
-  #rm(rowcolinfo)  
+  #rm(rowcolinfo) 
+
 
   if (rowvar == "TOTAL") rowcol.total <- TRUE
 
@@ -579,20 +582,12 @@ modGBratio <- function(GBpopdat,
     if (!row.add0) {
       if (any(is.na(tdomdat[[rowvar]]))) {
         tdomdat <- tdomdat[!is.na(tdomdat[[rowvar]]), ]
-      } else if (any(is.na(tdomdat[[rowvar]]))) {
-        tdomdat <- tdomdat[!is.na(tdomdat[[rowvar]]),]
-      } else if (any(as.character(tdomdat[[rowvar]]) == "0")) {
-        tdomdat <- tdomdat[tdomdat[[rowvar]] != 0,]
       }
     }
     if (colvar != "NONE") {
       if (!col.add0) {
         if (any(is.na(tdomdat[[colvar]]))) {
           tdomdat <- tdomdat[!is.na(tdomdat[[colvar]]), ]
-        } else if (any(is.na(tdomdat[[colvar]]))) {
-          tdomdat <- tdomdat[!is.na(tdomdat[[colvar]]),]
-        } else if (any(as.character(tdomdat[[colvar]]) == "0")) {
-          tdomdat <- tdomdat[tdomdat[[colvar]] != 0,]
         }
       }
     }

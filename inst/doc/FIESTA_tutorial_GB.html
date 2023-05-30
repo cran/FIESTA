@@ -613,7 +613,7 @@ output
 output
 </summary>
 <pre><code>##   ONEUNIT ACRES_GIS
-## 1       1   1112401</code></pre>
+## 1       1   1112388</code></pre>
 </details>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Pixel counts and strata weights (strwt) by strata and estimation unit</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>stratdat.bh<span class="sc">$</span>stratalut</span></code></pre></div>
@@ -622,8 +622,8 @@ output
 output
 </summary>
 <pre><code>##   ONEUNIT STRATUMCD count     strwt
-## 1       1         1 52289 0.7260344
-## 2       1         2 19731 0.2739656</code></pre>
+## 1       1         1 52280 0.7259397
+## 2       1         2 19737 0.2740603</code></pre>
 </details>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Variable names</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>stratdat.bh<span class="sc">$</span>unitvar        <span class="co"># Estimation unit variable</span></span></code></pre></div>
@@ -727,9 +727,9 @@ output
 output
 </summary>
 <pre><code>##                       DISTRICTNA ACRES_GIS
-## 1 Medicine Wheel Ranger District  364522.8
-## 2   Powder River Ranger District  334333.7
-## 3         Tongue Ranger District  413774.9</code></pre>
+## 1 Medicine Wheel Ranger District  364517.8
+## 2   Powder River Ranger District  334330.4
+## 3         Tongue Ranger District  413769.7</code></pre>
 </details>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Pixel counts and strata weights (strwt) by strata and estimation unit</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>stratdat.bhdist<span class="sc">$</span>stratalut</span></code></pre></div>
@@ -738,12 +738,12 @@ output
 output
 </summary>
 <pre><code>##                       DISTRICTNA STRATUMCD count     strwt
-## 1 Medicine Wheel Ranger District         1 14472 0.6127789
-## 2 Medicine Wheel Ranger District         2  9145 0.3872211
-## 3   Powder River Ranger District         1 15251 0.7044667
-## 4   Powder River Ranger District         2  6398 0.2955333
-## 5         Tongue Ranger District         1 22588 0.8437804
-## 6         Tongue Ranger District         2  4182 0.1562196</code></pre>
+## 1 Medicine Wheel Ranger District         1 14471 0.6127625
+## 2 Medicine Wheel Ranger District         2  9145 0.3872375
+## 3   Powder River Ranger District         1 15247 0.7043796
+## 4   Powder River Ranger District         2  6399 0.2956204
+## 5         Tongue Ranger District         1 22583 0.8436566
+## 6         Tongue Ranger District         2  4185 0.1563434</code></pre>
 </details>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Variable names</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>stratdat.bhdist<span class="sc">$</span>unitvar        <span class="co"># Estimation unit variable</span></span></code></pre></div>
@@ -909,7 +909,81 @@ output
 ## 33:        41         2      86508         63      63       63 1.00000000
 ## 34:        43         2      92938         63      63       63 1.00000000
 ## 35:        45         2      99461         73      73       73 1.00000000
-##     ESTN_UNIT STRATUMCD P1POINTCNT P2POINTCNT n.total n.strata      strwt</code></pre>
+##     ESTN_UNIT STRATUMCD P1POINTCNT P2POINTCNT n.total n.strata      strwt
+##       ACRES    expfac    EXPNS ADJ_FACTOR_COND ADJ_FACTOR_SUBP ADJ_FACTOR_MACR
+##  1: 2757613 162212.53 27800.62        1.014925        1.014925               0
+##  2: 2757613  23772.53 19698.30        1.000000        1.000000               0
+##  3: 2021729 168477.42 20462.23        1.000000        1.000000               0
+##  4: 2021729  23508.48 20653.28        1.008798        1.008798               0
+##  5: 3072988  20217.03 20217.03        1.000000        1.000000               0
+##  6: 5096959 145627.40 22271.87        1.000000        1.000000               0
+##  7: 5096959  24271.23 20559.25        1.000000        1.000000               0
+##  8: 2729653 170603.31 13462.99        1.015873        1.015873               0
+##  9: 2729653  23330.37 21489.27        1.000000        1.000000               0
+## 10: 1837124  65611.57 19286.98        1.000000        1.000000               0
+## 11: 1837124  32230.25 22755.94        1.000000        1.000000               0
+## 12: 5930088 123543.50 19495.86        1.005236        1.005236               0
+## 13: 5930088  24504.50 20637.55        1.000000        1.000000               0
+## 14: 1428579  20408.27 20408.27        1.000000        1.000000               0
+## 15: 1283969  22137.40 22137.40        1.000000        1.000000               0
+## 16: 2671802 148433.44 21152.80        1.014085        1.014085               0
+## 17: 2671802  24289.11 20827.74        1.000000        1.000000               0
+## 18: 1720074  20000.86 20000.86        1.000000        1.000000               0
+## 19: 2616954  74770.11 21780.52        1.007194        1.007194               0
+## 20: 2616954  26978.91 19119.96        1.000000        1.000000               0
+## 21: 3440445  19659.69 19659.69        1.000000        1.000000               0
+## 22: 1681849  21289.23 21289.23        1.000000        1.000000               0
+## 23: 4459826  44598.26 21629.77        1.007557        1.007557               0
+## 24: 4459826  38446.78 19800.42        1.002160        1.002160               0
+## 25: 1350969  21108.89 21108.89        1.000000        1.000000               0
+## 26: 1617318  89851.00 20622.06        1.014085        1.014085               0
+## 27: 1617318  25270.59 19470.64        1.000000        1.000000               0
+## 28: 3158807  71791.07 19492.07        1.000000        1.000000               0
+## 29: 3158807  27708.83 20185.58        1.000000        1.000000               0
+## 30: 6714319  19806.25 19806.25        1.000000        1.000000               0
+## 31: 2701941  27570.83 20328.15        1.007712        1.007712               0
+## 32: 2701941 100071.89 26288.23        1.000000        1.000000               0
+## 33: 1336034  21206.89 21206.89        1.000000        1.000000               0
+## 34: 1435352  22783.37 22783.37        1.000000        1.000000               0
+## 35: 1536038  21041.62 21041.62        1.006897        1.006897               0
+##       ACRES    expfac    EXPNS ADJ_FACTOR_COND ADJ_FACTOR_SUBP ADJ_FACTOR_MACR
+##     ADJ_FACTOR_MICR
+##  1:        1.014925
+##  2:        1.000000
+##  3:        1.000000
+##  4:        1.008798
+##  5:        1.000000
+##  6:        1.000000
+##  7:        1.000000
+##  8:        1.015873
+##  9:        1.000000
+## 10:        1.000000
+## 11:        1.000000
+## 12:        1.005236
+## 13:        1.000000
+## 14:        1.000000
+## 15:        1.000000
+## 16:        1.014085
+## 17:        1.000000
+## 18:        1.000000
+## 19:        1.007194
+## 20:        1.000000
+## 21:        1.000000
+## 22:        1.000000
+## 23:        1.007557
+## 24:        1.002160
+## 25:        1.000000
+## 26:        1.014085
+## 27:        1.000000
+## 28:        1.000000
+## 29:        1.000000
+## 30:        1.000000
+## 31:        1.007712
+## 32:        1.000000
+## 33:        1.000000
+## 34:        1.000000
+## 35:        1.006897
+##     ADJ_FACTOR_MICR</code></pre>
 </details>
 <div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Adjustment factors added to condition-level data</span></span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>GBpopdat<span class="sc">$</span>condx</span></code></pre></div>
@@ -1197,9 +1271,12 @@ output
 <summary>
 output
 </summary>
-<pre><code>##    ONEUNIT STRATUMCD     strwt P2POINTCNT n.total n.strata
-## 1:       1         1 0.7260344         41      56       41
-## 2:       1         2 0.2739656         15      56       15</code></pre>
+<pre><code>##    ONEUNIT STRATUMCD     strwt P2POINTCNT n.total n.strata ACRES_GIS   expfac
+## 1:       1         1 0.7259397         41      56       41   1112388 27131.42
+## 2:       1         2 0.2740603         15      56       15   1112388 74159.21
+##       EXPNS ADJ_FACTOR_COND ADJ_FACTOR_SUBP ADJ_FACTOR_MACR ADJ_FACTOR_MICR
+## 1: 19695.77        1.006135        1.006135               0        1.006135
+## 2: 20324.09        1.000000        1.000000               0        1.000000</code></pre>
 </details>
 </details>
 </details>
@@ -1355,19 +1432,26 @@ output
 output
 </summary>
 <pre><code>##                        DISTRICTNA STRATUMCD     strwt P2POINTCNT n.total
-## 1: Medicine Wheel Ranger District         1 0.6127789          9      16
-## 2: Medicine Wheel Ranger District         2 0.3872211          7      16
-## 3:   Powder River Ranger District         1 0.7044667         13      19
-## 4:   Powder River Ranger District         2 0.2955333          6      19
-## 5:         Tongue Ranger District         1 0.8437804         19      21
-## 6:         Tongue Ranger District         2 0.1562196          2      21
-##    n.strata
-## 1:        9
-## 2:        7
-## 3:       13
-## 4:        6
-## 5:       19
-## 6:        2</code></pre>
+## 1: Medicine Wheel Ranger District         1 0.6127625          9      16
+## 2: Medicine Wheel Ranger District         2 0.3872375          7      16
+## 3:   Powder River Ranger District         1 0.7043796         13      19
+## 4:   Powder River Ranger District         2 0.2956204          6      19
+## 5:         Tongue Ranger District         1 0.8436566         19      21
+## 6:         Tongue Ranger District         2 0.1563434          2      21
+##    n.strata ACRES_GIS    expfac    EXPNS ADJ_FACTOR_COND ADJ_FACTOR_SUBP
+## 1:        9  364517.8  40501.98 24818.09        1.028571        1.028571
+## 2:        7  364517.8  52073.97 20164.99        1.000000        1.000000
+## 3:       13  334330.4  25717.72 18115.04        1.000000        1.000000
+## 4:        6  334330.4  55721.74 16472.48        1.000000        1.000000
+## 5:       19  413769.7  21777.36 18372.61        1.000000        1.000000
+## 6:        2  413769.7 206884.87 32345.08        1.000000        1.000000
+##    ADJ_FACTOR_MACR ADJ_FACTOR_MICR
+## 1:               0        1.028571
+## 2:               0        1.000000
+## 3:               0        1.000000
+## 4:               0        1.000000
+## 5:               0        1.000000
+## 6:               0        1.000000</code></pre>
 </details>
 </details>
 </div>
@@ -2104,23 +2188,23 @@ we can just grab the <code>est</code> object from our ouputted list:</p>
 output
 </summary>
 <pre><code>##                        Forest type Large diameter Medium diameter
-## 1                      Douglas-fir        19819.4              --
-## 2                 Engelmann spruce        45091.6         19819.4
-## 3 Engelmann spruce / subalpine fir        49548.6          9909.7
-## 4                    Subalpine fir        24774.3              --
-## 5                   Lodgepole pine       164008.2        203149.2
+## 1                      Douglas-fir        19816.6              --
+## 2                 Engelmann spruce        45094.9         19816.6
+## 3 Engelmann spruce / subalpine fir        49541.5          9908.3
+## 4                    Subalpine fir        24770.8              --
+## 5                   Lodgepole pine       163994.5        203120.2
 ## 6                            Aspen             --              --
 ## 7                       Nonstocked             --              --
-## 8                            Total       303242.1        232878.3
+## 8                            Total       303218.2        232845.1
 ##   Small diameter Nonstocked    Total
-## 1        19819.4         --  39638.9
-## 2             --         --    64911
-## 3         9909.7         --    69368
-## 4        20317.3         --  45091.6
-## 5        40136.7         -- 407294.1
-## 6        19819.4         --  19819.4
-## 7             --    19819.4  19819.4
-## 8       110002.6    19819.4 665942.4</code></pre>
+## 1        19816.6         --  39633.2
+## 2             --         --  64911.5
+## 3         9908.3         --  69358.1
+## 4        20324.1         --  45094.9
+## 5        40140.7         -- 407255.4
+## 6        19816.6         --  19816.6
+## 7             --    19816.6  19816.6
+## 8       110006.3    19816.6 665886.2</code></pre>
 </details>
 <p>We can also look at raw data and titles for estimate, as shown below.
 Note the change in titles.</p>
@@ -2141,33 +2225,33 @@ output
 output
 </summary>
 <pre><code>##   ONEUNIT                      Forest type Stand-size class        nhat
-## 1       1                      Douglas-fir   Large diameter 0.017816796
-## 2       1                      Douglas-fir   Small diameter 0.017816796
-## 3       1                 Engelmann spruce   Large diameter 0.040535366
-## 4       1                 Engelmann spruce  Medium diameter 0.017816796
-## 5       1 Engelmann spruce / subalpine fir   Large diameter 0.044541990
-## 6       1 Engelmann spruce / subalpine fir  Medium diameter 0.008908398
+## 1       1                      Douglas-fir   Large diameter 0.017814471
+## 2       1                      Douglas-fir   Small diameter 0.017814471
+## 3       1                 Engelmann spruce   Large diameter 0.040538775
+## 4       1                 Engelmann spruce  Medium diameter 0.017814471
+## 5       1 Engelmann spruce / subalpine fir   Large diameter 0.044536178
+## 6       1 Engelmann spruce / subalpine fir  Medium diameter 0.008907236
 ##       nhat.var NBRPLT.gt0 STDSZCD FORTYPCD ACRES_GIS AREAUSED       est
-## 1 3.222659e-04          1       1      201   1112401  1112401 19819.430
-## 2 3.222659e-04          1       3      201   1112401  1112401 19819.430
-## 3 6.799631e-04          3       1      265   1112401  1112401 45091.601
-## 4 3.222659e-04          1       2      265   1112401  1112401 19819.430
-## 5 6.928718e-04          3       1      266   1112401  1112401 49548.576
-## 6 8.056649e-05          1       2      266   1112401  1112401  9909.715
+## 1 3.222249e-04          1       1      201   1112388  1112388 19816.606
+## 2 3.222249e-04          1       3      201   1112388  1112388 19816.606
+## 3 6.800308e-04          3       1      265   1112388  1112388 45094.851
+## 4 3.222249e-04          1       2      265   1112388  1112388 19816.606
+## 5 6.927836e-04          3       1      266   1112388  1112388 49541.514
+## 6 8.055623e-05          1       2      266   1112388  1112388  9908.303
 ##     est.var    est.se    est.cv       pse CI99left CI99right CI95left CI95right
-## 1 398783824 19969.572 1.0075755 100.75755        0  71257.64        0  58959.07
-## 2 398783824 19969.572 1.0075755 100.75755        0  71257.64        0  58959.07
-## 3 841411576 29007.095 0.6432926  64.32926        0 119808.93        0 101944.46
-## 4 398783824 19969.572 1.0075755 100.75755        0  71257.64        0  58959.07
-## 5 857385222 29281.141 0.5909583  59.09583        0 124971.80        0 106938.56
-## 6  99695956  9984.786 1.0075755 100.75755        0  35628.82        0  29479.54
+## 1 398723466 19968.061 1.0076428 100.76428        0  71250.92        0  58953.29
+## 2 398723466 19968.061 1.0076428 100.76428        0  71250.92        0  58953.29
+## 3 841475072 29008.190 0.6432706  64.32706        0 119815.00        0 101949.86
+## 4 398723466 19968.061 1.0076428 100.76428        0  71250.92        0  58953.29
+## 5 857255451 29278.925 0.5909978  59.09978        0 124959.03        0 106927.15
+## 6  99680866  9984.031 1.0076428 100.76428        0  35625.46        0  29476.64
 ##   CI68left CI68right
-## 1     0.00  39678.33
-## 2     0.00  39678.33
-## 3 16245.27  73937.94
-## 4     0.00  39678.33
-## 5 20429.71  78667.44
-## 6     0.00  19839.16</code></pre>
+## 1     0.00  39674.00
+## 2     0.00  39674.00
+## 3 16247.43  73942.27
+## 4     0.00  39674.00
+## 5 20424.86  78658.17
+## 6     0.00  19837.00</code></pre>
 </details>
 <div class="sourceCode" id="cb147"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb147-1"><a href="#cb147-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Titles (list object) for estimate</span></span>
 <span id="cb147-2"><a href="#cb147-2" aria-hidden="true" tabindex="-1"></a>titlelst2<span class="fl">.1</span> <span class="ot">&lt;-</span> area2<span class="fl">.1</span><span class="sc">$</span>titlelst</span>
@@ -2270,22 +2354,22 @@ output
 </summary>
 <pre><code>##                       Forest-type group No visible disturbance Disease
 ## 1                Pinyon / juniper group                      0       0
-## 2                     Douglas-fir group                39638.9       0
+## 2                     Douglas-fir group                39633.2       0
 ## 3                  Ponderosa pine group                      0       0
-## 4 Fir / spruce / mountain hemlock group               133781.2  4954.9
-## 5                  Lodgepole pine group               352292.8 35181.9
-## 6                 Aspen / birch / group                19819.4       0
-## 7                            Nonstocked                19819.4       0
-## 8                                 Total               565351.6 40136.7
+## 4 Fir / spruce / mountain hemlock group               133762.1  4954.2
+## 5                  Lodgepole pine group               352252.2 35186.5
+## 6                 Aspen / birch / group                19816.6       0
+## 7                            Nonstocked                19816.6       0
+## 8                                 Total               565280.8 40140.7
 ##   Disease to trees    Fire    Wind    Total
 ## 1                0       0       0      0.0
-## 2                0       0       0  39638.9
+## 2                0       0       0  39633.2
 ## 3                0       0       0      0.0
-## 4          20317.3 20317.3       0 179370.6
-## 5                0       0 19819.4 407294.1
-## 6                0       0       0  19819.4
-## 7                0       0       0  19819.4
-## 8          20317.3 20317.3 19819.4 665942.4</code></pre>
+## 4          20324.1 20324.1       0 179364.4
+## 5                0       0 19816.6 407255.4
+## 6                0       0       0  19816.6
+## 7                0       0       0  19816.6
+## 8          20324.1 20324.1 19816.6 665886.2</code></pre>
 </details>
 <p>We can also look at raw data and titles for estimate, as shown below.
 Note the change in titles.</p>
@@ -2311,28 +2395,28 @@ output
 ## 3       1 Pinyon / juniper group       Disease to trees 0.00000000 0.0000000000
 ## 4       1 Pinyon / juniper group                   Fire 0.00000000 0.0000000000
 ## 5       1 Pinyon / juniper group                   Wind 0.00000000 0.0000000000
-## 6       1      Douglas-fir group No visible disturbance 0.03563359 0.0006284186
+## 6       1      Douglas-fir group No visible disturbance 0.03562894 0.0006283386
 ##   NBRPLT.gt0 FORTYPGRPCD DSTRBCD1 ACRES_GIS AREAUSED      est   est.var
-## 1          0         180        0   1112401  1112401     0.00         0
-## 2          0         180       20   1112401  1112401     0.00         0
-## 3          0         180       22   1112401  1112401     0.00         0
-## 4          0         180       30   1112401  1112401     0.00         0
-## 5          0         180       52   1112401  1112401     0.00         0
-## 6          2         200        0   1112401  1112401 39638.86 777628457
+## 1          0         180        0   1112388  1112388     0.00         0
+## 2          0         180       20   1112388  1112388     0.00         0
+## 3          0         180       22   1112388  1112388     0.00         0
+## 4          0         180       30   1112388  1112388     0.00         0
+## 5          0         180       52   1112388  1112388     0.00         0
+## 6          2         200        0   1112388  1112388 39633.21 777510758
 ##     est.se    est.cv      pse CI99left CI99right CI95left CI95right CI68left
-## 1     0.00       NaN      NaN        0       0.0        0       0.0     0.00
-## 2     0.00       NaN      NaN        0       0.0        0       0.0     0.00
-## 3     0.00       NaN      NaN        0       0.0        0       0.0     0.00
-## 4     0.00       NaN      NaN        0       0.0        0       0.0     0.00
-## 5     0.00       NaN      NaN        0       0.0        0       0.0     0.00
-## 6 27885.99 0.7035013 70.35013        0  111468.4        0   94294.4 11907.42
+## 1     0.00       NaN      NaN        0       0.0        0      0.00     0.00
+## 2     0.00       NaN      NaN        0       0.0        0      0.00     0.00
+## 3     0.00       NaN      NaN        0       0.0        0      0.00     0.00
+## 4     0.00       NaN      NaN        0       0.0        0      0.00     0.00
+## 5     0.00       NaN      NaN        0       0.0        0      0.00     0.00
+## 6 27883.88 0.7035483 70.35483        0  111457.3        0  94284.61 11903.87
 ##   CI68right
-## 1       0.0
-## 2       0.0
-## 3       0.0
-## 4       0.0
-## 5       0.0
-## 6   67370.3</code></pre>
+## 1      0.00
+## 2      0.00
+## 3      0.00
+## 4      0.00
+## 5      0.00
+## 6  67362.56</code></pre>
 </details>
 <div class="sourceCode" id="cb160"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb160-1"><a href="#cb160-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Titles (list object) for estimate</span></span>
 <span id="cb160-2"><a href="#cb160-2" aria-hidden="true" tabindex="-1"></a>titlelst2<span class="fl">.2</span> <span class="ot">&lt;-</span> area2<span class="fl">.2</span><span class="sc">$</span>titlelst</span>
@@ -2431,14 +2515,14 @@ we can just grab the <code>est</code> object from our ouputted list:</p>
 <summary>
 output
 </summary>
-<pre><code>##                       Forest-type group Disease Disease to trees    Fire
-## 1 Fir / spruce / mountain hemlock group  6382.1          20164.4 20164.4
-## 2                  Lodgepole pine group 39310.6               --      --
-## 3                                 Total 45692.6          20164.4 20164.4
-##      Wind   Total
-## 1      -- 46710.9
-## 2 18375.5 57686.1
-## 3 18375.5  104397</code></pre>
+<pre><code>##                       Forest-type group Disease Disease to trees  Fire    Wind
+## 1 Fir / spruce / mountain hemlock group  6381.8            20165 20165      --
+## 2                  Lodgepole pine group 39310.4               --    -- 18372.6
+## 3                                 Total 45692.2            20165 20165 18372.6
+##      Total
+## 1  46711.8
+## 2    57683
+## 3 104394.8</code></pre>
 </details>
 <p>We can also look at raw data and titles for estimate, as shown
 below:</p>
@@ -2463,17 +2547,17 @@ output
 ## 2 Medicine Wheel Ranger District                  Lodgepole pine group
 ## 3         Tongue Ranger District                  Lodgepole pine group
 ##         nhat    nhat.var NBRPLT.gt0 FORTYPGRPCD ACRES_GIS AREAUSED      est
-## 1 0.12814256 0.006624630          3         260  364522.8 364522.8 46710.89
-## 2 0.10784120 0.006431702          2         280  364522.8 364522.8 39310.58
-## 3 0.04440949 0.002133382          1         280  413774.9 413774.9 18375.53
+## 1 0.12814678 0.006624852          3         260  364517.8 364517.8 46711.78
+## 2 0.10784214 0.006431776          2         280  364517.8 364517.8 39310.38
+## 3 0.04440298 0.002133087          1         280  413769.7 413769.7 18372.61
 ##     est.var   est.se    est.cv       pse CI99left CI99right CI95left CI95right
-## 1 880260198 29669.18 0.6351663  63.51663        0 123133.63        0 104861.41
-## 2 854624495 29233.96 0.7436665  74.36665        0 114612.27        0  96608.09
-## 3 365255577 19111.66 1.0400602 104.00602        0  67603.91        0  55833.70
+## 1 880265399 29669.27 0.6351560  63.51560        0 123134.75        0 104862.47
+## 2 854610742 29233.73 0.7436643  74.36643        0 114611.47        0  96607.43
+## 3 365195944 19110.10 1.0401408 104.01408        0  67596.97        0  55827.72
 ##   CI68left CI68right
-## 1 17206.14  76215.64
-## 2 10238.64  68382.52
-## 3     0.00  37381.27</code></pre>
+## 1 17206.94  76216.62
+## 2 10238.67  68382.09
+## 3     0.00  37376.80</code></pre>
 </details>
 <div class="sourceCode" id="cb173"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb173-1"><a href="#cb173-1" aria-hidden="true" tabindex="-1"></a>raw3<span class="fl">.1</span><span class="sc">$</span>rowest              <span class="co"># estimates for population for row domains</span></span></code></pre></div>
 <details>
@@ -2481,14 +2565,14 @@ output
 output
 </summary>
 <pre><code>##                       Forest-type group FORTYPGRPCD      est    est.var
-## 1 Fir / spruce / mountain hemlock group         260 46710.89  880260198
-## 2                  Lodgepole pine group         280 57686.11 1219880072
+## 1 Fir / spruce / mountain hemlock group         260 46711.78  880265399
+## 2                  Lodgepole pine group         280 57682.99 1219806687
 ##   NBRPLT.gt0 AREAUSED   est.se    est.cv      pse CI99left CI99right CI95left
-## 1          3 364522.8 29669.18 0.6351663 63.51663        0  123133.6        0
-## 2          3 778297.7 34926.78 0.6054626 60.54626        0  147651.5        0
+## 1          3 364517.8 29669.27 0.6351560 63.51560        0  123134.7        0
+## 2          3 778287.5 34925.73 0.6054771 60.54771        0  147645.7        0
 ##   CI95right CI68left CI68right
-## 1  104861.4 17206.14  76215.64
-## 2  126141.3 22952.90  92419.32</code></pre>
+## 1  104862.5 17206.94  76216.62
+## 2  126136.2 22950.82  92415.16</code></pre>
 </details>
 <div class="sourceCode" id="cb175"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb175-1"><a href="#cb175-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raw3<span class="fl">.1</span><span class="sc">$</span>unit_colest)   <span class="co"># estimates by estimation unit for column domains</span></span></code></pre></div>
 <details>
@@ -2496,20 +2580,20 @@ output
 output
 </summary>
 <pre><code>##                       DISTRICTNA Primary disturbance       nhat    nhat.var
-## 1 Medicine Wheel Ranger District             Disease 0.12534917 0.008479138
-## 2 Medicine Wheel Ranger District    Disease to trees 0.05531730 0.003799284
-## 3 Medicine Wheel Ranger District                Fire 0.05531730 0.003799284
-## 4         Tongue Ranger District                Wind 0.04440949 0.002133382
+## 1 Medicine Wheel Ranger District             Disease 0.12534964 0.008479163
+## 2 Medicine Wheel Ranger District    Disease to trees 0.05531964 0.003799421
+## 3 Medicine Wheel Ranger District                Fire 0.05531964 0.003799421
+## 4         Tongue Ranger District                Wind 0.04440298 0.002133087
 ##   NBRPLT.gt0 DSTRBCD1 ACRES_GIS AREAUSED      est    est.var   est.se    est.cv
-## 1          2       20  364522.8 364522.8 45692.63 1126681476 33566.08 0.7346059
-## 2          1       22  364522.8 364522.8 20164.42  504836949 22468.58 1.1142686
-## 3          1       30  364522.8 364522.8 20164.42  504836949 22468.58 1.1142686
-## 4          1       52  413774.9 413774.9 18375.53  365255577 19111.66 1.0400602
+## 1          2       20  364517.8 364517.8 45692.17 1126653662 33565.66 0.7346042
+## 2          1       22  364517.8 364517.8 20164.99  504841275 22468.67 1.1142416
+## 3          1       30  364517.8 364517.8 20164.99  504841275 22468.67 1.1142416
+## 4          1       52  413769.7 413769.7 18372.61  365195944 19110.10 1.0401408
 ##         pse CI99left CI99right CI95left CI95right CI68left CI68right
-## 1  73.46059        0 132153.12        0 111480.93 12312.58  79072.68
-## 2 111.42686        0  78039.64        0  64202.02     0.00  42508.47
-## 3 111.42686        0  78039.64        0  64202.02     0.00  42508.47
-## 4 104.00602        0  67603.91        0  55833.70     0.00  37381.27</code></pre>
+## 1  73.46042        0 132151.59        0 111479.66 12312.54  79071.81
+## 2 111.42416        0  78040.46        0  64202.78     0.00  42509.14
+## 3 111.42416        0  78040.46        0  64202.78     0.00  42509.14
+## 4 104.01408        0  67596.97        0  55827.72     0.00  37376.80</code></pre>
 </details>
 <div class="sourceCode" id="cb177"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb177-1"><a href="#cb177-1" aria-hidden="true" tabindex="-1"></a>raw3<span class="fl">.1</span><span class="sc">$</span>colest              <span class="co"># estimates for population for column domains</span></span></code></pre></div>
 <details>
@@ -2517,15 +2601,15 @@ output
 output
 </summary>
 <pre><code>##   Primary disturbance DSTRBCD1      est    est.var NBRPLT.gt0 AREAUSED   est.se
-## 1             Disease       20 45692.63 1126681476          2 364522.8 33566.08
-## 2    Disease to trees       22 20164.42  504836949          1 364522.8 22468.58
-## 3                Fire       30 20164.42  504836949          1 364522.8 22468.58
-## 4                Wind       52 18375.53  365255577          1 413774.9 19111.66
+## 1             Disease       20 45692.17 1126653662          2 364517.8 33565.66
+## 2    Disease to trees       22 20164.99  504841275          1 364517.8 22468.67
+## 3                Fire       30 20164.99  504841275          1 364517.8 22468.67
+## 4                Wind       52 18372.61  365195944          1 413769.7 19110.10
 ##      est.cv       pse CI99left CI99right CI95left CI95right CI68left CI68right
-## 1 0.7346059  73.46059        0 132153.12        0 111480.93 12312.58  79072.68
-## 2 1.1142686 111.42686        0  78039.64        0  64202.02     0.00  42508.47
-## 3 1.1142686 111.42686        0  78039.64        0  64202.02     0.00  42508.47
-## 4 1.0400602 104.00602        0  67603.91        0  55833.70     0.00  37381.27</code></pre>
+## 1 0.7346042  73.46042        0 132151.59        0 111479.66 12312.54  79071.81
+## 2 1.1142416 111.42416        0  78040.46        0  64202.78     0.00  42509.14
+## 3 1.1142416 111.42416        0  78040.46        0  64202.78     0.00  42509.14
+## 4 1.0401408 104.01408        0  67596.97        0  55827.72     0.00  37376.80</code></pre>
 </details>
 <div class="sourceCode" id="cb179"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb179-1"><a href="#cb179-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Titles (list object) for estimate</span></span>
 <span id="cb179-2"><a href="#cb179-2" aria-hidden="true" tabindex="-1"></a>titlelst3<span class="fl">.1</span> <span class="ot">&lt;-</span> area3<span class="fl">.1</span><span class="sc">$</span>titlelst</span>
@@ -2817,22 +2901,24 @@ output
 ## 12                      Net volume of live trees (at least 5 in dia)  VOLCFNET
 ## 13             Net volume of growing-stock trees (at least 5 in dia)  VOLCFNET
 ## 14             Net volume of standing-dead trees (at least 5 in dia)  VOLCFNET
-## 15                                     Net volume of sawtimber trees  VOLBFNET
-## 16                         Gross volume of trees (at least 5 in dia)  VOLCFGRS
-## 17                    Gross volume of live trees (at least 5 in dia)  VOLCFGRS
-## 18           Gross volume of growing-stock trees (at least 5 in dia)  VOLCFGRS
-## 19           Gross volume of standing-dead trees (at least 5 in dia)  VOLCFGRS
-## 20               Aboveground dry weight of trees (at least 1 in dia) DRYBIO_AG
-## 21          Aboveground dry weight of live trees (at least 1 in dia) DRYBIO_AG
-## 22          Aboveground dry weight of live trees (at least 5 in dia) DRYBIO_AG
-## 23 Aboveground dry weight of standing-dead trees (at least 5 in dia) DRYBIO_AG
-## 24                Aboveground dry weight of saplings (1 to 5 in dia) DRYBIO_AG
-## 25              Aboveground carbon in live trees (at least 1 in dia) CARBON_AG
-## 26              Aboveground carbon in live trees (at least 5 in dia) CARBON_AG
-## 27     Aboveground carbon in standing-dead trees (at least 5 in dia) CARBON_AG
-## 28                                                          Tree age   TREEAGE
-## 29                          Number of seedlings (less than 1 in dia) TPA_UNADJ
-## 30                             Number of trees (including seedlings) TPA_UNADJ
+## 15              Net volume in the sawlog portion of a sawtimber tree  VOLCSNET
+## 16                                     Net volume of sawtimber trees  VOLBFNET
+## 17                         Gross volume of trees (at least 5 in dia)  VOLCFGRS
+## 18                    Gross volume of live trees (at least 5 in dia)  VOLCFGRS
+## 19           Gross volume of growing-stock trees (at least 5 in dia)  VOLCFGRS
+## 20           Gross volume of standing-dead trees (at least 5 in dia)  VOLCFGRS
+## 21            Gross volume in the sawlog portion of a sawtimber tree  VOLCSGRS
+## 22               Aboveground dry weight of trees (at least 1 in dia) DRYBIO_AG
+## 23          Aboveground dry weight of live trees (at least 1 in dia) DRYBIO_AG
+## 24          Aboveground dry weight of live trees (at least 5 in dia) DRYBIO_AG
+## 25 Aboveground dry weight of standing-dead trees (at least 5 in dia) DRYBIO_AG
+## 26                Aboveground dry weight of saplings (1 to 5 in dia) DRYBIO_AG
+## 27              Aboveground carbon in live trees (at least 1 in dia) CARBON_AG
+## 28              Aboveground carbon in live trees (at least 5 in dia) CARBON_AG
+## 29     Aboveground carbon in standing-dead trees (at least 5 in dia) CARBON_AG
+## 30                                                          Tree age   TREEAGE
+## 31                          Number of seedlings (less than 1 in dia) TPA_UNADJ
+## 32                             Number of trees (including seedlings) TPA_UNADJ
 ##                                             ESTFILTER
 ## 1                                          DIA &gt;= 1.0
 ## 2                          STATUSCD == 1 &amp; DIA &gt;= 1.0
@@ -2848,22 +2934,24 @@ output
 ## 12                         STATUSCD == 1 &amp; DIA &gt;= 5.0
 ## 13                         TREECLCD == 2 &amp; DIA &gt;= 5.0
 ## 14 STATUSCD == 2 &amp; STANDING_DEAD_CD == 1 &amp; DIA &gt;= 5.0
-## 15         TREECLCD == 2 &amp; STATUSCD == 1 &amp; DIA &gt;= 9.0
-## 16                                         DIA &gt;= 5.0
-## 17                         STATUSCD == 1 &amp; DIA &gt;= 5.0
-## 18                         TREECLCD == 2 &amp; DIA &gt;= 5.0
-## 19 STATUSCD == 2 &amp; STANDING_DEAD_CD == 1 &amp; DIA &gt;= 5.0
-## 20                                         DIA &gt;= 1.0
+## 15                                      STATUSCD == 1
+## 16         TREECLCD == 2 &amp; STATUSCD == 1 &amp; DIA &gt;= 9.0
+## 17                                         DIA &gt;= 5.0
+## 18                         STATUSCD == 1 &amp; DIA &gt;= 5.0
+## 19                         TREECLCD == 2 &amp; DIA &gt;= 5.0
+## 20 STATUSCD == 2 &amp; STANDING_DEAD_CD == 1 &amp; DIA &gt;= 5.0
 ## 21                                      STATUSCD == 1
-## 22                         STATUSCD == 1 &amp; DIA &gt;= 5.0
-## 23 STATUSCD == 2 &amp; STANDING_DEAD_CD == 1 &amp; DIA &gt;= 5.0
-## 24                                         DIA &lt;  5.0
-## 25                                      STATUSCD == 1
-## 26                         STATUSCD == 1 &amp; DIA &gt;= 5.0
-## 27 STATUSCD == 2 &amp; STANDING_DEAD_CD == 1 &amp; DIA &gt;= 5.0
-## 28                                                   
-## 29                                                   
+## 22                                         DIA &gt;= 1.0
+## 23                                      STATUSCD == 1
+## 24                         STATUSCD == 1 &amp; DIA &gt;= 5.0
+## 25 STATUSCD == 2 &amp; STANDING_DEAD_CD == 1 &amp; DIA &gt;= 5.0
+## 26                                         DIA &lt;  5.0
+## 27                                      STATUSCD == 1
+## 28                         STATUSCD == 1 &amp; DIA &gt;= 5.0
+## 29 STATUSCD == 2 &amp; STANDING_DEAD_CD == 1 &amp; DIA &gt;= 5.0
 ## 30                                                   
+## 31                                                   
+## 32                                                   
 ##                                    ESTUNITS
 ## 1                                     trees
 ## 2                                     trees
@@ -2879,22 +2967,24 @@ output
 ## 12                               cubic feet
 ## 13                               cubic feet
 ## 14                               cubic feet
-## 15 board feet (International 1/4-inch rule)
-## 16                               cubic feet
+## 15                               cubic feet
+## 16 board feet (International 1/4-inch rule)
 ## 17                               cubic feet
 ## 18                               cubic feet
 ## 19                               cubic feet
-## 20                                     tons
-## 21                                     tons
+## 20                               cubic feet
+## 21                               cubic feet
 ## 22                                     tons
 ## 23                                     tons
 ## 24                                     tons
 ## 25                                     tons
 ## 26                                     tons
 ## 27                                     tons
-## 28                                    years
-## 29                                seedlings
-## 30                                    trees</code></pre>
+## 28                                     tons
+## 29                                     tons
+## 30                                    years
+## 31                                seedlings
+## 32                                    trees</code></pre>
 </details>
 <div id="pop1-1.1-net-cubic-foot-volume-of-live-trees-wyoming-2011-2013" class="section level4">
 <h4>POP1: 1.1 Net cubic-foot volume of live trees, Wyoming,
@@ -3711,25 +3801,25 @@ output
 output
 </summary>
 <pre><code>##                        Species     Estimate Percent Sampling Error
-## 1                subalpine fir 1149064733.7                   8.33
-## 2                 Utah juniper   45255337.4                  27.67
-## 3       Rocky Mountain juniper    100653677                  20.77
-## 4             Engelmann spruce  472342493.8                  11.91
-## 5                  blue spruce    6731266.5                  63.82
+## 1                    green ash    1288927.2                  91.98
+## 2            plains cottonwood    2027267.7                  82.62
+## 3                quaking aspen  253876469.3                  18.88
+## 4        narrowleaf cottonwood    4585746.3                   57.8
+## 5                  limber pine   93252401.1                   20.6
 ## 6               whitebark pine  237604255.7                  15.55
 ## 7  common or two-needle pinyon     119194.9                    100
 ## 8               lodgepole pine 1458559075.4                  11.36
-## 9                  limber pine   93252401.1                   20.6
-## 10              ponderosa pine  260988183.6                  15.71
-## 11                 Douglas-fir  206129937.1                  19.48
-## 12                    boxelder    1126869.5                  81.93
-## 13                 paper birch    1445853.6                 107.34
-## 14  curlleaf mountain-mahogany       538261                  69.47
-## 15                   green ash    1288927.2                  91.98
-## 16           plains cottonwood    2027267.7                  82.62
-## 17               quaking aspen  253876469.3                  18.88
-## 18       narrowleaf cottonwood    4585746.3                   57.8
-## 19                     bur oak   23604682.4                   38.4
+## 9                subalpine fir 1149064733.7                   8.33
+## 10            Engelmann spruce  472342493.8                  11.91
+## 11              ponderosa pine  260988183.6                  15.71
+## 12                Utah juniper   45255337.4                  27.67
+## 13      Rocky Mountain juniper    100653677                  20.77
+## 14                 blue spruce    6731266.5                  63.82
+## 15                     bur oak   23604682.4                   38.4
+## 16  curlleaf mountain-mahogany       538261                  69.47
+## 17                 paper birch    1445853.6                 107.34
+## 18                    boxelder    1126869.5                  81.93
+## 19                 Douglas-fir  206129937.1                  19.48
 ## 20                       Total 4319194633.1                   4.83</code></pre>
 </details>
 </details>
@@ -3776,25 +3866,25 @@ output
 output
 </summary>
 <pre><code>##                        Species     Estimate Percent Sampling Error
-## 1                subalpine fir 7595942259.7                   8.12
-## 2                 Utah juniper   51536534.7                  27.08
-## 3       Rocky Mountain juniper  149789361.8                  20.65
-## 4             Engelmann spruce 1653336667.8                   10.4
-## 5                  blue spruce    9597932.5                  72.35
+## 1                    green ash    4180634.4                  79.48
+## 2            plains cottonwood    2027267.7                  82.62
+## 3                quaking aspen   1870428252                  16.35
+## 4        narrowleaf cottonwood   51593597.2                  61.75
+## 5                  limber pine  465590561.1                  19.17
 ## 6               whitebark pine 1409480054.7                  14.49
 ## 7  common or two-needle pinyon     119194.9                    100
 ## 8               lodgepole pine 4417708152.9                  14.09
-## 9                  limber pine  465590561.1                  19.17
-## 10              ponderosa pine  628036828.7                  21.73
-## 11                 Douglas-fir  547823866.7                  24.23
-## 12                    boxelder    5891677.3                  96.11
-## 13                 paper birch     10120975                   75.3
-## 14  curlleaf mountain-mahogany       538261                  69.47
-## 15                   green ash    4180634.4                  79.48
-## 16           plains cottonwood    2027267.7                  82.62
-## 17               quaking aspen   1870428252                  16.35
-## 18       narrowleaf cottonwood   51593597.2                  61.75
-## 19                     bur oak  367717832.1                  50.87
+## 9                subalpine fir 7595942259.7                   8.12
+## 10            Engelmann spruce 1653336667.8                   10.4
+## 11              ponderosa pine  628036828.7                  21.73
+## 12                Utah juniper   51536534.7                  27.08
+## 13      Rocky Mountain juniper  149789361.8                  20.65
+## 14                 blue spruce    9597932.5                  72.35
+## 15                     bur oak  367717832.1                  50.87
+## 16  curlleaf mountain-mahogany       538261                  69.47
+## 17                 paper birch     10120975                   75.3
+## 18                    boxelder    5891677.3                  96.11
+## 19                 Douglas-fir  547823866.7                  24.23
 ## 20                       Total  19241459912                   5.21</code></pre>
 </details>
 <div class="sourceCode" id="cb275"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb275-1"><a href="#cb275-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Compare estimates with and without seedlings</span></span>
@@ -3803,26 +3893,26 @@ output
 <summary>
 output
 </summary>
-<pre><code>##                  Species     Estimate Percent Sampling Error
-## 1          subalpine fir 1149064733.7                   8.33
-## 2           Utah juniper   45255337.4                  27.67
-## 3 Rocky Mountain juniper    100653677                  20.77
-## 4       Engelmann spruce  472342493.8                  11.91
-## 5            blue spruce    6731266.5                  63.82
-## 6         whitebark pine  237604255.7                  15.55</code></pre>
+<pre><code>##                 Species    Estimate Percent Sampling Error
+## 1             green ash   1288927.2                  91.98
+## 2     plains cottonwood   2027267.7                  82.62
+## 3         quaking aspen 253876469.3                  18.88
+## 4 narrowleaf cottonwood   4585746.3                   57.8
+## 5           limber pine  93252401.1                   20.6
+## 6        whitebark pine 237604255.7                  15.55</code></pre>
 </details>
 <div class="sourceCode" id="cb277"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb277-1"><a href="#cb277-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(tree1<span class="fl">.5</span><span class="sc">$</span>est)</span></code></pre></div>
 <details>
 <summary>
 output
 </summary>
-<pre><code>##                  Species     Estimate Percent Sampling Error
-## 1          subalpine fir 7595942259.7                   8.12
-## 2           Utah juniper   51536534.7                  27.08
-## 3 Rocky Mountain juniper  149789361.8                  20.65
-## 4       Engelmann spruce 1653336667.8                   10.4
-## 5            blue spruce    9597932.5                  72.35
-## 6         whitebark pine 1409480054.7                  14.49</code></pre>
+<pre><code>##                 Species     Estimate Percent Sampling Error
+## 1             green ash    4180634.4                  79.48
+## 2     plains cottonwood    2027267.7                  82.62
+## 3         quaking aspen   1870428252                  16.35
+## 4 narrowleaf cottonwood   51593597.2                  61.75
+## 5           limber pine  465590561.1                  19.17
+## 6        whitebark pine 1409480054.7                  14.49</code></pre>
 </details>
 </details>
 </div>
@@ -3865,24 +3955,27 @@ output
 <summary>
 output
 </summary>
-<pre><code>##                   Species      Estimate Percent Sampling Error
-## 1           subalpine fir  6446877525.9                   8.72
-## 2            Utah juniper     6281197.4                  49.99
-## 3  Rocky Mountain juniper    49135684.8                  32.32
-## 4        Engelmann spruce    1180994174                  11.58
-## 5             blue spruce       2866666                 101.99
-## 6          whitebark pine    1171875799                  15.95
-## 7          lodgepole pine  2959149077.4                  17.66
-## 8             limber pine     372338160                  20.34
-## 9          ponderosa pine   367048645.1                  32.58
-## 10            Douglas-fir   341693929.6                  33.54
-## 11               boxelder     4764807.8                    100
-## 12            paper birch     8675121.4                  74.48
-## 13              green ash     2891707.1                 107.34
-## 14          quaking aspen  1616551782.7                  17.32
-## 15  narrowleaf cottonwood    47007850.9                  64.53
-## 16                bur oak   344113149.8                     53
-## 17                  Total 14922265278.9                   5.99</code></pre>
+<pre><code>##                        Species     Estimate Percent Sampling Error
+## 1                    green ash    1288927.2                  91.98
+## 2            plains cottonwood    2154301.9                  77.88
+## 3                quaking aspen  280590243.3                  17.75
+## 4        narrowleaf cottonwood    4703050.5                  58.39
+## 5                  limber pine  122214988.3                  17.62
+## 6               whitebark pine  314094044.8                  13.78
+## 7  common or two-needle pinyon     119194.9                    100
+## 8               lodgepole pine 1705072743.5                     10
+## 9                subalpine fir 1246233705.1                   8.04
+## 10            Engelmann spruce  554005425.4                  11.01
+## 11              ponderosa pine  274484174.5                  15.47
+## 12                Utah juniper   50965393.6                  26.72
+## 13      Rocky Mountain juniper  105031772.7                  20.34
+## 14                 blue spruce    6731266.5                  63.82
+## 15                     bur oak   24110714.8                  37.92
+## 16  curlleaf mountain-mahogany     670280.1                  70.07
+## 17                 paper birch    1561923.5                  99.39
+## 18                    boxelder    1244044.7                  77.19
+## 19                 Douglas-fir  249338016.3                  17.75
+## 20                       Total 4944614211.6                   4.37</code></pre>
 </details>
 <div class="sourceCode" id="cb284"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb284-1"><a href="#cb284-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Compare estimates with, without, and only seedlings</span></span>
 <span id="cb284-2"><a href="#cb284-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(tree1<span class="fl">.4</span><span class="sc">$</span>est)</span></code></pre></div>
@@ -3890,39 +3983,39 @@ output
 <summary>
 output
 </summary>
-<pre><code>##                  Species     Estimate Percent Sampling Error
-## 1          subalpine fir 1149064733.7                   8.33
-## 2           Utah juniper   45255337.4                  27.67
-## 3 Rocky Mountain juniper    100653677                  20.77
-## 4       Engelmann spruce  472342493.8                  11.91
-## 5            blue spruce    6731266.5                  63.82
-## 6         whitebark pine  237604255.7                  15.55</code></pre>
+<pre><code>##                 Species    Estimate Percent Sampling Error
+## 1             green ash   1288927.2                  91.98
+## 2     plains cottonwood   2027267.7                  82.62
+## 3         quaking aspen 253876469.3                  18.88
+## 4 narrowleaf cottonwood   4585746.3                   57.8
+## 5           limber pine  93252401.1                   20.6
+## 6        whitebark pine 237604255.7                  15.55</code></pre>
 </details>
 <div class="sourceCode" id="cb286"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb286-1"><a href="#cb286-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(tree1<span class="fl">.5</span><span class="sc">$</span>est)</span></code></pre></div>
 <details>
 <summary>
 output
 </summary>
-<pre><code>##                  Species     Estimate Percent Sampling Error
-## 1          subalpine fir 7595942259.7                   8.12
-## 2           Utah juniper   51536534.7                  27.08
-## 3 Rocky Mountain juniper  149789361.8                  20.65
-## 4       Engelmann spruce 1653336667.8                   10.4
-## 5            blue spruce    9597932.5                  72.35
-## 6         whitebark pine 1409480054.7                  14.49</code></pre>
+<pre><code>##                 Species     Estimate Percent Sampling Error
+## 1             green ash    4180634.4                  79.48
+## 2     plains cottonwood    2027267.7                  82.62
+## 3         quaking aspen   1870428252                  16.35
+## 4 narrowleaf cottonwood   51593597.2                  61.75
+## 5           limber pine  465590561.1                  19.17
+## 6        whitebark pine 1409480054.7                  14.49</code></pre>
 </details>
 <div class="sourceCode" id="cb288"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb288-1"><a href="#cb288-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(tree1<span class="fl">.6</span><span class="sc">$</span>est)</span></code></pre></div>
 <details>
 <summary>
 output
 </summary>
-<pre><code>##                  Species     Estimate Percent Sampling Error
-## 1          subalpine fir 6446877525.9                   8.72
-## 2           Utah juniper    6281197.4                  49.99
-## 3 Rocky Mountain juniper   49135684.8                  32.32
-## 4       Engelmann spruce   1180994174                  11.58
-## 5            blue spruce      2866666                 101.99
-## 6         whitebark pine   1171875799                  15.95</code></pre>
+<pre><code>##                 Species    Estimate Percent Sampling Error
+## 1             green ash   1288927.2                  91.98
+## 2     plains cottonwood   2154301.9                  77.88
+## 3         quaking aspen 280590243.3                  17.75
+## 4 narrowleaf cottonwood   4703050.5                  58.39
+## 5           limber pine 122214988.3                  17.62
+## 6        whitebark pine 314094044.8                  13.78</code></pre>
 </details>
 </details>
 </div>
@@ -3970,25 +4063,25 @@ output
 </summary>
 <pre><code>##                        Forest type         subalpine fir      Engelmann spruce
 ## 1                      Douglas-fir           -- (    --)           -- (    --)
-## 2                 Engelmann spruce  5,748,668.1 ( 77.02) 13,619,359.9 ( 52.63)
-## 3 Engelmann spruce / subalpine fir 27,057,507.3 ( 64.52) 12,145,337.3 ( 60.75)
-## 4                    Subalpine fir 11,180,825.7 ( 86.24)    119,274.2 (100.76)
-## 5                   Lodgepole pine 27,362,519.2 ( 36.76) 28,612,774.3 ( 44.96)
+## 2                 Engelmann spruce  5,749,765.4 ( 77.01) 13,619,107.7 ( 52.63)
+## 3 Engelmann spruce / subalpine fir 27,053,651.4 ( 64.52) 12,143,606.5 ( 60.75)
+## 4                    Subalpine fir 11,179,232.3 ( 86.25)    119,257.2 (100.76)
+## 5                   Lodgepole pine 27,358,852.8 ( 36.77) 28,613,223.4 ( 44.96)
 ## 6                            Aspen           -- (    --)           -- (    --)
 ##           lodgepole pine          limber pine           Douglas-fir
-## 1            -- (    --) 4,283,555.0 ( 97.92) 21,223,387.2 ( 89.14)
-## 2   4,641,377.7 ( 98.14)          -- (    --)  3,513,431.3 (100.76)
-## 3            -- (    --)   357,822.7 (100.76)  1,431,290.9 ( 79.06)
-## 4   2,504,759.1 ( 79.85)          -- (    --)           -- (    --)
-## 5 158,998,727.8 ( 22.59)          -- (    --)    238,548.5 (100.76)
-## 6  11,886,153.4 (100.76)          -- (    --)           -- (    --)
+## 1            -- (    --) 4,282,944.6 ( 97.93) 21,220,362.7 ( 89.14)
+## 2   4,640,716.3 ( 98.14)          -- (    --)  3,512,930.6 (100.76)
+## 3            -- (    --)   357,771.7 (100.76)  1,431,086.9 ( 79.06)
+## 4   2,504,402.2 ( 79.86)          -- (    --)           -- (    --)
+## 5 158,980,399.8 ( 22.59)          -- (    --)    238,514.5 (100.76)
+## 6  11,884,459.5 (100.76)          -- (    --)           -- (    --)
 ##           quaking aspen                  Total
-## 1           -- (    --)  25,506,942.2 ( 90.53)
-## 2           -- (    --)  27,522,837.1 ( 50.80)
-## 3           -- (    --)  40,991,958.3 ( 55.71)
-## 4           -- (    --)  13,804,859.0 ( 85.10)
-## 5 10,052,879.2 ( 84.38) 225,265,449.0 ( 19.47)
-## 6           -- (    --)  11,886,153.4 (100.76)</code></pre>
+## 1           -- (    --)  25,503,307.3 ( 90.54)
+## 2           -- (    --)  27,522,520.0 ( 50.80)
+## 3           -- (    --)  40,986,116.6 ( 55.71)
+## 4           -- (    --)  13,802,891.7 ( 85.10)
+## 5 10,051,446.6 ( 84.39) 225,242,437.0 ( 19.47)
+## 6           -- (    --)  11,884,459.5 (100.76)</code></pre>
 </details>
 </details>
 </div>
@@ -4030,33 +4123,33 @@ output
 output
 </summary>
 <pre><code>##            Species                  Other                Insect
-## 1    subalpine fir  21,190,713.8 ( 49.41)  2,542,352.8 (100.76)
-## 2 Engelmann spruce  41,509,462.5 ( 46.15) 55,085,858.6 ( 97.75)
-## 3   lodgepole pine  60,858,957.0 ( 29.62)  4,118,397.1 ( 66.16)
-## 4      limber pine      80,032.4 (100.76)           -- (    --)
-## 5      Douglas-fir  13,989,308.8 (100.76)           -- (    --)
-## 6            Total 137,628,474.6 ( 30.03) 61,746,608.4 ( 91.29)
+## 1      limber pine      80,021.0 (100.76)           -- (    --)
+## 2   lodgepole pine  60,852,105.6 ( 29.62)  4,117,810.2 ( 66.17)
+## 3    subalpine fir  21,189,023.2 ( 49.41)  2,541,990.5 (100.76)
+## 4 Engelmann spruce  41,510,499.0 ( 46.15) 55,078,805.3 ( 97.75)
+## 5      Douglas-fir  13,987,315.2 (100.76)           -- (    --)
+## 6            Total 137,618,964.1 ( 30.03) 61,738,605.9 ( 91.29)
 ##                 Disease                  Fire  Unidentified animal
-## 1 30,508,319.8 ( 62.45)  2,658,383.3 (101.19)          -- (    --)
-## 2  2,289,154.2 ( 69.15) 32,915,727.9 (101.19)          -- (    --)
-## 3  1,673,509.8 (100.76)           -- (    --) 3,118,558.7 ( 84.42)
-## 4           -- (    --)  3,004,004.7 (100.76)          -- (    --)
+## 1           -- (    --)  3,003,576.6 (100.76)          -- (    --)
+## 2  1,673,271.3 (100.76)           -- (    --) 3,119,322.2 ( 84.42)
+## 3 30,508,246.9 ( 62.45)  2,659,270.4 (101.17)          -- (    --)
+## 4  2,289,354.2 ( 69.14) 32,926,712.4 (101.17)          -- (    --)
 ## 5           -- (    --)           -- (    --)          -- (    --)
-## 6 34,470,983.8 ( 61.02) 38,578,115.9 ( 93.64) 3,118,558.7 ( 84.42)
+## 6 34,470,872.4 ( 61.02) 38,589,559.4 ( 93.63) 3,119,322.2 ( 84.42)
 ##                Weather Vegetation (e.g., suppression)          Unidentified
-## 1   538,264.0 (101.19)             276,742.8 (100.76)  7,867,809.7 ( 66.63)
-## 2   610,593.0 (100.76)                    -- (    --)  8,283,794.0 ( 78.51)
-## 3   730,095.4 ( 97.76)                    -- (    --) 12,650,215.0 ( 62.27)
-## 4          -- (    --)                    -- (    --)    128,237.6 (100.76)
+## 1          -- (    --)                    -- (    --)    128,219.3 (100.76)
+## 2   729,991.4 ( 97.76)                    -- (    --) 12,650,879.8 ( 62.27)
+## 3   538,443.6 (101.17)             276,703.4 (100.76)  7,869,019.1 ( 66.63)
+## 4   610,506.0 (100.76)                    -- (    --)  8,282,613.5 ( 78.51)
 ## 5          -- (    --)                    -- (    --)           -- (    --)
-## 6 1,878,952.4 ( 57.37)             276,742.8 (100.76) 28,930,056.4 ( 40.25)
+## 6 1,878,940.9 ( 57.37)             276,703.4 (100.76) 28,930,731.8 ( 40.25)
 ##                    Total
-## 1  65,582,586.2 ( 44.71)
-## 2 140,694,590.2 ( 50.63)
-## 3  83,149,733.1 ( 29.20)
-## 4   3,212,274.7 ( 96.72)
-## 5  13,989,308.8 (100.76)
-## 6 306,628,493.0 ( 30.22)</code></pre>
+## 1   3,211,816.9 ( 96.72)
+## 2  83,143,380.4 ( 29.20)
+## 3  65,582,697.1 ( 44.71)
+## 4 140,698,490.4 ( 50.62)
+## 5  13,987,315.2 (100.76)
+## 6 306,623,700.2 ( 30.22)</code></pre>
 </details>
 </details>
 </div>
@@ -4249,40 +4342,40 @@ output
 output
 </summary>
 <pre><code>##                 Species group               1.0-2.9               3.0-4.9
-## 1                 Douglas-fir 14,857,691.8 (100.76)  5,943,076.7 ( 60.40)
-## 2                    True fir 35,733,108.1 ( 34.02) 23,772,306.8 ( 41.20)
-## 3 Engelmann and other spruces 19,538,943.0 ( 52.05)  7,428,845.9 ( 59.10)
-## 4              Lodgepole pine 43,087,306.1 ( 36.30) 34,284,662.9 ( 34.68)
-## 5     Other western softwoods  2,971,538.4 (100.76)           -- (    --)
-## 6        Cottonwood and aspen  5,943,076.7 (100.76)  1,485,769.2 (100.76)
+## 1                 Douglas-fir 14,855,574.4 (100.76)  5,942,229.8 ( 60.41)
+## 2                    True fir 35,729,466.5 ( 34.02) 23,768,919.1 ( 41.20)
+## 3 Engelmann and other spruces 19,540,510.5 ( 52.06)  7,427,787.2 ( 59.10)
+## 4              Lodgepole pine 43,081,165.8 ( 36.30) 34,281,953.1 ( 34.68)
+## 5     Other western softwoods  2,971,114.9 (100.76)           -- (    --)
+## 6        Cottonwood and aspen  5,942,229.8 (100.76)  1,485,557.4 (100.76)
 ##                 5.0-6.9               7.0-8.9              9.0-10.9
-## 1  2,146,936.4 ( 46.77)  1,550,565.2 ( 60.21)    715,645.5 ( 56.70)
-## 2  6,461,783.1 ( 32.38)  2,862,581.8 ( 36.05)    840,912.3 ( 36.35)
-## 3  8,247,900.5 ( 29.96)  6,458,786.8 ( 34.84)  3,473,934.5 ( 36.36)
-## 4 37,267,496.8 ( 24.24) 32,818,394.5 ( 21.39) 17,789,839.9 ( 20.44)
-## 5  1,192,742.4 ( 82.60)    357,822.7 ( 74.35)    119,274.2 (100.76)
-## 6  2,266,210.6 ( 54.80)    238,548.5 ( 70.35)    119,274.2 (100.76)
+## 1  2,146,630.4 ( 46.77)  1,550,344.2 ( 60.21)    715,543.5 ( 56.70)
+## 2  6,461,269.8 ( 32.39)  2,862,173.9 ( 36.06)    840,908.9 ( 36.35)
+## 3  8,247,074.4 ( 29.96)  6,458,215.8 ( 34.84)  3,473,730.5 ( 36.37)
+## 4 37,263,234.0 ( 24.24) 32,814,067.0 ( 21.39) 17,787,654.1 ( 20.44)
+## 5  1,192,572.5 ( 82.60)    357,771.7 ( 74.35)    119,257.2 (100.76)
+## 6  2,265,887.7 ( 54.81)    238,514.5 ( 70.35)    119,257.2 (100.76)
 ##              11.0-12.9            13.0-14.9            15.0-16.9
-## 1   119,274.2 (100.76)   357,822.7 ( 74.35)   357,822.7 (100.76)
-## 2 1,318,009.2 ( 44.43)   119,274.2 (100.76)   122,270.5 (101.19)
-## 3 4,067,309.4 ( 28.16) 2,045,639.8 ( 39.54)   834,919.7 ( 64.85)
-## 4 7,168,439.7 ( 22.35) 3,226,397.1 ( 30.61) 1,076,464.5 ( 41.49)
+## 1   119,257.2 (100.76)   357,771.7 ( 74.35)   357,771.7 (100.76)
+## 2 1,317,937.9 ( 44.43)   119,257.2 (100.76)   122,311.3 (101.17)
+## 3 4,066,962.7 ( 28.16) 2,045,697.7 ( 39.54)   834,800.7 ( 64.86)
+## 4 7,167,651.1 ( 22.35) 3,226,053.8 ( 30.61) 1,076,369.3 ( 41.49)
 ## 5          -- (    --)          -- (    --)          -- (    --)
 ## 6          -- (    --)          -- (    --)          -- (    --)
 ##            17.0-18.9            19.0-20.9          21.0-22.9          23.0-24.9
-## 1        -- (    --)   119,274.2 (100.76) 119,274.2 (100.76) 119,274.2 (100.76)
-## 2 119,274.2 (100.76)          -- (    --)        -- (    --)        -- (    --)
-## 3 957,190.2 ( 55.17) 1,079,460.8 ( 42.09) 119,274.2 (100.76) 244,541.1 (101.19)
-## 4 834,919.7 ( 74.03)   357,822.7 ( 74.35)        -- (    --) 119,274.2 (100.76)
+## 1        -- (    --)   119,257.2 (100.76) 119,257.2 (100.76) 119,257.2 (100.76)
+## 2 119,257.2 (100.76)          -- (    --)        -- (    --)        -- (    --)
+## 3 957,112.0 ( 55.17) 1,079,423.4 ( 42.09) 119,257.2 (100.76) 244,622.7 (101.17)
+## 4 834,800.7 ( 74.03)   357,771.7 ( 74.35)        -- (    --) 119,257.2 (100.76)
 ## 5        -- (    --)          -- (    --)        -- (    --)        -- (    --)
 ## 6        -- (    --)          -- (    --)        -- (    --)        -- (    --)
 ##                    Total
-## 1  26,406,657.9 ( 72.43)
-## 2  71,349,520.3 ( 30.27)
-## 3  54,496,745.8 ( 28.35)
-## 4 178,031,018.1 ( 20.43)
-## 5   4,641,377.7 ( 90.51)
-## 6  10,052,879.2 ( 84.38)</code></pre>
+## 1  26,402,894.7 ( 72.44)
+## 2  71,341,501.9 ( 30.28)
+## 3  54,495,194.9 ( 28.35)
+## 4 178,009,977.8 ( 20.43)
+## 5   4,640,716.3 ( 90.51)
+## 6  10,051,446.6 ( 84.39)</code></pre>
 </details>
 </details>
 </div>
@@ -4326,19 +4419,19 @@ output
 output
 </summary>
 <pre><code>##                 Species group                 0-4.9                 5-9.9
-## 1                 Douglas-fir 20,800,768.5 ( 86.59)  4,055,324.3 ( 51.25)
-## 2                    True fir 59,505,414.9 ( 31.91) 10,046,002.9 ( 31.06)
-## 3 Engelmann and other spruces 26,967,788.9 ( 45.56) 16,385,515.5 ( 32.40)
-## 4              Lodgepole pine 77,371,969.0 ( 30.20) 80,597,006.1 ( 21.14)
-## 5     Other western softwoods  2,971,538.4 (100.76)  1,550,565.2 ( 80.36)
-## 6        Cottonwood and aspen  7,428,845.9 (100.76)  2,624,033.3 ( 56.06)
+## 1                 Douglas-fir 20,797,804.2 ( 86.59)  4,054,746.3 ( 51.25)
+## 2                    True fir 59,498,385.6 ( 31.91) 10,045,095.4 ( 31.06)
+## 3 Engelmann and other spruces 26,968,297.7 ( 45.56) 16,384,053.9 ( 32.40)
+## 4              Lodgepole pine 77,363,118.9 ( 30.21) 80,587,209.0 ( 21.14)
+## 5     Other western softwoods  2,971,114.9 (100.76)  1,550,344.2 ( 80.37)
+## 6        Cottonwood and aspen  7,427,787.2 (100.76)  2,623,659.4 ( 56.07)
 ##                 10-19.9                20+                  Total
-## 1  1,192,742.4 ( 47.37) 357,822.7 ( 74.35)  26,406,657.9 ( 72.43)
-## 2  1,798,102.5 ( 38.15)        -- (    --)  71,349,520.3 ( 30.27)
-## 3 10,415,810.8 ( 29.66) 727,630.6 ( 71.82)  54,496,745.8 ( 28.35)
-## 4 19,823,494.6 ( 20.78) 238,548.5 ( 70.35) 178,031,018.1 ( 20.43)
-## 5    119,274.2 (100.76)        -- (    --)   4,641,377.7 ( 90.51)
-## 6           -- (    --)        -- (    --)  10,052,879.2 ( 84.38)</code></pre>
+## 1  1,192,572.5 ( 47.37) 357,771.7 ( 74.35)  26,402,894.7 ( 72.44)
+## 2  1,798,020.9 ( 38.16)        -- (    --)  71,341,501.9 ( 30.28)
+## 3 10,415,083.4 ( 29.66) 727,759.8 ( 71.82)  54,495,194.9 ( 28.35)
+## 4 19,821,135.4 ( 20.78) 238,514.5 ( 70.35) 178,009,977.8 ( 20.43)
+## 5    119,257.2 (100.76)        -- (    --)   4,640,716.3 ( 90.51)
+## 6           -- (    --)        -- (    --)  10,051,446.6 ( 84.39)</code></pre>
 </details>
 </details>
 </div>
@@ -4382,19 +4475,26 @@ output
 output
 </summary>
 <pre><code>##                 Species group                     &lt;1                 0-4.9
-## 1                 Douglas-fir  25,258,076.1 ( 88.99) 20,800,768.5 ( 86.59)
-## 2                    True fir 339,359,746.0 ( 25.54) 59,505,414.9 ( 31.91)
-## 3 Engelmann and other spruces  70,428,334.8 ( 39.27) 26,967,788.9 ( 45.56)
-## 4              Lodgepole pine  72,877,337.8 ( 26.90) 77,371,969.0 ( 30.20)
-## 5     Other western softwoods  34,172,691.2 ( 96.37)  2,971,538.4 (100.76)
-## 6        Cottonwood and aspen  77,259,997.6 ( 84.01)  7,428,845.9 (100.76)
-##                   5-9.9               10-19.9                  Total
-## 1  4,055,324.3 ( 51.25)  1,192,742.4 ( 47.37)  51,306,911.2 ( 80.67)
-## 2 10,046,002.9 ( 31.06)  1,798,102.5 ( 38.15) 410,709,266.3 ( 24.79)
-## 3 16,385,515.5 ( 32.40) 10,415,810.8 ( 29.66) 124,197,450.0 ( 32.00)
-## 4 80,597,006.1 ( 21.14) 19,823,494.6 ( 20.78) 250,669,807.4 ( 19.14)
-## 5  1,550,565.2 ( 80.36)    119,274.2 (100.76)  38,814,069.0 ( 95.62)
-## 6  2,624,033.3 ( 56.06)           -- (    --)  87,312,876.8 ( 76.24)</code></pre>
+## 1                 Douglas-fir  25,254,476.7 ( 89.00) 20,797,804.2 ( 86.59)
+## 2                    True fir 339,352,003.3 ( 25.55) 59,498,385.6 ( 31.91)
+## 3 Engelmann and other spruces  70,429,903.5 ( 39.28) 26,968,297.7 ( 45.56)
+## 4              Lodgepole pine  72,868,402.9 ( 26.90) 77,363,118.9 ( 30.21)
+## 5     Other western softwoods  34,167,821.3 ( 96.37)  2,971,114.9 (100.76)
+## 6        Cottonwood and aspen  77,248,987.4 ( 84.02)  7,427,787.2 (100.76)
+##                   5-9.9               10-19.9                20+
+## 1  4,054,746.3 ( 51.25)  1,192,572.5 ( 47.37) 357,771.7 ( 74.35)
+## 2 10,045,095.4 ( 31.06)  1,798,020.9 ( 38.16)        -- (    --)
+## 3 16,384,053.9 ( 32.40) 10,415,083.4 ( 29.66) 727,759.8 ( 71.82)
+## 4 80,587,209.0 ( 21.14) 19,821,135.4 ( 20.78) 238,514.5 ( 70.35)
+## 5  1,550,344.2 ( 80.37)    119,257.2 (100.76)        -- (    --)
+## 6  2,623,659.4 ( 56.07)           -- (    --)        -- (    --)
+##                    Total
+## 1  51,657,371.4 ( 80.14)
+## 2 410,693,505.2 ( 24.79)
+## 3 124,925,098.4 ( 31.82)
+## 4 250,878,380.6 ( 19.12)
+## 5  38,808,537.7 ( 95.62)
+## 6  87,300,434.0 ( 76.24)</code></pre>
 </details>
 </details>
 </div>
@@ -4437,19 +4537,19 @@ output
 output
 </summary>
 <pre><code>##                       Forest-type group Medicine Wheel Ranger District
-## 1                     Douglas-fir group             165,175.1 ( 97.68)
-## 2 Fir / spruce / mountain hemlock group         157,055,354.0 ( 48.22)
-## 3                  Lodgepole pine group          36,412,904.6 ( 56.21)
+## 1                     Douglas-fir group             165,168.4 ( 97.68)
+## 2 Fir / spruce / mountain hemlock group         157,053,798.8 ( 48.22)
+## 3                  Lodgepole pine group          36,412,218.0 ( 56.21)
 ## 4                 Aspen / birch / group                    -- (    --)
 ## 5                            Nonstocked                    -- (    --)
-## 6                                 Total         193,633,433.7 ( 37.60)
+## 6                                 Total         193,631,185.1 ( 37.60)
 ##   Powder River Ranger District Tongue Ranger District                  Total
-## 1                  -- (    --)            -- (    --)     130,096.2 (101.16)
-## 2        71,882,234.1 ( 82.23)     467,909.0 (104.01) 218,543,614.3 ( 42.93)
-## 3        12,312,080.1 ( 71.60)  31,023,626.0 ( 30.93)  77,698,950.9 ( 28.38)
-## 4         7,704,906.0 ( 99.63)            -- (    --)   8,313,354.1 (101.16)
-## 5                  -- (    --)   2,859,356.9 (104.01)   3,041,827.7 (101.16)
-## 6        91,899,220.2 ( 63.23)  34,350,891.9 ( 28.07) 307,727,843.3 ( 30.19)</code></pre>
+## 1                  -- (    --)            -- (    --)     130,081.0 (101.17)
+## 2        71,872,642.4 ( 82.23)     467,834.6 (104.01) 218,544,932.5 ( 42.93)
+## 3        12,310,437.3 ( 71.60)  31,018,741.5 ( 30.93)  77,694,274.8 ( 28.38)
+## 4         7,703,877.9 ( 99.64)            -- (    --)   8,312,379.6 (101.17)
+## 5                  -- (    --)   2,858,902.1 (104.01)   3,041,471.1 (101.17)
+## 6        91,886,957.6 ( 63.23)  34,345,478.2 ( 28.07) 307,723,138.9 ( 30.19)</code></pre>
 </details>
 <div class="sourceCode" id="cb332"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb332-1"><a href="#cb332-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Estimate and percent sampling error by district</span></span>
 <span id="cb332-2"><a href="#cb332-2" aria-hidden="true" tabindex="-1"></a>tree3<span class="fl">.1</span><span class="sc">$</span>raw<span class="sc">$</span>unit_rowest</span></code></pre></div>
@@ -4469,38 +4569,38 @@ output
 ## 9          Tongue Ranger District                  Lodgepole pine group
 ## 10         Tongue Ranger District                            Nonstocked
 ##           nhat     nhat.var NBRPLT.gt0 FORTYPGRPCD ACRES_GIS AREAUSED
-## 1    0.4531269 1.959208e-01          1         200  364522.8 364522.8
-## 2  430.8519180 4.316523e+04          5         260  364522.8 364522.8
-## 3   99.8919770 3.152230e+03          5         280  364522.8 364522.8
-## 4  215.0014788 3.125324e+04          3         260  334333.7 334333.7
-## 5   36.8257257 6.951532e+02          3         280  334333.7 334333.7
-## 6   23.0455579 5.272159e+02          1         900  334333.7 334333.7
-## 7    0.0000000 0.000000e+00          0         200  413774.9 413774.9
-## 8    1.1308300 1.383285e+00          1         260  413774.9 413774.9
-## 9   74.9770645 5.376754e+02         13         280  413774.9 413774.9
-## 10   6.9104167 5.165656e+01          1         999  413774.9 413774.9
+## 1    0.4531147     0.195916          1         200  364517.8 364517.8
+## 2  430.8535875 43165.341520          5         260  364517.8 364517.8
+## 3   99.8914695  3152.227017          5         280  364517.8 364517.8
+## 4  214.9748787 31249.654762          3         260  334330.4 334330.4
+## 5   36.8211696   695.073514          3         280  334330.4 334330.4
+## 6   23.0427067   527.155403          1         900  334330.4 334330.4
+## 7    0.0000000     0.000000          0         200  413769.7 413769.7
+## 8    1.1306641     1.383093          1         260  413769.7 413769.7
+## 9   74.9661899   537.600991         13         280  413769.7 413769.7
+## 10   6.9094033    51.649407          1         999  413769.7 413769.7
 ##            est      est.var     est.se    est.cv       pse CI99left   CI99right
-## 1     165175.1 2.603334e+10   161348.5 0.9768332  97.68332        0    580781.3
-## 2  157055354.0 5.735661e+15 75734144.2 0.4822131  48.22131        0 352133581.9
-## 3   36412904.6 4.188584e+14 20466031.5 0.5620544  56.20544        0  89129908.4
-## 4   71882234.1 3.493456e+15 59105464.4 0.8222541  82.22541        0 224127821.4
-## 5   12312080.1 7.770354e+13  8814960.9 0.7159603  71.59603        0  35017914.8
-## 6    7704906.0 5.893166e+13  7676696.2 0.9963387  99.63387        0  27478765.0
+## 1     165168.4 2.603200e+10   161344.3 0.9768476  97.68476        0    580763.9
+## 2  157053798.8 5.735518e+15 75733202.6 0.4822118  48.22118        0 352129601.3
+## 3   36412218.0 4.188466e+14 20465741.1 0.5620570  56.20570        0  89128473.6
+## 4   71872642.4 3.492987e+15 59101501.1 0.8223087  82.23087        0 224108020.8
+## 5   12310437.3 7.769312e+13  8814369.9 0.7160079  71.60079        0  35014749.4
+## 6    7703877.9 5.892376e+13  7676181.4 0.9964049  99.64049        0  27476411.0
 ## 7          0.0 0.000000e+00        0.0       NaN       NaN        0         0.0
-## 8     467909.0 2.368317e+11   486653.6 1.0400602 104.00602        0   1721445.6
-## 9   31023626.0 9.205522e+13  9594541.3 0.3092656  30.92656  6309725  55737526.7
-## 10   2859356.9 8.844102e+12  2973903.4 1.0400602 104.00602        0  10519624.4
+## 8     467834.6 2.367931e+11   486613.9 1.0401408 104.01408        0   1721268.9
+## 9   31018741.5 9.204020e+13  9593758.1 0.3092891  30.92891  6306858  55730624.9
+## 10   2858902.1 8.842658e+12  2973660.6 1.0401408 104.01408        0  10518544.3
 ##    CI95left   CI95right     CI68left   CI68right
-## 1         0    481412.3     4720.787    325629.4
-## 2   8619159 305491549.0 81740937.247 232369770.7
-## 3         0  76525589.3 16060298.267  56765511.0
-## 4         0 187726815.7 13104338.994 130660129.1
-## 5         0  29589086.1  3545972.728  21078187.5
-## 6         0  22750954.1    70754.980  15339057.1
+## 1         0    481397.5     4718.238    325618.5
+## 2   8619449 305488148.3 81740318.423 232367279.1
+## 3         0  76524333.4 16059900.422  56764535.5
+## 4         0 187709456.0 13098688.746 130646596.1
+## 5         0  29586284.7  3544917.677  21075956.8
+## 6         0  22748917.0    70238.786  15337517.0
 ## 7         0         0.0        0.000         0.0
-## 8         0   1421732.6        0.000    951865.5
-## 9  12218671  49828581.4 21482258.792  40564993.3
-## 10        0   8688100.5        0.000   5816778.6</code></pre>
+## 8         0   1421580.3        0.000    951751.6
+## 9  12215321  49822162.0 21478153.119  40559329.9
+## 10        0   8687169.8        0.000   5816082.3</code></pre>
 </details>
 </details>
 </div>
@@ -5449,12 +5549,12 @@ output
 output
 </summary>
 <pre><code>##            Species Estimate Percent Sampling Error
-## 1    subalpine fir    107.1                  29.07
-## 2 Engelmann spruce     81.8                  26.99
-## 3   lodgepole pine    267.3                  18.32
-## 4      limber pine        7                  90.07
-## 5      Douglas-fir     39.7                  71.92
-## 6    quaking aspen     15.1                  83.91</code></pre>
+## 1    quaking aspen     16.1                  83.82
+## 2      limber pine      7.4                  89.98
+## 3   lodgepole pine    284.5                  17.82
+## 4    subalpine fir      114                  28.76
+## 5 Engelmann spruce     87.1                  26.54
+## 6      Douglas-fir     42.2                  71.82</code></pre>
 </details>
 </details>
 </div>
@@ -5510,13 +5610,13 @@ output
 ## [1] &quot;Bighorn National Forest&quot;
 ## 
 ## $outfn.estpse
-## [1] &quot;ratio_TPA_UNADJ_ACRE_withseeds_SPNM_forestland&quot;
+## [1] &quot;ratio_TPA_UNADJ_ACRE_withseeds_COMMON_NAME_forestland&quot;
 ## 
 ## $outfn.rawdat
-## [1] &quot;ratio_TPA_UNADJ_ACRE_withseeds_SPNM_forestland_rawdata&quot;
+## [1] &quot;ratio_TPA_UNADJ_ACRE_withseeds_COMMON_NAME_forestland_rawdata&quot;
 ## 
 ## $outfn.param
-## [1] &quot;ratio_TPA_UNADJ_ACRE_withseeds_SPNM_forestland_parameters&quot;
+## [1] &quot;ratio_TPA_UNADJ_ACRE_withseeds_COMMON_NAME_forestland_parameters&quot;
 ## 
 ## $title.rowvar
 ## [1] &quot;Species&quot;
@@ -5546,12 +5646,12 @@ output
 output
 </summary>
 <pre><code>##            Species Estimate Percent Sampling Error
-## 1    subalpine fir    616.7                  22.55
-## 2 Engelmann spruce    187.6                  30.53
-## 3   lodgepole pine    376.8                  17.35
-## 4      limber pine     58.3                   95.2
-## 5      Douglas-fir     77.6                  79.66
-## 6    quaking aspen    131.1                  75.72</code></pre>
+## 1    quaking aspen    135.1                  75.65
+## 2      limber pine     60.1                  95.15
+## 3   lodgepole pine    388.3                  17.07
+## 4    subalpine fir    635.7                  22.36
+## 5 Engelmann spruce    193.4                  30.43
+## 6      Douglas-fir       80                   79.6</code></pre>
 </details>
 <div class="sourceCode" id="cb415"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb415-1"><a href="#cb415-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Compare estimates with and without seedlings</span></span>
 <span id="cb415-2"><a href="#cb415-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ratio2<span class="fl">.1</span><span class="sc">$</span>est)</span></code></pre></div>
@@ -5560,12 +5660,12 @@ output
 output
 </summary>
 <pre><code>##            Species Estimate Percent Sampling Error
-## 1    subalpine fir    107.1                  29.07
-## 2 Engelmann spruce     81.8                  26.99
-## 3   lodgepole pine    267.3                  18.32
-## 4      limber pine        7                  90.07
-## 5      Douglas-fir     39.7                  71.92
-## 6    quaking aspen     15.1                  83.91</code></pre>
+## 1    quaking aspen     16.1                  83.82
+## 2      limber pine      7.4                  89.98
+## 3   lodgepole pine    284.5                  17.82
+## 4    subalpine fir      114                  28.76
+## 5 Engelmann spruce     87.1                  26.54
+## 6      Douglas-fir     42.2                  71.82</code></pre>
 </details>
 <div class="sourceCode" id="cb417"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb417-1"><a href="#cb417-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ratio2<span class="fl">.2</span><span class="sc">$</span>est)</span></code></pre></div>
 <details>
@@ -5573,12 +5673,12 @@ output
 output
 </summary>
 <pre><code>##            Species Estimate Percent Sampling Error
-## 1    subalpine fir    616.7                  22.55
-## 2 Engelmann spruce    187.6                  30.53
-## 3   lodgepole pine    376.8                  17.35
-## 4      limber pine     58.3                   95.2
-## 5      Douglas-fir     77.6                  79.66
-## 6    quaking aspen    131.1                  75.72</code></pre>
+## 1    quaking aspen    135.1                  75.65
+## 2      limber pine     60.1                  95.15
+## 3   lodgepole pine    388.3                  17.07
+## 4    subalpine fir    635.7                  22.36
+## 5 Engelmann spruce    193.4                  30.43
+## 6      Douglas-fir       80                   79.6</code></pre>
 </details>
 </details>
 </div>
@@ -5622,13 +5722,13 @@ output
 <summary>
 output
 </summary>
-<pre><code>##            Species Estimate Percent Sampling Error
-## 1    subalpine fir    509.6                  23.22
-## 2 Engelmann spruce    105.8                  38.19
-## 3   lodgepole pine    109.4                  26.47
-## 4      limber pine     51.3                  95.96
-## 5      Douglas-fir     37.9                  88.55
-## 6    quaking aspen      116                  83.54</code></pre>
+<pre><code>##                  Species Estimate Percent Sampling Error
+## 1          quaking aspen     15.1                  83.92
+## 2            limber pine        8                  80.63
+## 3         lodgepole pine      284                  17.68
+## 4          subalpine fir    127.7                  29.07
+## 5       Engelmann spruce     91.4                  25.04
+## 6 Rocky Mountain juniper       --                     --</code></pre>
 </details>
 <div class="sourceCode" id="cb424"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb424-1"><a href="#cb424-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Compare estimates with, without, and only seedlings</span></span>
 <span id="cb424-2"><a href="#cb424-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ratio2<span class="fl">.1</span><span class="sc">$</span>est)</span></code></pre></div>
@@ -5637,12 +5737,12 @@ output
 output
 </summary>
 <pre><code>##            Species Estimate Percent Sampling Error
-## 1    subalpine fir    107.1                  29.07
-## 2 Engelmann spruce     81.8                  26.99
-## 3   lodgepole pine    267.3                  18.32
-## 4      limber pine        7                  90.07
-## 5      Douglas-fir     39.7                  71.92
-## 6    quaking aspen     15.1                  83.91</code></pre>
+## 1    quaking aspen     16.1                  83.82
+## 2      limber pine      7.4                  89.98
+## 3   lodgepole pine    284.5                  17.82
+## 4    subalpine fir      114                  28.76
+## 5 Engelmann spruce     87.1                  26.54
+## 6      Douglas-fir     42.2                  71.82</code></pre>
 </details>
 <div class="sourceCode" id="cb426"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb426-1"><a href="#cb426-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ratio2<span class="fl">.2</span><span class="sc">$</span>est)</span></code></pre></div>
 <details>
@@ -5650,25 +5750,25 @@ output
 output
 </summary>
 <pre><code>##            Species Estimate Percent Sampling Error
-## 1    subalpine fir    616.7                  22.55
-## 2 Engelmann spruce    187.6                  30.53
-## 3   lodgepole pine    376.8                  17.35
-## 4      limber pine     58.3                   95.2
-## 5      Douglas-fir     77.6                  79.66
-## 6    quaking aspen    131.1                  75.72</code></pre>
+## 1    quaking aspen    135.1                  75.65
+## 2      limber pine     60.1                  95.15
+## 3   lodgepole pine    388.3                  17.07
+## 4    subalpine fir    635.7                  22.36
+## 5 Engelmann spruce    193.4                  30.43
+## 6      Douglas-fir       80                   79.6</code></pre>
 </details>
 <div class="sourceCode" id="cb428"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb428-1"><a href="#cb428-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ratio2<span class="fl">.3</span><span class="sc">$</span>est)</span></code></pre></div>
 <details>
 <summary>
 output
 </summary>
-<pre><code>##            Species Estimate Percent Sampling Error
-## 1    subalpine fir    509.6                  23.22
-## 2 Engelmann spruce    105.8                  38.19
-## 3   lodgepole pine    109.4                  26.47
-## 4      limber pine     51.3                  95.96
-## 5      Douglas-fir     37.9                  88.55
-## 6    quaking aspen      116                  83.54</code></pre>
+<pre><code>##                  Species Estimate Percent Sampling Error
+## 1          quaking aspen     15.1                  83.92
+## 2            limber pine        8                  80.63
+## 3         lodgepole pine      284                  17.68
+## 4          subalpine fir    127.7                  29.07
+## 5       Engelmann spruce     91.4                  25.04
+## 6 Rocky Mountain juniper       --                     --</code></pre>
 </details>
 </details>
 </div>
@@ -5713,17 +5813,17 @@ output
 </summary>
 <pre><code>##                        Forest type  subalpine fir Engelmann spruce
 ## 1                      Douglas-fir    -- (    --)      -- (    --)
-## 2                 Engelmann spruce  88.6 ( 62.90)   209.8 ( 22.86)
+## 2                 Engelmann spruce  88.6 ( 62.89)   209.8 ( 22.85)
 ## 3 Engelmann spruce / subalpine fir 390.1 ( 36.28)   175.1 ( 47.50)
-## 4                    Subalpine fir 248.0 ( 61.36)     2.6 ( 73.63)
+## 4                    Subalpine fir 247.9 ( 61.37)     2.6 ( 73.64)
 ## 5                   Lodgepole pine  67.2 ( 34.42)    70.3 ( 40.77)
 ## 6                            Aspen    -- (    --)      -- (    --)
 ##   lodgepole pine    limber pine    Douglas-fir quaking aspen          Total
-## 1    -- (    --) 108.1 ( 68.11) 535.4 ( 54.74)   -- (    --) 643.5 ( 56.98)
-## 2  71.5 ( 81.44)    -- (    --)  54.1 ( 83.85)   -- (    --) 424.0 ( 12.33)
-## 3    -- (    --)   5.2 ( 82.44)  20.6 ( 60.31)   -- (    --) 590.9 ( 26.06)
-## 4  55.5 ( 57.27)    -- (    --)    -- (    --)   -- (    --) 306.2 ( 60.54)
-## 5 390.4 ( 15.86)    -- (    --)   0.6 (100.61) 24.7 ( 82.69) 553.1 ( 10.85)
+## 1    -- (    --) 108.1 ( 68.12) 535.4 ( 54.74)   -- (    --) 643.5 ( 56.99)
+## 2  71.5 ( 81.45)    -- (    --)  54.1 ( 83.86)   -- (    --) 424.0 ( 12.33)
+## 3    -- (    --)   5.2 ( 82.44)  20.6 ( 60.31)   -- (    --) 590.9 ( 26.07)
+## 4  55.5 ( 57.28)    -- (    --)    -- (    --)   -- (    --) 306.1 ( 60.55)
+## 5 390.4 ( 15.86)    -- (    --)   0.6 (100.62) 24.7 ( 82.69) 553.1 ( 10.85)
 ## 6 599.7 (    --)    -- (    --)    -- (    --)   -- (    --) 599.7 (    --)</code></pre>
 </details>
 </details>
@@ -5768,26 +5868,26 @@ output
 output
 </summary>
 <pre><code>##            Species          Other        Insect       Disease          Fire
-## 1    subalpine fir  31.8 ( 48.54)  3.8 (100.36) 45.8 ( 61.06)  4.0 ( 99.21)
-## 2 Engelmann spruce  62.3 ( 44.05) 82.7 ( 97.29)  3.4 ( 67.45) 49.4 ( 99.21)
-## 3   lodgepole pine  91.4 ( 28.53)  6.2 ( 66.27)  2.5 (100.36)   -- (    --)
-## 4      limber pine   0.1 (100.36)   -- (    --)   -- (    --)  4.5 (100.36)
-## 5      Douglas-fir  21.0 (100.36)   -- (    --)   -- (    --)   -- (    --)
-## 6            Total 206.7 ( 28.20) 92.7 ( 90.84) 51.8 ( 59.59) 57.9 ( 91.64)
+## 1      limber pine   0.1 (100.37)   -- (    --)   -- (    --)  4.5 (100.37)
+## 2   lodgepole pine  91.4 ( 28.53)  6.2 ( 66.27)  2.5 (100.37)   -- (    --)
+## 3    subalpine fir  31.8 ( 48.54)  3.8 (100.37) 45.8 ( 61.05)  4.0 ( 99.20)
+## 4 Engelmann spruce  62.3 ( 44.05) 82.7 ( 97.30)  3.4 ( 67.44) 49.4 ( 99.20)
+## 5      Douglas-fir  21.0 (100.37)   -- (    --)   -- (    --)   -- (    --)
+## 6            Total 206.7 ( 28.20) 92.7 ( 90.84) 51.8 ( 59.59) 58.0 ( 91.62)
 ##   Unidentified animal      Weather Vegetation (e.g., suppression)  Unidentified
-## 1         -- (    --) 0.8 ( 99.21)                   0.4 (100.36) 11.8 ( 64.97)
-## 2         -- (    --) 0.9 (100.36)                    -- (    --) 12.4 ( 80.26)
-## 3        4.7 ( 82.40) 1.1 ( 97.35)                    -- (    --) 19.0 ( 60.58)
-## 4         -- (    --)  -- (    --)                    -- (    --)  0.2 (100.36)
+## 1         -- (    --)  -- (    --)                    -- (    --)  0.2 (100.37)
+## 2        4.7 ( 82.39) 1.1 ( 97.36)                    -- (    --) 19.0 ( 60.58)
+## 3         -- (    --) 0.8 ( 99.20)                   0.4 (100.37) 11.8 ( 64.97)
+## 4         -- (    --) 0.9 (100.37)                    -- (    --) 12.4 ( 80.26)
 ## 5         -- (    --)  -- (    --)                    -- (    --)   -- (    --)
-## 6        4.7 ( 82.40) 2.8 ( 55.87)                   0.4 (100.36) 43.4 ( 39.35)
+## 6        4.7 ( 82.39) 2.8 ( 55.87)                   0.4 (100.37) 43.4 ( 39.35)
 ##            Total
-## 1  98.5 ( 42.92)
-## 2 211.3 ( 48.91)
-## 3 124.9 ( 27.57)
-## 4   4.8 ( 96.31)
-## 5  21.0 (100.36)
-## 6 460.4 ( 27.78)</code></pre>
+## 1   4.8 ( 96.32)
+## 2 124.9 ( 27.57)
+## 3  98.5 ( 42.92)
+## 4 211.3 ( 48.90)
+## 5  21.0 (100.37)
+## 6 460.5 ( 27.78)</code></pre>
 </details>
 </details>
 </div>
@@ -5834,26 +5934,26 @@ output
 output
 </summary>
 <pre><code>##                 Species group       1.0-2.9       3.0-4.9       5.0-6.9
-## 1                 Douglas-fir 22.3 (100.36)  8.9 ( 59.74)  3.2 ( 46.01)
+## 1                 Douglas-fir 22.3 (100.37)  8.9 ( 59.75)  3.2 ( 46.01)
 ## 2                    True fir 53.7 ( 32.92) 35.7 ( 40.47)  9.7 ( 31.02)
-## 3 Engelmann and other spruces 29.3 ( 50.99) 11.2 ( 59.47) 12.4 ( 28.93)
+## 3 Engelmann and other spruces 29.3 ( 50.99) 11.2 ( 59.48) 12.4 ( 28.93)
 ## 4              Lodgepole pine 64.7 ( 35.42) 51.5 ( 32.89) 56.0 ( 22.45)
-## 5     Other western softwoods  4.5 (100.36)   -- (    --)  1.8 ( 82.12)
-## 6        Cottonwood and aspen  8.9 (100.36)  2.2 (100.36)  3.4 ( 54.08)
+## 5     Other western softwoods  4.5 (100.37)   -- (    --)  1.8 ( 82.12)
+## 6        Cottonwood and aspen  8.9 (100.37)  2.2 (100.37)  3.4 ( 54.08)
 ##         7.0-8.9      9.0-10.9     11.0-12.9    13.0-14.9    15.0-16.9
-## 1  2.3 ( 59.95)  1.1 ( 56.69)  0.2 (100.36) 0.5 ( 73.81) 0.5 (100.36)
-## 2  4.3 ( 35.49)  1.3 ( 33.91)  2.0 ( 42.85) 0.2 (101.90) 0.2 ( 99.21)
+## 1  2.3 ( 59.95)  1.1 ( 56.69)  0.2 (100.37) 0.5 ( 73.82) 0.5 (100.37)
+## 2  4.3 ( 35.49)  1.3 ( 33.91)  2.0 ( 42.85) 0.2 (101.90) 0.2 ( 99.20)
 ## 3  9.7 ( 33.61)  5.2 ( 35.15)  6.1 ( 27.02) 3.1 ( 37.39) 1.3 ( 64.24)
 ## 4 49.3 ( 19.64) 26.7 ( 18.62) 10.8 ( 20.67) 4.8 ( 29.27) 1.6 ( 40.50)
-## 5  0.5 ( 73.81)  0.2 (100.36)   -- (    --)  -- (    --)  -- (    --)
-## 6  0.4 ( 69.79)  0.2 (100.36)   -- (    --)  -- (    --)  -- (    --)
+## 5  0.5 ( 73.82)  0.2 (100.37)   -- (    --)  -- (    --)  -- (    --)
+## 6  0.4 ( 69.79)  0.2 (100.37)   -- (    --)  -- (    --)  -- (    --)
 ##      17.0-18.9    19.0-20.9    21.0-22.9    23.0-24.9          Total
-## 1  -- (    --) 0.2 (100.36) 0.2 (100.36) 0.2 (100.36)  39.7 ( 71.92)
-## 2 0.2 (100.36)  -- (    --)  -- (    --)  -- (    --) 107.1 ( 29.07)
-## 3 1.4 ( 54.08) 1.6 ( 41.09) 0.2 (100.36) 0.4 ( 99.21)  81.8 ( 26.99)
-## 4 1.3 ( 73.49) 0.5 ( 74.51)  -- (    --) 0.2 (100.36) 267.3 ( 18.32)
-## 5  -- (    --)  -- (    --)  -- (    --)  -- (    --)   7.0 ( 90.07)
-## 6  -- (    --)  -- (    --)  -- (    --)  -- (    --)  15.1 ( 83.91)</code></pre>
+## 1  -- (    --) 0.2 (100.37) 0.2 (100.37) 0.2 (100.37)  39.7 ( 71.93)
+## 2 0.2 (100.37)  -- (    --)  -- (    --)  -- (    --) 107.1 ( 29.07)
+## 3 1.4 ( 54.08) 1.6 ( 41.09) 0.2 (100.37) 0.4 ( 99.20)  81.8 ( 26.99)
+## 4 1.3 ( 73.50) 0.5 ( 74.51)  -- (    --) 0.2 (100.37) 267.3 ( 18.33)
+## 5  -- (    --)  -- (    --)  -- (    --)  -- (    --)   7.0 ( 90.08)
+## 6  -- (    --)  -- (    --)  -- (    --)  -- (    --)  15.1 ( 83.92)</code></pre>
 </details>
 </details>
 </div>
@@ -5898,12 +5998,12 @@ output
 output
 </summary>
 <pre><code>##                 Species group Estimate (% Sampling Error)
-## 1                 Douglas-fir                46.4 (73.91)
-## 2                    True fir               110.3 (28.06)
-## 3 Engelmann and other spruces                79.6 (29.34)
-## 4              Lodgepole pine               261.7 (18.16)
-## 5     Other western softwoods                 8.7 (87.35)
-## 6        Cottonwood and aspen                13.6 (81.98)</code></pre>
+## 1                 Douglas-fir                49.2 (73.91)
+## 2                    True fir               116.9 (27.81)
+## 3 Engelmann and other spruces                84.4 (28.70)
+## 4              Lodgepole pine               277.4 (17.68)
+## 5     Other western softwoods                 9.2 (87.36)
+## 6        Cottonwood and aspen                14.4 (81.95)</code></pre>
 </details>
 </details>
 </div>
@@ -5920,19 +6020,18 @@ View Example
 <span id="cb450-2"><a href="#cb450-2" aria-hidden="true" tabindex="-1"></a><span class="do">##    by forest type, Wyoming, 2011-2013</span></span>
 <span id="cb450-3"><a href="#cb450-3" aria-hidden="true" tabindex="-1"></a>ratio1<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">modGBratio</span>(</span>
 <span id="cb450-4"><a href="#cb450-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">GBpopdat =</span> GBpopdat,         <span class="co"># pop - population calculations for WY, post-stratification</span></span>
-<span id="cb450-5"><a href="#cb450-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">estseed =</span> <span class="st">&quot;add&quot;</span>,             <span class="co"># est - add seedling data</span></span>
-<span id="cb450-6"><a href="#cb450-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">landarea =</span> <span class="st">&quot;FOREST&quot;</span>,         <span class="co"># est - forest land filter</span></span>
-<span id="cb450-7"><a href="#cb450-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">sumunits =</span> <span class="cn">TRUE</span>,             <span class="co"># est - sum estimation units to population</span></span>
-<span id="cb450-8"><a href="#cb450-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">estvarn =</span> <span class="st">&quot;VOLCFNET&quot;</span>,                <span class="co"># est - net cubic-foot volume, numerator</span></span>
-<span id="cb450-9"><a href="#cb450-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">estvarn.filter =</span> <span class="st">&quot;STATUSCD == 1&quot;</span>,    <span class="co"># est - live trees only</span></span>
-<span id="cb450-10"><a href="#cb450-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">estvard =</span> <span class="st">&quot;VOLCFNET&quot;</span>,                <span class="co"># est - net cubic-foot volume, numerator</span></span>
-<span id="cb450-11"><a href="#cb450-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">rowvar =</span> <span class="st">&quot;FORTYPCD&quot;</span>,         <span class="co"># est - row domain</span></span>
-<span id="cb450-12"><a href="#cb450-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">returntitle =</span> <span class="cn">TRUE</span>,          <span class="co"># out - return title information</span></span>
-<span id="cb450-13"><a href="#cb450-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">table_opts =</span> <span class="fu">table_options</span>(</span>
-<span id="cb450-14"><a href="#cb450-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">row.FIAname =</span> <span class="cn">TRUE</span>,          <span class="co"># est - row domain names</span></span>
-<span id="cb450-15"><a href="#cb450-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">allin1 =</span> <span class="cn">TRUE</span>,               <span class="co"># out - return output with est(pse)</span></span>
-<span id="cb450-16"><a href="#cb450-16" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb450-17"><a href="#cb450-17" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div>
+<span id="cb450-5"><a href="#cb450-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">landarea =</span> <span class="st">&quot;FOREST&quot;</span>,         <span class="co"># est - forest land filter</span></span>
+<span id="cb450-6"><a href="#cb450-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">sumunits =</span> <span class="cn">TRUE</span>,             <span class="co"># est - sum estimation units to population</span></span>
+<span id="cb450-7"><a href="#cb450-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">estvarn =</span> <span class="st">&quot;VOLCFNET&quot;</span>,                <span class="co"># est - net cubic-foot volume, numerator</span></span>
+<span id="cb450-8"><a href="#cb450-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">estvarn.filter =</span> <span class="st">&quot;STATUSCD == 1&quot;</span>,    <span class="co"># est - live trees only</span></span>
+<span id="cb450-9"><a href="#cb450-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">estvard =</span> <span class="st">&quot;VOLCFNET&quot;</span>,                <span class="co"># est - net cubic-foot volume, numerator</span></span>
+<span id="cb450-10"><a href="#cb450-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">rowvar =</span> <span class="st">&quot;FORTYPCD&quot;</span>,         <span class="co"># est - row domain</span></span>
+<span id="cb450-11"><a href="#cb450-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">returntitle =</span> <span class="cn">TRUE</span>,          <span class="co"># out - return title information</span></span>
+<span id="cb450-12"><a href="#cb450-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">table_opts =</span> <span class="fu">table_options</span>(</span>
+<span id="cb450-13"><a href="#cb450-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">row.FIAname =</span> <span class="cn">TRUE</span>,          <span class="co"># est - row domain names</span></span>
+<span id="cb450-14"><a href="#cb450-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">allin1 =</span> <span class="cn">TRUE</span>,               <span class="co"># out - return output with est(pse)</span></span>
+<span id="cb450-15"><a href="#cb450-15" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb450-16"><a href="#cb450-16" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div>
 <p>And examine the output:</p>
 <div class="sourceCode" id="cb451"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb451-1"><a href="#cb451-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Look at output list</span></span>
 <span id="cb451-2"><a href="#cb451-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(ratio1<span class="fl">.4</span>)</span></code></pre></div>

@@ -39,7 +39,7 @@ check.rowcol <- function(gui, esttype, treef=NULL, seedf=NULL, condf,
   if (!is.null(cuniqueid) && !cuniqueid %in% names(condf)) stop("invalid cuniqueid")
   if (!is.null(treef) && !is.null(tuniqueid) && !tuniqueid %in% names(treef))
     stop("invalid tuniqueid")
-  ref_titles <- ref_titles
+  ref_titles <- FIESTAutils::ref_titles
   concat <- FALSE
   bytdom <- FALSE
   seedclnm <- "<1"
@@ -168,7 +168,7 @@ check.rowcol <- function(gui, esttype, treef=NULL, seedf=NULL, condf,
     if (!is.null(row.FIAname) && row.FIAname) {
       ## Get FIA reference table for xvar
       xvar.ref <- getRefobject(toupper(rowvar))
-      if (is.null(xvar.ref)) {
+      if (is.null(xvar.ref) && toupper(rowvar) != "SPCD") {
         message(paste("no reference name for", rowvar))
         row.FIAname <- FALSE
       }
@@ -262,8 +262,8 @@ check.rowcol <- function(gui, esttype, treef=NULL, seedf=NULL, condf,
           rowLUT <- datLUTnm(x=condf, xvar=rowvar, 
                              LUT=rowlut, FIAname=row.FIAname, 
                              group=rowLUTgrp, add0=row.add0)
-          condf <- rowLUT$xLUT
-          rowlut <- rowLUT$LUT
+          condf <- setDT(rowLUT$xLUT)
+          rowlut <- setDT(rowLUT$LUT)
 
           rowLUTnm <- rowLUT$xLUTnm
           if (rowgrp) {
@@ -360,16 +360,24 @@ check.rowcol <- function(gui, esttype, treef=NULL, seedf=NULL, condf,
           }
 
           if (!is.null(rowlut)) row.add0 <- TRUE
-          rowLUT <- datLUTnm(x=treef, xvar=rowvar, LUT=rowlut, FIAname=row.FIAname,
+          if (rowvar == "SPCD") {
+            rowLUT <- datLUTspp(x=treef, xvar=rowvar, add0=row.add0, xtxt="treef")
+          } else {            
+            rowLUT <- datLUTnm(x=treef, xvar=rowvar, LUT=rowlut, FIAname=row.FIAname,
 		  		group=rowLUTgrp, add0=row.add0, xtxt="tree")
-          treef <- rowLUT$xLUT
-          rowlut <- rowLUT$LUT
+          }
+          treef <- setDT(rowLUT$xLUT)
+          rowlut <- setDT(rowLUT$LUT)
           rowLUTnm <- rowLUT$xLUTnm
 
           if (estseed %in% c("add", "only") && !is.null(seedf)) {
             if (rowvar %in% names(seedf)) {
-              rowLUT <- datLUTnm(x=seedf, xvar=rowvar, LUT=rowlut,
+              if (rowvar == "SPCD") {
+                rowLUT <- datLUTspp(x=seedf, xvar=rowvar, add0=row.add0, xtxt="treef")
+              } else {            
+                rowLUT <- datLUTnm(x=seedf, xvar=rowvar, LUT=rowlut,
 				FIAname=row.FIAname, group=rowLUTgrp, add0=row.add0, xtxt="seed")
+              }
               seedf <- rowLUT$xLUT
             } else if (rowvar == "DIACL") {
               seedf$DIACL <- seedclnm
@@ -479,8 +487,9 @@ check.rowcol <- function(gui, esttype, treef=NULL, seedf=NULL, condf,
 
     if (!is.null(col.FIAname) && col.FIAname) {
       ## Get FIA reference table for xvar
+
       xvar.ref <- getRefobject(toupper(colvar))
-      if (is.null(xvar.ref)) {
+      if (is.null(xvar.ref) && toupper(colvar) != "SPCD") {
         message(paste("no reference name for", colvar))
         col.FIAname <- FALSE
       }
@@ -549,8 +558,8 @@ check.rowcol <- function(gui, esttype, treef=NULL, seedf=NULL, condf,
           if (!is.null(collut)) col.add0 <- TRUE
           colLUT <- datLUTnm(x=condf, xvar=colvar, LUT=collut, FIAname=col.FIAname,
 			add0=col.add0)
-          condf <- colLUT$xLUT
-          collut <- colLUT$LUT
+          condf <- setDT(colLUT$xLUT)
+          collut <- setDT(colLUT$LUT)
           colLUTnm <- colLUT$xLUTnm
 
           if (is.null(col.orderby) || col.orderby == "NONE") {
@@ -618,16 +627,24 @@ check.rowcol <- function(gui, esttype, treef=NULL, seedf=NULL, condf,
           }
         } else {
           #if (!is.null(collut)) col.add0 <- TRUE
-          colLUT <- datLUTnm(x=treef, xvar=colvar, LUT=collut, FIAname=col.FIAname,
+          if (colvar == "SPCD") {
+            colLUT <- datLUTspp(x=treef, xvar=colvar, add0=col.add0, xtxt="treef")
+          } else {            
+            colLUT <- datLUTnm(x=treef, xvar=colvar, LUT=collut, FIAname=col.FIAname,
 				add0=col.add0, xtxt="treef")
-          treef <- colLUT$xLUT
-          collut <- colLUT$LUT
+          }
+          treef <- setDT(colLUT$xLUT)
+          collut <- setDT(colLUT$LUT)
           colLUTnm <- colLUT$xLUTnm
 
           if (estseed == "add" && !is.null(seedf)) {
             if (colvar %in% names(seedf)) {
-              colLUT <- datLUTnm(x=seedf, xvar=colvar, LUT=collut,
+              if (colvar == "SPCD") {
+                colLUT <- datLUTspp(x=seedf, xvar=colvar, add0=col.add0, xtxt="treef")
+              } else {            
+                colLUT <- datLUTnm(x=seedf, xvar=colvar, LUT=collut,
 				FIAname=col.FIAname, add0=col.add0, xtxt="seed")
+              }
               seedf <- colLUT$xLUT
             } else if (colvar == "DIACL") {
               seedf$DIACL <- seedclnm
