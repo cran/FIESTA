@@ -652,7 +652,6 @@ spGetSAdoms <- function(smallbnd,
     if (is.null(helperbndx)) {
       stop("invalid helperbnd for autoselection")
     }
- 
     autoselectlst <- helper.select(smallbndx, smallbnd.unique=smallbnd.unique,
  		      smallbnd.domain=smallbnd.domain,
  		      helperbndx=helperbndx, helperbnd.unique=helperbnd.unique, 
@@ -813,7 +812,7 @@ spGetSAdoms <- function(smallbnd,
   rm(largebndx)
   rm(maxbndx)
   if (helper_autoselect) rm(autoselectlst)
-  gc()
+  # gc()
 
 
   if (saveobj) {

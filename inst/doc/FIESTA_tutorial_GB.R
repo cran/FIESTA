@@ -2,7 +2,7 @@
 library(knitr)
 knitr::opts_chunk$set(message = F, warning = F)
 
-## ---- include=FALSE-----------------------------------------------------------
+## ----include=FALSE------------------------------------------------------------
 # Sets up output folding
 hooks = knitr::knit_hooks$get()
 hook_foldable = function(type) {
@@ -24,7 +24,10 @@ knitr::knit_hooks$set(
   plot = hook_foldable("plot")
 )
 
-## ---- warning = F, message = F------------------------------------------------
+## ----echo=-1------------------------------------------------------------------
+data.table::setDTthreads(2)
+
+## ----warning = F, message = F-------------------------------------------------
 library(FIESTA)
 
 ## -----------------------------------------------------------------------------
@@ -106,7 +109,7 @@ stratdat.bhdist$strvar         # Strata variable
 stratdat.bhdist$areavar        # Area variable
 
 
-## ---- results = FALSE, message = F--------------------------------------------
+## ----results = FALSE, message = F---------------------------------------------
 
 GBpopdat <- modGBpop(
   popTabs = list(cond = FIESTA::WYcond,          # FIA plot/condition data
@@ -125,7 +128,7 @@ GBpopdat <- modGBpop(
 
 
 
-## ---- results = T-------------------------------------------------------------
+## ----results = T--------------------------------------------------------------
 names(GBpopdat)
 
 ## -----------------------------------------------------------------------------
@@ -141,7 +144,7 @@ GBpopdat$treex
 ## Adjustment factors added to seedling data
 GBpopdat$seedx
 
-## ---- results = TRUE, eval = FALSE--------------------------------------------
+## ----results = TRUE, eval = FALSE---------------------------------------------
 #  qry <- "select estn_unit, stratumcd, p1pointcnt, p2pointcnt, expns,
 #            adj_factor_macr, adj_factor_subp, adj_factor_micr from pop_stratum
 #          where evalid = 561301 order by estn_unit, stratumcd"
@@ -159,7 +162,7 @@ GBpopdat$seedx
 #  }
 #  head(GBpopdat$stratalut)
 
-## ---- results = FALSE, message = F--------------------------------------------
+## ----results = FALSE, message = F---------------------------------------------
 
 ## -----------------------------------------------------------------------------
 
@@ -205,7 +208,7 @@ GBpopdat.bh$stratalut
 
 
 
-## ---- results = FALSE, message = F--------------------------------------------
+## ----results = FALSE, message = F---------------------------------------------
 
 ## -----------------------------------------------------------------------------
 
@@ -249,7 +252,7 @@ head(GBpopdat.bhdist$seedx)
 GBpopdat.bhdist$stratalut
 
 
-## ---- results = FALSE, message = F--------------------------------------------
+## ----results = FALSE, message = F---------------------------------------------
 
 SQLitefn <- system.file("extdata", "FIA_data/RIdat_eval2019.db", package="FIESTA")
 
@@ -258,7 +261,7 @@ DBI::dbListTables(conn)
 DBI::dbDisconnect(conn)
 
 
-## ---- results = FALSE, message = F--------------------------------------------
+## ----results = FALSE, message = F---------------------------------------------
 GBpopdat.RI <- modGBpop(popTabs = list(plt="plot", cond="cond", tree="tree", seed="seed"),
                   dsn = SQLitefn,
                   pltassgn = "pop_plot_stratum_assgn",
@@ -282,13 +285,13 @@ area1.1 <- modGBarea(
     )
 
 
-## ---- results = T-------------------------------------------------------------
+## ----results = T--------------------------------------------------------------
 names(area1.1)
 
-## ---- results = T-------------------------------------------------------------
+## ----results = T--------------------------------------------------------------
 area1.1$est
 
-## ---- results = TRUE----------------------------------------------------------
+## ----results = TRUE-----------------------------------------------------------
 ## Raw data (list object) for estimate
 raw1.1 <- area1.1$raw        # extract raw data list object from output
 names(raw1.1)
@@ -332,6 +335,7 @@ titlelst1.2
 
 ## -----------------------------------------------------------------------------
 ## Area of forest land by forest type and stand-size class, Wyoming, 2011-2013
+
 area1.3 <- modGBarea(
     GBpopdat = GBpopdat,         # pop - population calculations for WY, post-stratification
     landarea = "FOREST",         # est - forest land filter
@@ -399,13 +403,13 @@ area2.1 <- modGBarea(
       )
     )
 
-## ---- results = T-------------------------------------------------------------
+## ----results = T--------------------------------------------------------------
 names(area2.1)
 
-## ---- results = T-------------------------------------------------------------
+## ----results = T--------------------------------------------------------------
 area2.1$est
 
-## ---- results = TRUE----------------------------------------------------------
+## ----results = TRUE-----------------------------------------------------------
 ## Raw data (list object) for estimate
 raw2.1 <- area2.1$raw      # extract raw data list object from output
 names(raw2.1)
@@ -440,13 +444,13 @@ area2.2 <- modGBarea(
     )
 
 
-## ---- results = T-------------------------------------------------------------
+## ----results = T--------------------------------------------------------------
 names(area2.2)
 
-## ---- results = T-------------------------------------------------------------
+## ----results = T--------------------------------------------------------------
 area2.2$est
 
-## ---- results = TRUE----------------------------------------------------------
+## ----results = TRUE-----------------------------------------------------------
 ## Raw data (list object) for estimate
 raw2.2 <- area2.2$raw      # extract raw data list object from output
 names(raw2.2)
@@ -478,13 +482,13 @@ area3.1 <- modGBarea(
     )
 
 
-## ---- results = T-------------------------------------------------------------
+## ----results = T--------------------------------------------------------------
 names(area3.1)
 
-## ---- results = T-------------------------------------------------------------
+## ----results = T--------------------------------------------------------------
 area3.1$est
 
-## ---- results = TRUE----------------------------------------------------------
+## ----results = TRUE-----------------------------------------------------------
 ## Raw data (list object) for estimate
 raw3.1 <- area3.1$raw       # extract raw data list object from output
 names(raw3.1)
@@ -517,13 +521,13 @@ area4.1 <- modGBarea(
     )
 
 
-## ---- results = T-------------------------------------------------------------
+## ----results = T--------------------------------------------------------------
 names(area4.1)
 
-## ---- results = T-------------------------------------------------------------
+## ----results = T--------------------------------------------------------------
 area4.1$est
 
-## ---- results = TRUE----------------------------------------------------------
+## ----results = TRUE-----------------------------------------------------------
 ## Raw data (list object) for estimate
 raw4.1 <- area4.1$raw      # extract raw data list object from output
 names(raw4.1)

@@ -15,7 +15,7 @@
 #' 74.965282 for trees on microplot).\cr 
 #' \tab cond \tab cuniqueid \tab Unique identifier for each plot, to link to 
 #' pltassgn (e.g. PLT_CN).\cr 
-#' \tab \tab CONDID \tab Unique identfier of each condition on plot. Set 
+#' \tab \tab CONDID \tab Unique identifier of each condition on plot. Set 
 #' CONDID=1, if only 1 condition per plot.\cr 
 #' \tab \tab CONDPROP_UNADJ \tab Unadjusted proportion of condition on
 #' each plot.  Set CONDPROP_UNADJ=1, if only 1 condition per plot.\cr 
@@ -231,10 +231,10 @@ modSApop <- function(popType="VOL",
   returnSApopdat <- FALSE
   nonsamp.pfilter=nonsamp.cfilter <- NULL 
   returnlst <- list(module = "SA")
-  pvars2keep=cvars2keep=NULL
   adj <- ifelse(adjplot, "plot", "none")
-
-  
+  areawt2 <- NULL
+  pvars2keep <- "AOI"
+   
   # dunitvar2=NULL
   # pvars2keep=NULL
   # cvars2keep=NULL
@@ -244,10 +244,7 @@ modSApop <- function(popType="VOL",
  
   ## Set global variables
   ONEUNIT=n.total=n.strata=strwt=TOTAL=stratcombinelut <- NULL
-  dunitvar2=NULL
-  adj <- "plot"
-  
-  
+ 
   ##################################################################
   ## CHECK PARAMETER NAMES
   ##################################################################
@@ -289,10 +286,11 @@ modSApop <- function(popType="VOL",
   }
   
   ## Set user-supplied popFilters values
+  popFilter2 <- popFilters_defaults_list
   if (length(popFilter) > 0) {
     for (i in 1:length(popFilter)) {
       if (names(popFilter)[[i]] %in% names(popFilters_defaults_list)) {
-        assign(names(popFilter)[[i]], popFilter[[i]])
+		popFilter2[[names(popFilter)[[i]]]] <- popFilter[[i]]
       } else {
         stop(paste("Invalid parameter: ", names(popFilter)[[i]]))
       }
@@ -372,11 +370,17 @@ modSApop <- function(popType="VOL",
   evalTyplst <- c("ALL", "CURR", "VOL", "LULC", "P2VEG", "INV", "DWM", "CHNG", "GRM")
   popType <- pcheck.varchar(var2check=popType, varnm="popType", gui=gui,
 		checklst=evalTyplst, caption="popType", multiple=FALSE, stopifnull=TRUE)
-  popevalid <- as.character(evalid)
-  if (!is.null(evalid)) {
+  popevalid <- as.character(popFilter2$evalid)
+  if (!is.null(popevalid)) {
     substr(popevalid, nchar(popevalid)-1, nchar(popevalid)) <- 
-		FIESTAutils::ref_popType[FIESTAutils::ref_popType$popType %in% popType, "EVAL_TYP_CD"]
+		formatC(FIESTAutils::ref_popType[FIESTAutils::ref_popType$popType %in% popType, "EVAL_TYP_CD"], 
+		width=2, flag="0")
+    #evalid <- as.character(evalid)
+    #substr(evalid, nchar(evalid)-1, nchar(evalid)) <- "01"
   } 
+  if (popType %in% c("GROW", "MORT", "REMV")) {
+    popType <- "GRM"
+  }
 
   ###################################################################################
   ## Load data
@@ -399,7 +403,6 @@ modSApop <- function(popType="VOL",
     puniqueid <- SAdata$puniqueid
     pjoinid <- SAdata$pjoinid
     predfac <- SAdata$predfac
-    zonalnames <- SAdata$zonalnames
 
     if (is.null(prednames)) {
       prednames <- SAdata$prednames
@@ -525,12 +528,11 @@ modSApop <- function(popType="VOL",
   ###################################################################################
   pltcheck <- check.popdataPLT(dsn=dsn, tabs=popTabs, tabIDs=popTabIDs, 
       pltassgn=pltassgn, pltassgnid=pltassgnid, pjoinid=pjoinid, 
-      module="SA", popType=popType, popevalid=popevalid, adj=adj, ACI=ACI, 
-      evalid=evalid, measCur=measCur, measEndyr=measEndyr, 
-      measEndyr.filter=measEndyr.filter, invyrs=invyrs, intensity=intensity,
-      nonsamp.pfilter=nonsamp.pfilter, unitarea=dunitarea, areavar=areavar, 
-      unitvar=dunitvar, unitvar2=dunitvar2, areaunits=areaunits, 
-      unit.action=unit.action, prednames=prednames, predfac=predfac, pvars2keep="AOI")
+      module="SA", popType=popType, popevalid=popevalid, adj=adj, 
+	  popFilter=popFilter2, nonsamp.pfilter=nonsamp.pfilter, 
+	  unitarea=dunitarea, areavar=areavar, unitvar=dunitvar, 
+	  unitvar2=unitvar2, areaunits=areaunits, unit.action=unit.action, 
+      prednames=prednames, predfac=predfac, pvars2keep=pvars2keep)
   if (is.null(pltcheck)) return(NULL)
   pltassgnx <- pltcheck$pltassgnx
   pltassgnid <- pltcheck$pltassgnid
@@ -564,9 +566,11 @@ modSApop <- function(popType="VOL",
     ###################################################################################
     popcheck <- check.popdataVOL(gui=gui, 
                tabs=popTabs, tabIDs=popTabIDs, pltassgnx=pltassgnx, 
-               pfromqry=pfromqry, palias=palias, pjoinid=pjoinid, whereqry=whereqry, 
-               adj=adj, ACI=ACI, pltx=pltx, puniqueid=puniqueid, dsn=dsn, dbconn=dbconn,
-               condid="CONDID", nonsamp.cfilter=nonsamp.cfilter, cvars2keep="AOI")
+               pfromqry=pfromqry, palias=palias, pjoinid=pjoinid, 
+			   whereqry=whereqry, adj=adj, ACI=ACI, 
+			   pltx=pltx, puniqueid=puniqueid, dsn=dsn, dbconn=dbconn,
+               condid="CONDID", nonsamp.cfilter=nonsamp.cfilter, 
+			   areawt=areawt, areawt2=areawt2, cvars2keep="AOI")
     if (is.null(popcheck)) return(NULL)
     condx <- popcheck$condx
     pltcondx <- popcheck$pltcondx
@@ -584,7 +588,7 @@ modSApop <- function(popType="VOL",
   if (is.null(treef) && is.null(seedf)) {
     stop("must include tree data")
   }
- 
+
   ###################################################################################
   ## Check auxiliary data
   ###################################################################################
@@ -676,6 +680,10 @@ modSApop <- function(popType="VOL",
         stop("must include smallbnd.domain for smallbnd")
       }
     } 
+    ## Check for AOI column
+	if (!"AOI" %in% names(smallbnd)) {
+	  smallbnd$AOI <- 1
+	}
     returnlst$smallbnd <- smallbnd
     returnlst$smallbnd.domain <- smallbnd.domain
   }
@@ -799,5 +807,5 @@ modSApop <- function(popType="VOL",
     return(returnlst)
   } 
   rm(returnlst)
-  gc()
+  # gc()
 }

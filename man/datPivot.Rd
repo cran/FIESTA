@@ -14,7 +14,8 @@ datPivot(
   NAto0 = TRUE,
   dropNAxvar = TRUE,
   dropNAyvar = TRUE,
-  pvar.round = 2,
+  pvar.round = 6,
+  returnDT = FALSE,
   savedata = FALSE,
   savedata_opts = NULL,
   gui = FALSE
@@ -42,6 +43,8 @@ pivoting (ex. "STATUSCD == 1").}
 \item{dropNAyvar}{Logical. If TRUE, removes rows that have NA values.}
 
 \item{pvar.round}{Integer. Number to round pvar values to.}
+
+\item{returnDT}{Logical. If TRUE, returns a datatable.}
 
 \item{savedata}{Logical. If TRUE, writes output data to outfolder.}
 

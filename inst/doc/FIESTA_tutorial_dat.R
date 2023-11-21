@@ -2,7 +2,7 @@
 library(knitr)
 knitr::opts_chunk$set(message = F, warning = F)
 
-## ---- include=FALSE-----------------------------------------------------------
+## ----include=FALSE------------------------------------------------------------
 # Sets up output folding
 hooks = knitr::knit_hooks$get()
 hook_foldable = function(type) {
@@ -24,7 +24,10 @@ knitr::knit_hooks$set(
   plot = hook_foldable("plot")
 )
 
-## ---- message = F, warning = F------------------------------------------------
+## ----echo=-1------------------------------------------------------------------
+data.table::setDTthreads(2)
+
+## ----message = F, warning = F-------------------------------------------------
 # Load library
 library(FIESTA)
 

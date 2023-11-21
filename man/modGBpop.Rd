@@ -16,6 +16,7 @@ modGBpop(
   areawt = "CONDPROP_UNADJ",
   areawt2 = NULL,
   adj = "samp",
+  defaultVars = TRUE,
   unitvar = NULL,
   unitarea = NULL,
   areavar = "ACRES",
@@ -78,6 +79,8 @@ weights (e.g., CONDPROP_UNADJ).}
 'plot').  'samp' - adjustments are calculated at strata/estimation unit
 level; 'plot' - adjustments are calculated at plot-level. Adjustments are
 only calculated for annual inventory plots (DESIGNCD=1).}
+
+\item{defaultVars}{Logical. If TRUE, a set of default variables are selected.}
 
 \item{unitvar}{String. Name of the estimation unit variable in unitarea and
 cond or pltassgn data frame with estimation unit assignment for each plot
@@ -198,7 +201,7 @@ population.
 \details{
 Population types \cr \tabular{lll}{ \tab \bold{popType}
 \bold{Description}\cr 
-\tab ALL \tab Population data, inluding nonsampled plots.\cr 
+\tab ALL \tab Population data, including nonsampled plots.\cr 
 \tab CURR \tab Population data for area estimates, excluding nonsampled 
 plots.\cr 
 \tab VOL \tab Population data for area/tree estimates, excluding 
@@ -219,7 +222,7 @@ Set CONDID=1, if only 1 condition per plot.\cr
 trees on microplot).\cr 
 \tab cond \tab cuniqueid \tab Unique identifier for each plot in cond 
 table.\cr 
-\tab \tab CONDID \tab Unique identfier of each condition on plot. Set 
+\tab \tab CONDID \tab Unique identifier of each condition on plot. Set 
 CONDID=1, if only 1 condition per plot.\cr 
 \tab \tab CONDPROP_UNADJ \tab Unadjusted proportion of condition on each 
 plot. Set CONDPROP_UNADJ=1, if only 1 condition per plot.\cr 
@@ -277,7 +280,7 @@ estimation units following in order, it is combined with the estimation unit
 previous in order.
 
 stratcombine:\cr If TRUE and less than 2 plots in any one strata class
-within an esimation unit, all strata classes with 2 or less plots are
+within an estimation unit, all strata classes with 2 or less plots are
 combined. The current method for combining is to group the strata with less
 than 2 plots with the strata class following in consecutive order (numeric
 or alphabetical), restrained by estimation unit (if unitcombine=FALSE), and
@@ -286,6 +289,7 @@ classes following in order, it is combined with the estimation unit previous
 in order.
 }
 \examples{
+\donttest{
 GBpopdat <- modGBpop(
 popTabs = list(cond = FIESTA::WYcond,  
                tree = FIESTA::WYtree,        
@@ -302,6 +306,7 @@ strata_opts = strata_options(getwt = TRUE)
 )
 
 str(GBpopdat, max.level = 1)
+}
 }
 \references{
 Scott, Charles T.; Bechtold, William A.; Reams, Gregory A.;

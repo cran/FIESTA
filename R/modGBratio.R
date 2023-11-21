@@ -17,7 +17,7 @@
 #' TPA_UNADJ=6.018046 for trees on subplot; 74.965282 for trees on
 #' microplot).\cr \tab cond \tab cuniqueid \tab Unique identifier for each
 #' plot, to link to pltassgn (ex. PLT_CN).\cr \tab \tab CONDID \tab Unique
-#' identfier of each condition on plot.  Set CONDID=1, if only 1 condition per
+#' identifier of each condition on plot.  Set CONDID=1, if only 1 condition per
 #' plot.\cr \tab \tab CONDPROP_UNADJ \tab Unadjusted proportion of condition on
 #' each plot.  Set CONDPROP_UNADJ=1, if only 1 condition per plot.\cr \tab \tab
 #' COND_STATUS_CD \tab Status of each forested condition on plot (i.e.
@@ -44,6 +44,10 @@
 #' @param GBpopdat List. Population data objects returned from modGBpop().
 #' @param estseed String. Use seedling data only or add to tree data. Seedling
 #' estimates are only for counts (estvar='TPA_UNADJ')-('none', 'only', 'add').
+#' @param woodland String. If woodland = 'Y', include woodland tree species  
+#' where measured. If woodland = 'N', only include timber species. See 
+#' FIESTA::ref_species$WOODLAND ='Y/N'. If woodland = 'only', only include
+#' woodland species.
 #' @param ratiotype String. The type of ratio estimates ("PERACRE", "PERTREE").
 #' @param landarea String. The sample area filter for estimates ("FOREST",
 #' "TIMBERLAND").  If landarea=FOREST, filtered to COND_STATUS_CD = 1; If
@@ -291,6 +295,7 @@
 modGBratio <- function(GBpopdat, 
                        estseed = "none", 
                        ratiotype = "PERACRE", 
+					   woodland = "Y",
                        landarea = "FOREST", 
                        pcfilter = NULL, 
                        estvarn = NULL, 
@@ -335,8 +340,8 @@ modGBratio <- function(GBpopdat,
   rawdata <- TRUE
 
   ## Set global variables
-  ONEUNIT=n.total=n.strata=strwt=TOTAL=tdom=estvar.name=rowvar.filter=colvar.filter=
-    variable=estvard.name <- NULL
+  ONEUNIT=n.total=n.strata=strwt=TOTAL=tdom=estvar.name=
+		variable=estvard.name <- NULL
   
   
   ##################################################################
@@ -475,8 +480,9 @@ modGBratio <- function(GBpopdat,
   ###################################################################################
   estdat <- check.estdata(esttype=esttype, pltcondf=pltcondx, 
                 cuniqueid=cuniqueid, condid=condid, 
-                treex=treex, seedx=seedx, estseed=estseed, sumunits=sumunits, 
-                landarea=landarea, ACI.filter=ACI.filter, pcfilter=pcfilter, 
+                treex=treex, seedx=seedx, estseed=estseed, woodland=woodland,
+				sumunits=sumunits, landarea=landarea, 
+				ACI.filter=ACI.filter, pcfilter=pcfilter, 
                 allin1=allin1, estround=estround, pseround=pseround, 
                 divideby=divideby, addtitle=addtitle, returntitle=returntitle, 
                 rawdata=rawdata, rawonly=rawonly, savedata=savedata, 
@@ -491,6 +497,7 @@ modGBratio <- function(GBpopdat,
   seedf <- estdat$seedf
   tuniqueid <- estdat$tuniqueid
   estseed <- estdat$estseed
+  woodland <- estdat$woodland
   sumunits <- estdat$sumunits
   landarea <- estdat$landarea
   allin1 <- estdat$allin1
@@ -522,8 +529,7 @@ modGBratio <- function(GBpopdat,
                      treef=treef, seedf=seedf,
 	                condf=pltcondf, cuniqueid=cuniqueid, 
 	                tuniqueid=tuniqueid, estseed=estseed, 
-	                rowvar=rowvar, rowvar.filter=rowvar.filter, 
-	                colvar=colvar, colvar.filter=colvar.filter, 
+	                rowvar=rowvar, colvar=colvar, 
 	                row.FIAname=row.FIAname, col.FIAname=col.FIAname,
  	                row.orderby=row.orderby, col.orderby=col.orderby, 
 	                row.add0=row.add0, col.add0=col.add0, 
@@ -574,25 +580,39 @@ modGBratio <- function(GBpopdat,
                   estvard=estvard, estvard.filter=estvard.filter, 
                   esttotn=TRUE, esttotd=TRUE, 
                   tdomvar=tdomvar, tdomvar2=tdomvar2, 
-                  adjtree=adjtree, metric=metric)
+                  adjtree=adjtree, metric=metric, woodland=woodland)
   if (is.null(treedat)) return(NULL)
   tdomdat <- treedat$tdomdat
 
   if (rowvar != "TOTAL") {
-    if (!row.add0) {
+    #if (!row.add0) {
       if (any(is.na(tdomdat[[rowvar]]))) {
-        tdomdat <- tdomdat[!is.na(tdomdat[[rowvar]]), ]
-      }
-    }
-    if (colvar != "NONE") {
-      if (!col.add0) {
-        if (any(is.na(tdomdat[[colvar]]))) {
-          tdomdat <- tdomdat[!is.na(tdomdat[[colvar]]), ]
+	    if (!row.FIAname) {
+		  rval <- ifelse (any(!is.na(tdomdat[[rowvar]]) & tdomdat[[rowvar]] == 0), max(tdomdat[[rowvar]], na.rm=TRUE), 0)
+		  tdomdat[is.na(tdomdat[[rowvar]]), rowvar] <- rval
+		  levels(uniquerow[[rowvar]]) <- c(levels(uniquerow[[rowvar]]), as.character(rval))
+		  uniquerow[is.na(uniquerow[[rowvar]]), rowvar] <- as.character(rval)
+        } else {
+          tdomdat <- tdomdat[!is.na(tdomdat[[rowvar]]), ]
         }
-      }
+	   }
+    #}
+    if (colvar != "NONE") {
+      #if (!col.add0) {
+        if (any(is.na(tdomdat[[colvar]]))) {
+	      if (!col.FIAname) {
+		    cval <- ifelse (any(!is.na(tdomdat[[colvar]]) & tdomdat[[colvar]] == 0), max(tdomdat[[colvar]], na.rm=TRUE), 0)
+		    tdomdat[is.na(tdomdat[[colvar]]), colvar] <- cval
+			levels(uniquecol[[colvar]]) <- c(levels(uniquecol[[colvar]]), as.character(cval))
+			uniquecol[is.na(uniquecol[[colvar]]), colvar] <- as.character(cval)
+		  } else {
+            tdomdat <- tdomdat[!is.na(tdomdat[[colvar]]), ]
+          }
+		}
+      #}
     }
   }
-  
+ 
   ## Merge tdomdat with condx
   xchk <- check.matchclass(condx, tdomdat, c(cuniqueid, condid))
   condx <- xchk$tab1

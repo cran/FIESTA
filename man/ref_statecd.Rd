@@ -5,7 +5,7 @@
 \alias{ref_statecd}
 \title{Reference table - state codes (STATECD).}
 \format{
-An object of class \code{data.frame} with 59 rows and 5 columns.
+An object of class \code{data.frame} with 59 rows and 7 columns.
 }
 \source{
 Imported from comma-delimited file.

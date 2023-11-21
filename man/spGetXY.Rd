@@ -10,7 +10,7 @@ spGetXY(
   bnd.filter = NULL,
   states = NULL,
   RS = NULL,
-  xy_datsource = "datamart",
+  xy_datsource,
   xy_dsn = NULL,
   xy = "PLOT",
   xy_opts = xy_options(),
@@ -23,6 +23,7 @@ spGetXY(
   invtype = "ANNUAL",
   intensity1 = FALSE,
   pvars2keep = NULL,
+  bndvars2keep = NULL,
   clipxy = TRUE,
   showsteps = FALSE,
   returnxy = TRUE,
@@ -61,7 +62,7 @@ name of xy R object. If datsource = 'shp', full pathname of shapefile.}
 \item{xy_opts}{List of xy data options for xy (e.g., xy_opts = list(xvar='LON', 
 yvar='LAT'). See xy_options() for more options and defaults.}
 
-\item{datsource}{String. Source of FIA data for defining FIA evalutions or 
+\item{datsource}{String. Source of FIA data for defining FIA evaluations or 
 appending variables ('datamart', 'sqlite', 'obj', 'csv'). If datsource = NULL, 
 datsource = xy_datsource. If datsource = 'datamart', data are downloaded
 extracted from FIA DataMart (http://apps.fs.usda.gov/fia/datamart/datamart.html). 
@@ -92,7 +93,11 @@ be unique. If using most current XY coordinates, use identifier for a plot
 \item{intensity1}{Logical. If TRUE, includes only XY coordinates where 
 INTENSITY = 1 (FIA base grid).}
 
-\item{pvars2keep}{String vector. One or more variables in pltTab to append to output.}
+\item{pvars2keep}{String vector. One or more variables in plot table to 
+append to output.}
+
+\item{bndvars2keep}{String vector. One or more variables in bnd to 
+append to output.}
 
 \item{clipxy}{Logical. If TRUE, clips xy data to bnd.}
 

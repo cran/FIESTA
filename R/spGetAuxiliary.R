@@ -229,6 +229,7 @@ spGetAuxiliary <- function(xyplt = NULL,
 
   ## Set global variables
   value=count=ACRES=TOTPIXELCNT=rast.lutfn=predfac=aspfn=prednames.cat=AOI <- NULL
+  badrast <- {}
   
   ##################################################################
   ## CHECK PARAMETER NAMES
@@ -347,7 +348,12 @@ spGetAuxiliary <- function(xyplt = NULL,
     ## Check unit_layer
     unit_layerx <- pcheck.spatial(layer=unit_layer, dsn=unit_dsn, gui=gui, 
 		caption="Domain spatial polygons?", stopifnull=TRUE)
- 
+		
+    ## Remove empty geometries
+ 	if (sum(sf::st_is_empty(unit_layerx)) > 0) {
+	  unit_layerx <- unit_layerx[!sf::st_is_empty(unit_layerx),]
+	}
+
     ## Check unitvar
     unitvar <- pcheck.varchar(var2check=unitvar, varnm="unitvar", gui=gui, 
 		checklst=names(unit_layerx), caption="Domain variable", 
@@ -568,7 +574,7 @@ spGetAuxiliary <- function(xyplt = NULL,
       sppltx <- unique(extpoly$spxyext)
 
       rm(extpoly)
-      gc()
+      # gc()
     } else {
       message(unitvar, " already in spplt... not extracting from unit_layer")
     }
@@ -606,6 +612,7 @@ spGetAuxiliary <- function(xyplt = NULL,
   ###############################################################################
   ## 3) Continuous raster layers - Extract values and get zonal statistics
   ###############################################################################
+  preds <- {}
   if (!is.null(rastlst.cont)) {
  
     if (extract) {
@@ -628,7 +635,7 @@ spGetAuxiliary <- function(xyplt = NULL,
       prednames.cont <- extdat.rast.cont$outnames
       inputdf.cont <- extdat.rast.cont$inputdf
       rm(extdat.rast.cont)
-      gc() 
+      # gc() 
  
       if (NAto0) {
         for (col in prednames.cont) set(sppltx, which(is.na(sppltx[[col]])), col, 0)
@@ -688,20 +695,26 @@ spGetAuxiliary <- function(xyplt = NULL,
       rast.cont.NODATA <- rastlst.cont.NODATA[i]
       zonalstat <- rastlst.cont.stat 
       #message(rastfn, "...")
- 
+
       if (asptransform && identical(rast.aspfn, rastfn)) {
         rastnm2 <- ifelse(is.null(rastnm), "asp_cos", paste0(rastnm, "_cos"))
         if (i == 1 && npixels) {
           zonalstat <- c("npixels", rastlst.cont.stat) 
           rastnm2 <- c("npixels", rastnm2)
         }  
-        zonaldat.rast.cont <- spZonalRast(unit_layerx, 
+        zonaldat.rast.cont <- tryCatch(spZonalRast(unit_layerx, 
                                     rastfn = rastfn, 
                                     polyv.att = unitvar, 
                                     zonalstat = zonalstat, 
                                     pixelfun = northness, 
                                     rast.NODATA = rast.cont.NODATA, 
-                                    na.rm = TRUE)
+                                    na.rm = TRUE),
+     	 	error=function(e) {
+			return(NULL) })
+        if (is.null(zonaldat.rast.cont)) {
+          badrast <- c(badrast, i)
+          break
+        }
         zonalext <- setDT(zonaldat.rast.cont$zonalext)
         outname <- zonaldat.rast.cont$outname
         class(zonalext[[unitvar]]) <- class(unitzonal[[unitvar]])        
@@ -714,13 +727,20 @@ spGetAuxiliary <- function(xyplt = NULL,
   
         rastnm2 <- ifelse(is.null(rastnm), "asp_sin", paste0(rastnm, "_sin"))
         zonalstat <- c(rastlst.cont.stat) 
-        zonaldat.rast.cont <- spZonalRast(unit_layerx, 
+        zonaldat.rast.cont <- tryCatch(spZonalRast(unit_layerx, 
                                     rastfn = rastfn, 
                                     rast.NODATA = rast.cont.NODATA, 
                                     polyv.att = unitvar, 
                                     zonalstat = rastlst.cont.stat,
                                     pixelfun = eastness, 
-                                    na.rm = TRUE)
+                                    na.rm = TRUE),
+     	 	error=function(e) {
+			return(NULL) })
+        if (is.null(zonaldat.rast.cont)) {
+          badrast <- c(badrast, i)
+          message("\nerror when calculating zonal statistics for ", rastnm, "\n")
+          break
+        }
         zonalext <- setDT(zonaldat.rast.cont$zonalext)
         outname <- zonaldat.rast.cont$outname
         class(zonalext[[unitvar]]) <- class(unitzonal[[unitvar]])        
@@ -737,13 +757,20 @@ spGetAuxiliary <- function(xyplt = NULL,
             rastnm <- c("npixels", rastnm)
           }
         } 
-        zonaldat.rast.cont <- spZonalRast(unit_layerx, 
+        zonaldat.rast.cont <- tryCatch(spZonalRast(unit_layerx, 
                                       rastfn = rastfn, 
                                       rast.NODATA = rast.cont.NODATA, 
                                       polyv.att = unitvar, 
                                       zonalstat = zonalstat, 
                                       showext = showext, 
-                                      na.rm = TRUE)
+                                      na.rm = TRUE),
+     	 	error=function(e) {
+			return(NULL) })
+        if (is.null(zonaldat.rast.cont)) {
+          message("\nerror when calculating zonal statistics for ", rastnm, "\n")
+          badrast <- c(badrast, i)
+          break
+        }
         zonalext <- setDT(zonaldat.rast.cont$zonalext)
         outname <- zonaldat.rast.cont$outname
         class(zonalext[[unitvar]]) <- class(unitzonal[[unitvar]])        
@@ -756,9 +783,13 @@ spGetAuxiliary <- function(xyplt = NULL,
       if (npixels) npixels <- FALSE
       rm(zonaldat.rast.cont)
       rm(zonalext)
-      gc() 
+      # gc() 
     }
     unitzonal <- unitzonal[zonalDT.cont] 
+  }
+  if (length(badrast) > 0) {
+    preds <- c(preds, inputdf.cont[badrast, "var.name"][[1]])
+    inputdf.cont <- inputdf.cont[-badrast,]
   }
 
   ###############################################################################
@@ -788,10 +819,10 @@ spGetAuxiliary <- function(xyplt = NULL,
       inputdf.cat <- extdat.rast.cat$inputdf
       prednames <- c(prednames, prednames.cat)
       predfac <- c(predfac, prednames.cat)
-      inputdf <- rbind(inputdf, inputdf.cat)
+      #inputdf <- rbind(inputdf, inputdf.cat)
       rm(extdat.rast.cat)
-      gc() 
-
+      # gc() 
+ 
       if (NAto0) {
         for (col in prednames.cat) set(sppltx, which(is.na(sppltx[[col]])), col, 0)
       }
@@ -853,22 +884,36 @@ spGetAuxiliary <- function(xyplt = NULL,
         zonalstat <- c("npixels", zonalstat) 
       }       
       if (identical(rast.lutfn, rastfn)) {
-        zonaldat.rast.cat <- spZonalRast(unit_layerx, 
+        zonaldat.rast.cat <- tryCatch(spZonalRast(unit_layerx, 
                                     rastfn = rastfn, 
                                     rast.NODATA = rast.cat.NODATA, 
                                     polyv.att = unitvar, 
                                     zonalstat = zonalstat, 
                                     rastlut = rastlut, 
                                     outname = names(rastlut)[2], 
-                                    na.rm = TRUE)
+                                    na.rm = TRUE),
+     	 	error=function(e) {
+			return(NULL) })
+        if (is.null(zonaldat.rast.cat)) {
+          message("\nerror when calculating zonal statistics for ", rastnm)
+          badrast <- c(badrast, i)
+          break
+        }
       } else {
-        zonaldat.rast.cat <- spZonalRast(unit_layerx, 
+        zonaldat.rast.cat <- tryCatch(spZonalRast(unit_layerx, 
                                     rastfn = rastfn, 
                                     rast.NODATA = rast.cat.NODATA, 
                                     polyv.att = unitvar, 
                                     outname = rastnm, 
                                     zonalstat = zonalstat,
-                                    na.rm = TRUE)
+                                    na.rm = TRUE),
+     	 	error=function(e) {
+			return(NULL) })
+        if (is.null(zonaldat.rast.cat)) {
+          message("\nerror when calculating zonal statistics for ", rastnm)
+          badrast <- c(badrast, i)
+          break
+        }
       }
       zonalext <- setDT(zonaldat.rast.cat$zonalext)
       outname <- zonaldat.rast.cat$outname
@@ -883,13 +928,17 @@ spGetAuxiliary <- function(xyplt = NULL,
       if (npixels) npixels <- FALSE
       rm(zonaldat.rast.cat)
       rm(zonalext)
-      gc() 
+      # gc() 
     }
     tabs <- check.matchclass(unitzonal, zonalDT.cat, unitvar)
     unitzonal <- tabs$tab1
     zonalDT.cat <- tabs$tab2
 
     unitzonal <- unitzonal[zonalDT.cat]  
+  }
+  if (length(badrast) > 0) {
+    preds <- c(preds, inputdf.cat[badrast, "var.name"][[1]])
+    inputdf.cat <- inputdf.cat[-badrast,]
   }
 
   ## Check if any auxiliary data included. If no return estimation unit info only
@@ -969,6 +1018,11 @@ spGetAuxiliary <- function(xyplt = NULL,
   }
 
   returnlst <- list(unitvar=unitvar)
+
+  if (length(preds) > 0) {
+    prednames <- prednames[!prednames %in% preds] 
+    zonalnames <- zonalnames[!zonalnames %in% preds] 
+  }
 
   if (extract) {
     returnlst$pltassgn <- pltassgn

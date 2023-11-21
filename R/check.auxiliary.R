@@ -5,7 +5,7 @@ check.auxiliary <- function(pltx, puniqueid, module="GB", strata=FALSE,
 	strwtvar='strwt', P2POINTCNT=NULL, npixelvar=NULL, stratcombine=FALSE,
 	minplotnum.unit=10, unit.action="keep", minplotnum.strat=2, na.rm=TRUE,
  	removeifnostrata=FALSE, auxtext="auxlut", removetext="unitarea",
-	pvars2keep=NULL, standardize=TRUE){
+	pvars2keep=NULL, standardize=TRUE, AOI=FALSE){
 
   ##################################################################################
   ## DESCRIPTION:
@@ -43,7 +43,6 @@ check.auxiliary <- function(pltx, puniqueid, module="GB", strata=FALSE,
   unitvars <- c(unitvar2, unitvar)
   strunitvars <- c(unitvars)
 
-
   ## Check auxlut
   #stopifnull <- ifelse((module == "SA" || (module == "MA" && any(MAmethod != "HT"))),
 #				TRUE, FALSE)
@@ -51,6 +50,15 @@ check.auxiliary <- function(pltx, puniqueid, module="GB", strata=FALSE,
  		caption="Strata table?", nullcheck=TRUE)
   P2POINTCNT <- pcheck.table(P2POINTCNT)
 
+  ## Subset auxiliary data to AOI = 1
+  if (AOI && "AOI" %in% names(auxlut)) {
+    auxlut <- auxlut[auxlut$AOI == 1, ]
+	
+	if (!is.null(unitarea)) {
+	  unitarea <- unitarea[unitarea[[unitvar]] %in% auxlut[[unitvar]], ]
+	}
+  }
+ 
   #######################################################################
   ## Check strata
   #######################################################################

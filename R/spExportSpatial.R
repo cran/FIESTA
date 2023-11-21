@@ -139,6 +139,7 @@ spExportSpatial <- function(sfobj, savedata_opts=NULL) {
       if (DBI::dbCanConnect(RSQLite::SQLite(), out_dsn)) {
         sqlconn <- DBI::dbConnect(RSQLite::SQLite(), out_dsn, loadable.extensions = TRUE)
         tablst <- DBI::dbListTables(sqlconn)
+        DBI::dbDisconnect(sqlconn)
         if (length(tablst) == 0 || !"SpatialIndex" %in% tablst) {
           stop(paste(out_dsn, "is a Spatialite database... "))
         }
@@ -198,7 +199,11 @@ spExportSpatial <- function(sfobj, savedata_opts=NULL) {
       out_dsn <- getoutfn(outfn=out_layer, outfolder=outfolder,
 		outfn.pre=outfn.pre, outfn.date=outfn.date, ext=outsp_fmt,
 		overwrite=FALSE, append=append_layer)
+      if (!file.exists(out_dsn)) {
+        overwrite_layer <- FALSE
+      }
     }
+
     ## Get out_layer
     out_layer <- basename.NoExt(out_dsn)
     
@@ -207,14 +212,16 @@ spExportSpatial <- function(sfobj, savedata_opts=NULL) {
     sfobj <- sfobjdat$shp
     newnms <- sfobjdat$newnms
 
-    delete_layer <- ifelse(append_layer, FALSE, TRUE)
+    #delete_layer <- ifelse(append_layer, FALSE, TRUE)
+
     writechk <- tryCatch(suppressWarnings(sf::st_write(sfobj, dsn=out_dsn, layer=out_layer, 
 		driver="ESRI Shapefile", append=append_layer, delete_dsn=overwrite_layer,
- 		delete_layer=overwrite_layer, quiet=FALSE)),
+ 		quiet=FALSE)),
      	 	error=function(e) {
+                  message(e)
 			return(NULL) })
     if (is.null(writechk)) {
-      stop("try removing file or changing name")
+      stop()
     }
 
     ## Write new names to *.csv file
@@ -226,5 +233,7 @@ spExportSpatial <- function(sfobj, savedata_opts=NULL) {
 
   } else {
     stop(out_fmt, " currently not supported")
-  }  
+  } 
+
+  invisible() 
 }

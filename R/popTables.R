@@ -44,6 +44,10 @@
 #' Plot-level data with unioned previous and current plots.
 #' @param condu DF/DT, R object, comma-delimited file(*.csv), or layer in dsn.
 #' Condition-level data with unioned previous and current plots.
+#' @param begin DF/DT, R object, comma-delimited file(*.csv), or layer in dsn.
+#' Tree-level growth, removal, and mortality data (TREE_GRM_BEGIN).
+#' @param midpt DF/DT, R object, comma-delimited file(*.csv), or layer in dsn.
+#' Tree-level growth, removal, and mortality data (TREE_GRM_MIDPT).
 #' @param ... For extendibility.
 #' @return A list of user-supplied parameters and parameter values for strata.
 #' @author Grayson W. White
@@ -52,13 +56,13 @@
 #' popTables(cond = FIESTA::WYcond, seed = FIESTA::WYseed)
 #' @export popTables
 
-popTables <- function(cond = NULL, 
-                      plt = NULL, 
-                      tree = NULL, 
-                      seed = NULL, 
-                      vsubpspp = NULL, 
-                      vsubpstr = NULL, 
-                      invsubp = NULL,
+popTables <- function(cond = "COND", 
+                      plt = "PLOT", 
+                      tree = "TREE", 
+                      seed = "SEEDLING", 
+                      vsubpspp = "P2VEG_SUBPLOT_SPP", 
+                      vsubpstr = "P2VEG_SUBP_STRUCTURE", 
+                      invsubp = "P2VEG_SUBP_STRUCTURE",
                       subplot = NULL, 
                       subp_cond = NULL, 
                       dwm = NULL,
@@ -66,6 +70,8 @@ popTables <- function(cond = NULL,
                       grm = NULL,
                       pltu = NULL, 
                       condu = NULL, 
+                      begin = NULL,
+                      midpt = NULL,
                       ...) {
   # Check input parameters
   input.params <- names(as.list(match.call()))[-1]

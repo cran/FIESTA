@@ -23,21 +23,14 @@ spGetPlots(
   puniqueid = "CN",
   invtype = "ANNUAL",
   intensity1 = FALSE,
-  issubp = FALSE,
-  istree = FALSE,
-  isseed = TRUE,
-  biojenk = FALSE,
-  greenwt = FALSE,
-  plotgeom = FALSE,
-  othertables = NULL,
-  ACI = FALSE,
   clipxy = TRUE,
   pjoinid = NULL,
   showsteps = FALSE,
+  returnxy = TRUE,
   returndata = TRUE,
   savedata = FALSE,
+  savexy = FALSE,
   savebnd = FALSE,
-  returnxy = TRUE,
   exportsp = FALSE,
   savedata_opts = NULL,
   spXYdat = NULL,
@@ -107,27 +100,6 @@ for a list of options.}
 \item{intensity1}{Logical. If TRUE, includes only XY coordinates where 
 INTENSITY = 1 (FIA base grid).}
 
-\item{issubp}{Logical. If TRUE, subplot tables are extracted from FIA
-database (SUBPLOT, SUBP_COND).}
-
-\item{istree}{Logical. If TRUE, include tree data.}
-
-\item{isseed}{Logical. If TRUE, include seedling data.}
-
-\item{biojenk}{Logical. If TRUE, Jenkins biomass is calculated.}
-
-\item{greenwt}{Logical. If TRUE, green weight biomass is calculated.}
-
-\item{plotgeom}{Logical. If TRUE, variables from the PLOTGEOM table are
-appended to the plot table.}
-
-\item{othertables}{String Vector. Name of other table(s) in FIADB to include
-in output. The table must have PLT_CN as unique identifier of a plot.}
-
-\item{ACI}{Logical. If TRUE, the data from All Condition Inventories (ACI)
-are included in dataset (NF_SAMPLING_STATUS_CD = 1). See below for more
-details.}
-
 \item{clipxy}{Logical. If TRUE, clips xy data to bnd.}
 
 \item{pjoinid}{String. Variable in plt to join to XY data. Not necessary to
@@ -136,16 +108,18 @@ be unique. If using most current XY coordinates, use identifier for a plot
 
 \item{showsteps}{Logical. If TRUE, display data in device window.}
 
+\item{returnxy}{Logical. If TRUE, save xy coordinates to outfolder.}
+
 \item{returndata}{Logical. If TRUE, returns data objects.}
 
 \item{savedata}{Logical. If TRUE, saves data to outfolder.}
 
-\item{savebnd}{Logical. If TRUE, saves bnd. If out_fmt='sqlite', saves to a
-SpatiaLite database.}
+\item{savexy}{Logical. If TRUE, saves XY data to outfolder.}
 
-\item{returnxy}{Logical. If TRUE, save xy coordinates to outfolder.}
+\item{savebnd}{Logical. If TRUE, and savedata=TRUE, saves bnd. If 
+out_fmt='sqlite', saves to a SpatiaLite database.}
 
-\item{exportsp}{Logical. If returnxy=TRUE, if TRUE, saves xy data as 
+\item{exportsp}{Logical. If TRUE, and savexy=TRUE, saves xy data as 
 spatial data. If FALSE, saves xy data as table.}
 
 \item{savedata_opts}{List. See help(savedata_options()) for a list
@@ -155,7 +129,7 @@ of options. Only used when savedata = TRUE.}
 
 \item{gui}{Logical. If TRUE, uses gui interface.}
 
-\item{...}{parameters passed to DBgetPlot().}
+\item{...}{parameters passed to DBgetPlots().}
 }
 \value{
 \item{xypltx}{ sf object. Input xy data clipped to boundary. }

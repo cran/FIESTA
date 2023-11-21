@@ -479,6 +479,7 @@ spExtractRast <- function(xyplt,
     ########################################################          
     message(paste("extracting point values from", rastnm, "...")) 
     inputs.rast <- inputs[rasterfile == rastfn,]
+    badrast <- {}
 
     for (j in 1:nrow(inputs.rast)) {	## loop through raster bands
 
@@ -492,14 +493,19 @@ spExtractRast <- function(xyplt,
       if (statistic == "value") statistic <- NULL
       rast.NODATA <- inputs.rast[j, rast.NODATA]
 
-      dat <- unique(suppressWarnings(extractPtsFromRaster(ptdata=sppltxy, 
+      dat <- tryCatch(unique(extractPtsFromRaster(ptdata=sppltxy, 
 			                rasterfile=rastfn, 
 			                band=band, 
 			                var.name=var.name, 
 			                interpolate=interpolate, 
 			                windowsize=windowsize, 
 			                statistic=statistic, 
-			                ncores=ncores)))
+			                ncores=ncores)),
+     	 	error=function(e) {
+			return(NULL) })
+      if (is.null(dat)) {
+        break
+      }
       cname <- names(dat)[2]
       outnames <- c(outnames, cname)
  
@@ -511,7 +517,7 @@ spExtractRast <- function(xyplt,
       }
       sppltx <- merge(sppltx, dat, by.x=xy.uniqueid, by.y="pid")
       rm(dat)
-      gc()
+      # gc()
 
       ## Set rast.NODATA values as NA
       #sppltx <- sppltx[!sppltx[[cname]] %in% rast.NODATA[[1]], ] 

@@ -34,6 +34,10 @@ knitr::knit_hooks$set(
 )
 ```
 
+```{r, echo=-1}
+data.table::setDTthreads(2)
+```
+
 ## Model-Assisted (MA) module overview
 
 `FIESTA`'s Model-Assisted (MA) module calculates population estimates and their sampling errors by taking advantage of available model-assisted survey estimators from the `mase` R package (McConville, et al. 2018). These estimators can use a variety of auxiliary data to build models and predict over a response variable of interest, while using a bias-correction term so that the bias of the model does not depend on model mis-specification. 
@@ -128,13 +132,15 @@ slp <- terra::terrain(dem,
                       v = "slope",
                       unit = "degrees",
                       filename = slpfn, 
-                      overwrite = TRUE)
+                      overwrite = TRUE,
+                      NAflag = -99999.0)
 aspfn <- paste0(outfolder, "/WYbh_asp.img")
 asp <- terra::terrain(dem,
                       v = "aspect",
                       unit = "degrees", 
                       filename = aspfn,
-                      overwrite = TRUE)
+                      overwrite = TRUE,
+                      NAflag = -99999.0)
 ```
 
 Next, we can get our FIA plot data and set up our auxiliary data. We can get our FIA plot data with the `spMakeSpatialPoints` function from `FIESTA`. For more information on how to use this function, please see the `sp` vignette included with `FIESTA` (link). 
@@ -193,7 +199,6 @@ We can create our population data for model-assisted estimation. To do so, we us
  
 ```{r}
 MApopdat <- modMApop(popTabs = list(tree = WYtree, cond = WYcond),
-                     pltassgn = WYpltassgn,
                      auxdat = modeldat)
 ```
 
@@ -220,7 +225,7 @@ In this example, we look at estimating the area of forest land in Wyoming from 2
 area1 <- modMAarea(
   MApopdat = MApopdat, # pop - population calculations for WY, post-stratification
   MAmethod = "greg", # est - model-assisted method
-  landarea = "FOREST", # est - forest land filter
+  landarea = "FOREST" # est - forest land filter
   )
 
 ```

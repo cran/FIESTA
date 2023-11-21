@@ -9,7 +9,6 @@ modSAarea(
   prednames = NULL,
   SApackage = "JoSAE",
   SAmethod = "area",
-  estseed = "none",
   largebnd.unique = NULL,
   landarea = "FOREST",
   pcfilter = NULL,
@@ -19,7 +18,7 @@ modSAarea(
   na.fill = "NONE",
   savedata = FALSE,
   savesteps = FALSE,
-  multest = FALSE,
+  multest = TRUE,
   addSAdomsdf = TRUE,
   SAdomvars = NULL,
   savemultest = FALSE,
@@ -43,9 +42,6 @@ model.}
 \item{SApackage}{String. Small area package to use ('JoSAE', 'sae', 'hbsae')}
 
 \item{SAmethod}{String. Small area method to use ('unit', 'area')}
-
-\item{estseed}{String. Use seedling data only or add to tree data. Seedling
-estimates are only for counts (estvar='TPA_UNADJ')-('none', 'only', 'add').}
 
 \item{largebnd.unique}{String. Name of the large boundary unique identifer
 to define plots within a model extent. If NULL, all plots are used for model
@@ -140,7 +136,7 @@ cond.  Set CONDID=1, if only 1 condition per plot.\cr \tab \tab TPA_UNADJ
 TPA_UNADJ=6.018046 for trees on subplot; 74.965282 for trees on
 microplot).\cr \tab cond \tab cuniqueid \tab Unique identifier for each
 plot, to link to pltstrat (ex. PLT_CN).\cr \tab \tab CONDID \tab Unique
-identfier of each condition on plot.  Set CONDID=1, if only 1 condition per
+identifier of each condition on plot.  Set CONDID=1, if only 1 condition per
 plot.\cr \tab \tab CONDPROP_UNADJ \tab Unadjusted proportion of condition on
 each plot.  Set CONDPROP_UNADJ=1, if only 1 condition per plot.\cr \tab \tab
 COND_STATUS_CD \tab Status of each forested condition on plot (i.e.

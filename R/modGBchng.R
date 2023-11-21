@@ -17,7 +17,7 @@
 #' \tabular{llll}{ \tab \bold{Data} 
 #' \tab \bold{Variable} \tab \bold{Description}\cr 
 #' \tab cond \tab cuniqueid \tab Unique identifier for each plot, to link to pltassgn (ex. PLT_CN).\cr \tab
-#' \tab CONDID \tab Unique identfier of each condition on plot.  Set CONDID=1,
+#' \tab CONDID \tab Unique identifier of each condition on plot.  Set CONDID=1,
 #' if only 1 condition per plot.\cr 
 #' \tab \tab CONDPROP_UNADJ \tab Unadjusted proportion of condition on each plot. Set CONDPROP_UNADJ=1, if only 1
 #' condition per plot.\cr 
@@ -28,7 +28,7 @@
 #' \tab RESERVCD \tab If landarea=TIMBERLAND. Reserved status.\cr
 #' 
 #' \tab pltassgn \tab puniqueid \tab Unique identifier for each plot, to link
-#' to cond (ex. CN).\cr 
+#' to cond (e.g., CN).\cr 
 #' \tab \tab STATECD \tab Identifies state each plot is located in.\cr \tab \tab INVYR \tab Identifies inventory year of each
 #' plot.\cr 
 #' \tab \tab PLOT_STATUS_CD \tab Status of each plot (i.e. sampled, nonsampled). If not included, all plots are assumed as sampled.\cr }
@@ -36,7 +36,7 @@
 #' For available reference tables: sort(unique(FIESTAutils::ref_codes$VARIABLE)) \cr
 #' 
 #' @param GBpopdat List. Population data objects returned from modGBpop().
-#' @param chngtype String. The type of change estimates ('TOTAL', 'ANNUAL').
+#' @param chngtype String. The type of change estimates ('total', 'annual').
 #' @param landarea String. The sample area filter for estimates ("ALL",
 #' "FOREST", "TIMBERLAND").  If landarea=FOREST, filtered to COND_STATUS_CD =
 #' 1; If landarea=TIMBERLAND, filtered to SITECLCD in(1:6) and RESERVCD = 0.
@@ -224,7 +224,7 @@
 #' @keywords data
 #' @export modGBchng
 modGBchng <- function(GBpopdat, 
-                      chngtype = "TOTAL",
+                      chngtype = "total",
                       landarea = "FOREST", 
                       pcfilter = NULL, 
                       rowvar = NULL, 
@@ -268,7 +268,7 @@ modGBchng <- function(GBpopdat,
   colvar <- NULL
   
   ## Set global variables
-  ONEUNIT=n.total=n.strata=strwt=TOTAL=rowvar.filter=colvar.filter=
+  ONEUNIT=n.total=n.strata=strwt=TOTAL=
     rawfolder <- NULL
   #estvar <- "CONDPROP_ADJ"
   
@@ -384,7 +384,7 @@ modGBchng <- function(GBpopdat,
 
   ## Check chngtype
   ########################################################
-  chngtypelst <- c('TOTAL', 'ANNUAL')
+  chngtypelst <- c('total', 'annual')
   chngtype <- pcheck.varchar(var2check=chngtype, varnm="chngtype", gui=gui,
 		checklst=chngtypelst, caption="chngtype", multiple=FALSE, stopifnull=TRUE)
 
@@ -446,15 +446,15 @@ modGBchng <- function(GBpopdat,
   ###################################################################################
   rowcolinfo <- check.rowcol(gui=gui, esttype=esttype, 
                   condf=pltcondf, cuniqueid=cuniqueid, 
-                  rowvar=rowvar, rowvar.filter=rowvar.filter, 
-                  colvar=colvar, colvar.filter=colvar.filter, 
+                  rowvar=rowvar, colvar=colvar, 
                   row.FIAname=row.FIAname, col.FIAname=col.FIAname, 
                   row.orderby=row.orderby, col.orderby=col.orderby, 
                   row.add0=row.add0, col.add0=col.add0, 
                   title.rowvar=title.rowvar, title.colvar=title.colvar, 
                   rowlut=rowlut, collut=collut, 
                   rowgrp=rowgrp, rowgrpnm=rowgrpnm, rowgrpord=rowgrpord, 
-                  landarea=landarea, cvars2keep=c("PREV_PLT_CN", "REMPER", "PROP_BASIS"))
+                  landarea=landarea, 
+                  cvars2keep=c("PREV_PLT_CN", "REMPER", "PROP_BASIS"))
   condf <- rowcolinfo$condf
   uniquerow <- rowcolinfo$uniquerow
   uniquecol <- rowcolinfo$uniquecol
@@ -529,9 +529,11 @@ modGBchng <- function(GBpopdat,
   }
  
   if (chngtype == "ANNUAL") {
-    condf_chng.qry <- paste0("SELECT ", select.qry, ", SUM(", estvar.name, " / 4 / c.REMPER) AS ysum")
+    condf_chng.qry <- paste0("SELECT ", select.qry, ", 
+                              SUM(", estvar.name, " / 4 / c.REMPER) AS ysum")
   } else {
-    condf_chng.qry <- paste0("SELECT ", select.qry, ", SUM(", estvar.name, " / 4) AS ysum")
+    condf_chng.qry <- paste0("SELECT ", select.qry, ", 
+                              SUM(", estvar.name, " / 4) AS ysum")
   }
  
   condf_chng.qry <- paste0(condf_chng.qry, 

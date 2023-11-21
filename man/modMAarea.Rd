@@ -21,6 +21,7 @@ modMAarea(
   title_opts = NULL,
   savedata_opts = NULL,
   gui = FALSE,
+  modelselect_bydomain = FALSE,
   ...
 )
 }
@@ -36,7 +37,9 @@ estimator to match FIA estimates.}
 \item{prednames}{String vector. Name(s) of predictor variables to include in
 model.}
 
-\item{modelselect}{Boolean. TRUE if you want model selection to occur.}
+\item{modelselect}{Logical. If TRUE, an elastic net regression model is fit 
+to the entire plot level data, and the variables selected in that model are 
+used for the proceeding estimation.}
 
 \item{landarea}{String. The sample area filter for estimates ('ALL',
 'FOREST', 'TIMBERLAND').  If landarea=FOREST, filtered to COND_STATUS_CD =
@@ -69,6 +72,10 @@ options.}
 of options. Only used when savedata = TRUE.}
 
 \item{gui}{Logical. If gui, user is prompted for parameters.}
+
+\item{modelselect_bydomain}{Logical. If TRUE, modelselection will occur at 
+the domain level as specified by rowvar and/or colvar and not at the level of
+the entire sample.}
 
 \item{...}{Parameters for modMApop() if MApopdat is NULL.}
 }
@@ -153,7 +160,7 @@ Unique identifier for each plot, to link to pltstrat (ex. PLT_CN).\cr \tab
 \tab CONDID \tab Unique identifier of each condition on plot, to link to
 cond.  Set CONDID=1, if only 1 condition per plot.\cr \tab cond \tab
 cuniqueid \tab Unique identifier for each plot, to link to pltstrat (ex.
-PLT_CN).\cr \tab \tab CONDID \tab Unique identfier of each condition on
+PLT_CN).\cr \tab \tab CONDID \tab Unique identifier of each condition on
 plot.  Set CONDID=1, if only 1 condition per plot.\cr \tab \tab
 CONDPROP_UNADJ \tab Unadjusted proportion of condition on each plot.  Set
 CONDPROP_UNADJ=1, if only 1 condition per plot.\cr \tab \tab COND_STATUS_CD
@@ -260,17 +267,21 @@ MApopdat <- modMApop(popTabs = list(tree = FIESTA::WYtree,
                      predfac = "tnt")
 
 # Use GREG estimator to estimate area of forest land in our population
-modMAarea(MApopdat = MApopdat, 
+mod1 <- modMAarea(MApopdat = MApopdat, 
           MAmethod = "greg", 
           landarea = "FOREST")
+
+str(mod1)
           
 # Use GREG estimator to estimate area of forest land by forest type and
 # stand-size class
-modMAarea(MApopdat = MApopdat,
+mod2 <- modMAarea(MApopdat = MApopdat,
           MAmethod = "greg",
           landarea = "FOREST",
           rowvar = "FORTYPCD",
           colvar = "STDSZCD")
+          
+str(mod2)
 }
 }
 \references{

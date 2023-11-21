@@ -11,7 +11,7 @@
 #' \tab CONDID \tab Unique identifier of each condition on plot, to link to
 #' cond.  Set CONDID=1, if only 1 condition per plot.\cr \tab cond \tab
 #' cuniqueid \tab Unique identifier for each plot, to link to pltstrat (ex.
-#' PLT_CN).\cr \tab \tab CONDID \tab Unique identfier of each condition on
+#' PLT_CN).\cr \tab \tab CONDID \tab Unique identifier of each condition on
 #' plot.  Set CONDID=1, if only 1 condition per plot.\cr \tab \tab
 #' CONDPROP_UNADJ \tab Unadjusted proportion of condition on each plot.  Set
 #' CONDPROP_UNADJ=1, if only 1 condition per plot.\cr \tab \tab COND_STATUS_CD
@@ -40,7 +40,9 @@
 #' estimator to match FIA estimates.
 #' @param prednames String vector. Name(s) of predictor variables to include in
 #' model.
-#' @param modelselect Boolean. TRUE if you want model selection to occur. 
+#' @param modelselect Logical. If TRUE, an elastic net regression model is fit 
+#' to the entire plot level data, and the variables selected in that model are 
+#' used for the proceeding estimation.
 #' @param landarea String. The sample area filter for estimates ('ALL',
 #' 'FOREST', 'TIMBERLAND').  If landarea=FOREST, filtered to COND_STATUS_CD =
 #' 1; If landarea=TIMBERLAND, filtered to SITECLCD in(1:6) and RESERVCD = 0.
@@ -62,6 +64,9 @@
 #' @param savedata_opts List. See help(savedata_options()) for a list
 #' of options. Only used when savedata = TRUE.  
 #' @param gui Logical. If gui, user is prompted for parameters.
+#' @param modelselect_bydomain Logical. If TRUE, modelselection will occur at 
+#' the domain level as specified by rowvar and/or colvar and not at the level of
+#' the entire sample.
 #' @param ...  Parameters for modMApop() if MApopdat is NULL.
 #' @return If FIA=TRUE or unitvar=NULL and colvar=NULL, one data frame is
 #' returned with tree estimates and percent sample errors. Otherwise, a list is
@@ -219,17 +224,21 @@
 #'                      predfac = "tnt")
 #'
 #' # Use GREG estimator to estimate area of forest land in our population
-#' modMAarea(MApopdat = MApopdat, 
+#' mod1 <- modMAarea(MApopdat = MApopdat, 
 #'           MAmethod = "greg", 
 #'           landarea = "FOREST")
+#' 
+#' str(mod1)
 #'           
 #' # Use GREG estimator to estimate area of forest land by forest type and
 #' # stand-size class
-#' modMAarea(MApopdat = MApopdat,
+#' mod2 <- modMAarea(MApopdat = MApopdat,
 #'           MAmethod = "greg",
 #'           landarea = "FOREST",
 #'           rowvar = "FORTYPCD",
 #'           colvar = "STDSZCD")
+#'           
+#' str(mod2)
 #' }
 #' @export modMAarea
 modMAarea <- function(MApopdat, 
@@ -248,6 +257,7 @@ modMAarea <- function(MApopdat,
                       title_opts = NULL, 
                       savedata_opts = NULL, 
                       gui = FALSE, 
+                      modelselect_bydomain = FALSE,
                       ...){
 
   ########################################################################################
@@ -277,7 +287,7 @@ modMAarea <- function(MApopdat,
   rawdata <- TRUE
   
   ## Set global variables
-  ONEUNIT=n.total=n.strata=strwt=TOTAL=rowvar.filter=colvar.filter <- NULL
+  ONEUNIT=n.total=n.strata=strwt=TOTAL <- NULL
   
   ##################################################################
   ## CHECK PARAMETER NAMES
@@ -481,8 +491,7 @@ modMAarea <- function(MApopdat,
   ### GET ROW AND COLUMN INFO FROM condf
   ###################################################################################
   rowcolinfo <- check.rowcol(gui=gui, esttype=esttype, condf=pltcondf, 
-                    cuniqueid=cuniqueid, rowvar=rowvar, rowvar.filter=rowvar.filter, 
-                    colvar=colvar, colvar.filter=colvar.filter, 
+                    cuniqueid=cuniqueid, rowvar=rowvar, colvar=colvar, 
                     row.FIAname=row.FIAname, col.FIAname=col.FIAname, 
                     row.orderby=row.orderby, col.orderby=col.orderby, 
                     row.add0=row.add0, col.add0=col.add0, 
@@ -557,12 +566,49 @@ modMAarea <- function(MApopdat,
   unit_totest=unit_rowest=unit_colest=unit_grpest=rowunit=totunit <- NULL
   addtotal <- ifelse(rowvar == "TOTAL" || length(unique(condf[[rowvar]])) > 1, TRUE, FALSE)
   estunits <- sort(unique(cdomdat[[unitvar]]))
-
+  response <- estvar.name
+  
   masemethod <- ifelse(MAmethod == "PS", "postStrat", 
 	ifelse(MAmethod == "greg", "greg", 
 	ifelse(MAmethod == "gregEN", "gregElasticNet", 
 	ifelse(MAmethod == "ratio", "ratioEstimator", "horvitzThompson"))))
   message("generating estimates using mase::", masemethod, " function...\n")
+  
+  predselect.overall <- NULL
+  if (MAmethod == "greg" && modelselect == T) {
+    
+    # want to do variable selection on plot level data...
+    pltlvl <- cdomdat[ , lapply(.SD, sum, na.rm = TRUE), 
+                       by=c(unitvar, cuniqueid, "TOTAL", strvar, prednames),
+                       .SDcols=response]
+    
+    y <- pltlvl[[response]]
+    xsample <- pltlvl[ , prednames, with = F, drop = F]
+    
+    # need to go means -> totals -> summed totals
+    xpop <- unitlut[ , c(unitvar, prednames), with = F, drop = F]
+    xpop_npix <- merge(xpop, npixels, by = unitvar, all.x = TRUE)
+    # multiply unitvar level population means by corresponding npixel values to get population level totals
+    xpop_npix[ ,2:ncol(xpop)] <- lapply(xpop_npix[ ,2:ncol(xpop)], function(x) xpop_npix[["npixels"]] * x)
+    # sum those values
+    xpop_totals <- colSums(xpop_npix[ ,2:ncol(xpop)])
+    # format xpop for mase input
+    xpop_totals <- data.frame(as.list(xpop_totals))
+    
+    N <- sum(npixels[["npixels"]])
+    
+    coefs_select <- MAest.greg(y = y,
+                               N = N,
+                               x_sample = setDF(xsample),
+                               x_pop = xpop_totals,
+                               modelselect = TRUE)
+    
+    predselect.overall <- coefs_select$predselect
+    prednames <- names(predselect.overall[ ,(!is.na(predselect.overall))[1,], with = F])
+    message(paste0("Predictors ", "[", paste0(prednames, collapse = ", "), "]", " were chosen in model selection.\n"))
+    
+  }
+  
   if (!MAmethod %in% c("HT", "PS")) {
     message("using the following predictors...", toString(prednames))
   } 
@@ -588,7 +634,7 @@ modMAarea <- function(MApopdat,
                           unitlut=unitlut, unitvar=unitvar, esttype=esttype, 
                           MAmethod=MAmethod, strvar=strvar, prednames=prednames, 
                           domain="TOTAL", response=estvar.name, npixels=npixels, 
-                          FIA=FIA, modelselect=modelselect, getweights=getweights,
+                          FIA=FIA, modelselect=modelselect_bydomain, getweights=getweights,
                           var_method=var_method)
     unit_totest <- do.call(rbind, sapply(unit_totestlst, '[', "unitest"))
     if (getweights) {
@@ -621,7 +667,7 @@ modMAarea <- function(MApopdat,
                         unitlut=unitlut, unitvar=unitvar, esttype=esttype, 
                         MAmethod=MAmethod, strvar=strvar, prednames=prednames, 
                         domain=rowvar, response=estvar.name, npixels=npixels, 
-                        FIA=FIA, modelselect=modelselect, getweights=getweights,
+                        FIA=FIA, modelselect=modelselect_bydomain, getweights=getweights,
                         var_method=var_method)
     unit_rowest <- do.call(rbind, sapply(unit_rowestlst, '[', "unitest"))
     if (MAmethod %in% c("greg", "gregEN")) {
@@ -637,7 +683,7 @@ modMAarea <- function(MApopdat,
                       unitlut=unitlut, unitvar=unitvar, esttype=esttype, 
                       MAmethod=MAmethod, strvar=strvar, prednames=prednames, 
                       domain=colvar, response=estvar.name, npixels=npixels, 
-                      FIA=FIA, modelselect=modelselect, var_method=var_method)
+                      FIA=FIA, modelselect=modelselect_bydomain, var_method=var_method)
     unit_colest <- do.call(rbind, sapply(unit_colestlst, '[', "unitest"))
     if (MAmethod %in% c("greg", "gregEN")) {
       predselectlst$grpest <- do.call(rbind, sapply(unit_grpest, '[', "predselect"))
@@ -652,7 +698,7 @@ modMAarea <- function(MApopdat,
                         unitlut=unitlut, unitvar=unitvar, esttype=esttype, 
                         MAmethod=MAmethod, strvar=strvar, prednames=prednames, 
                         domain="grpvar", response=estvar.name, npixels=npixels, 
-                        FIA=FIA, modelselect=modelselect, var_method=var_method)
+                        FIA=FIA, modelselect=modelselect_bydomain, var_method=var_method)
     unit_grpest <- do.call(rbind, sapply(unit_grpestlst, '[', "unitest"))
     preds_grpest <- do.call(rbind, sapply(unit_grpestlst, '[', "predselect"))
     if (any(unit_grpest$grpvar == "NA#NA")) {
@@ -811,6 +857,7 @@ modMAarea <- function(MApopdat,
     rawdat$esttype <- esttype
     rawdat$MAmethod <- MAmethod
     rawdat$predselectlst <- predselectlst
+    rawdat$predselect.overall <- predselect.overall
     if (!is.null(rowvar)) rawdat$rowvar <- rowvar
     if (!is.null(colvar)) rawdat$colvar <- colvar
     rawdat$areaunits <- areaunits

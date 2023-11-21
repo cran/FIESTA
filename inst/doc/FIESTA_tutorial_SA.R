@@ -1,7 +1,7 @@
 ## ----setup, include=FALSE-----------------------------------------------------
 knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
-## ---- include=FALSE-----------------------------------------------------------
+## ----include=FALSE------------------------------------------------------------
 # Sets up output folding
 hooks = knitr::knit_hooks$get()
 hook_foldable = function(type) {
@@ -23,15 +23,18 @@ knitr::knit_hooks$set(
   plot = hook_foldable("plot")
 )
 
-## ---- warning = F, message = F------------------------------------------------
+## ----echo=-1------------------------------------------------------------------
+data.table::setDTthreads(2)
+
+## ----warning = F, message = F-------------------------------------------------
 library(FIESTA)
 
 ## -----------------------------------------------------------------------------
 outfolder <- tempdir()
 
 ## -----------------------------------------------------------------------------
-# File names for external spatial data
 
+# File names for external spatial data
 WYbhfn <- system.file("extdata", "sp_data/WYbighorn_adminbnd.shp", package="FIESTA")
 WYbhdistfn <- system.file("extdata", "sp_data/WYbighorn_districtbnd.shp", package="FIESTA")
 WYbhdist.att <- "DISTRICTNA"
@@ -47,13 +50,15 @@ slp <- terra::terrain(dem,
                       v = "slope",
                       unit = "degrees",
                       filename = slpfn, 
-                      overwrite = TRUE)
+                      overwrite = TRUE, 
+                      NAflag = -99999.0)
 aspfn <- paste0(outfolder, "/WYbh_asp.img")
 asp <- terra::terrain(dem,
                       v = "aspect",
                       unit = "degrees", 
                       filename = aspfn,
-                      overwrite = TRUE)
+                      overwrite = TRUE, 
+                      NAflag = -99999.0)
 
 ## -----------------------------------------------------------------------------
 smallbnd <- WYbhdistfn
@@ -80,7 +85,7 @@ SApltdat <- spGetPlots(bnd = WYbhdistfn,
 ## -----------------------------------------------------------------------------
 str(SApltdat, max.level = 1)
 
-## ---- results='hide'----------------------------------------------------------
+## ----results='hide'-----------------------------------------------------------
 rastlst.cont <- c(demfn, slpfn, aspfn)
 rastlst.cont.name <- c("dem", "slp", "asp")
 rastlst.cat <- fornffn
@@ -108,6 +113,7 @@ auxdat <- spGetAuxiliary(
 )
 names(auxdat)
 
+
 ## -----------------------------------------------------------------------------
 str(auxdat, max.level = 1)
 
@@ -124,12 +130,14 @@ str(SApopdat, max.level = 1)
 all_preds <- c("slp", "dem", "asp_cos", "asp_sin", "fornf")
 
 ## -----------------------------------------------------------------------------
+
 area1 <- modSAarea(
   SApopdatlst = SApopdat,        # pop - population calculations for WY, post-stratification
-  prednames = all_preds,         # est - charater vector of predictors to be used in the model
+  prednames = all_preds,         # est - character vector of predictors to be used in the model
   SApackage = "JoSAE",           # est - character string of the R package to do the estimation
   SAmethod = "unit"              # est - method of small area estimation. Either "unit" or "area"
   )
+
 
 ## -----------------------------------------------------------------------------
 str(area1, max.level = 1)
@@ -141,10 +149,11 @@ str(area1$raw, max.level = 1)
 
 ## -----------------------------------------------------------------------------
 area2 <- modSAarea(
-  SApopdatlst = SApopdat,         # pop - population calculations for WY, post-stratification
-  prednames = "slp",          # est - charater vector of predictors to be used in the model
-  SApackage = "JoSAE",            # est - character string of the R package to do the estimation
-  SAmethod = "area"               # est - method of small area estimation. Either "unit" or "area"
+  SApopdatlst = SApopdat,   # pop - population calculations for WY, post-stratification
+  prednames = "slp",        # est - character vector of predictors to be used in the model
+  SApackage = "JoSAE",      # est - character string of the R package to do the estimation
+  SAmethod = "area",        # est - method of small area estimation. Either "unit" or "area"
+  multest = TRUE
   )
 
 ## -----------------------------------------------------------------------------
@@ -155,10 +164,11 @@ area2$multest
 
 ## -----------------------------------------------------------------------------
 area3 <- modSAarea(
-  SApopdatlst = SApopdat,           # pop - population calculations for WY, post-stratification
-  prednames = all_preds,            # est - character vector of predictors to be used in the model
-  SApackage = "hbsae",              # est - character string of the R package to do the estimation
-  SAmethod = "unit"                 # est - method of small area estimation. Either "unit" or "area"
+  SApopdatlst = SApopdat,   # pop - population calculations for WY, post-stratification
+  prednames = all_preds,    # est - character vector of predictors to be used in the model
+  SApackage = "hbsae",      # est - character string of the R package to do the estimation
+  SAmethod = "unit",        # est - method of small area estimation. Either "unit" or "area"
+  multest = TRUE
   )
 
 ## -----------------------------------------------------------------------------
@@ -168,11 +178,11 @@ area3$raw$SApackage
 
 ## -----------------------------------------------------------------------------
 area4 <- modSAarea(
-  SApopdatlst = SApopdat,           # pop - population calculations for WY, post-stratification
-  prednames = all_preds,            # est - charater vector of predictors to be used in the model
-  SApackage = "hbsae",              # est - character string of the R package to do the estimation
-  SAmethod = "unit",                # est - method of small area estimation. Either "unit" or "area"
-  prior = function(x) 1             # est - prior on ratio of between and within area variation
+  SApopdatlst = SApopdat,     # pop - population calculations for WY, post-stratification
+  prednames = all_preds,      # est - character vector of predictors to be used in the model
+  SApackage = "hbsae",        # est - character string of the R package to do the estimation
+  SAmethod = "unit",          # est - method of small area estimation. Either "unit" or "area"
+  prior = function(x) 1       # est - prior on ratio of between and within area variation
   )
 
 ## -----------------------------------------------------------------------------
@@ -185,7 +195,7 @@ area4$est
 ## -----------------------------------------------------------------------------
 area5 <- modSAarea(
   SApopdatlst = SApopdat,      # pop - population calculations for WY, post-stratification
-  prednames = all_preds,       # est - charater vector of predictors to be used in the model
+  prednames = all_preds,       # est - character vector of predictors to be used in the model
   SApackage = "JoSAE",         # est - character string of the R package to do the estimation
   SAmethod = "unit",           # est - method of small area estimation. Either "unit" or "area"
   modelselect = TRUE           # est - elastic net variable selection
@@ -217,7 +227,7 @@ tree1$multest
 ## -----------------------------------------------------------------------------
 tree2 <- modSAtree(
     SApopdatlst = SApopdat,      # pop - population calculations for WY, post-stratification
-    prednames = all_preds,       # est - charater vector of predictors to be used in the model
+    prednames = all_preds,       # est - character vector of predictors to be used in the model
     SApackage = "JoSAE",         # est - character string of the R package to do the estimation
     SAmethod = "unit",           # est - method of small area estimation. Either "unit" or "area"  
     landarea = "FOREST",         # est - forest land filter
@@ -233,7 +243,7 @@ tree2$est
 ## -----------------------------------------------------------------------------
 tree3 <- modSAtree(
     SApopdatlst = SApopdat,      # pop - population calculations for WY, post-stratification
-    prednames = all_preds,       # est - charater vector of predictors to be used in the model
+    prednames = all_preds,       # est - character vector of predictors to be used in the model
     SApackage = "JoSAE",         # est - character string of the R package to do the estimation
     SAmethod = "unit",           # est - method of small area estimation. Either "unit" or "area"  
     landarea = "FOREST",         # est - forest land filter
@@ -251,7 +261,7 @@ tree3$titlelst
 ## -----------------------------------------------------------------------------
 tree4 <- modSAtree(
     SApopdatlst = SApopdat,      # pop - population calculations for WY, post-stratification
-    prednames = "dem",       # est - charater vector of predictors to be used in the model
+    prednames = "dem",       # est - character vector of predictors to be used in the model
     SApackage = "sae",         # est - character string of the R package to do the estimation
     SAmethod = "area",           # est - method of small area estimation. Either "unit" or "area"  
     landarea = "FOREST",         # est - forest land filter
@@ -266,7 +276,7 @@ tree4$est
 ## -----------------------------------------------------------------------------
 tree5 <- modSAtree(
     SApopdatlst = SApopdat,      # pop - population calculations for WY, post-stratification
-    prednames = all_preds,       # est - charater vector of predictors to be used in the model
+    prednames = all_preds,       # est - character vector of predictors to be used in the model
     SApackage = "JoSAE",         # est - character string of the R package to do the estimation
     SAmethod = "unit",           # est - method of small area estimation. Either "unit" or "area"  
     landarea = "FOREST",         # est - forest land filter
@@ -281,7 +291,7 @@ tree5 <- modSAtree(
 ## -----------------------------------------------------------------------------
 tree6 <- modSAtree(
     SApopdatlst = SApopdat,      # pop - population calculations for WY, post-stratification
-    prednames = all_preds,       # est - charater vector of predictors to be used in the model
+    prednames = all_preds,       # est - character vector of predictors to be used in the model
     SApackage = "hbsae",         # est - character string of the R package to do the estimation
     SAmethod = "unit",           # est - method of small area estimation. Either "unit" or "area"  
     landarea = "FOREST",         # est - forest land filter

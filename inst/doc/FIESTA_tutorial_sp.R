@@ -2,7 +2,7 @@
 library(knitr)
 knitr::opts_chunk$set(message = F, warning = F, eval=F)
 
-## ---- include=FALSE-----------------------------------------------------------
+## ----include=FALSE------------------------------------------------------------
 #  # Sets up output folding
 #  hooks = knitr::knit_hooks$get()
 #  hook_foldable = function(type) {
@@ -24,7 +24,10 @@ knitr::opts_chunk$set(message = F, warning = F, eval=F)
 #    plot = hook_foldable("plot")
 #  )
 
-## ---- warning = F, message = F------------------------------------------------
+## ----echo=-1------------------------------------------------------------------
+#  data.table::setDTthreads(2)
+
+## ----warning = F, message = F-------------------------------------------------
 #  library(FIESTA)
 
 ## -----------------------------------------------------------------------------
@@ -51,7 +54,7 @@ knitr::opts_chunk$set(message = F, warning = F, eval=F)
 #  WYco <- USAco[USAco$NAME_1 == "Wyoming",]
 #  
 
-## ---- include = F-------------------------------------------------------------
+## ----include = F--------------------------------------------------------------
 #  outfolder <- tempdir()
 
 ## -----------------------------------------------------------------------------
@@ -194,14 +197,14 @@ knitr::opts_chunk$set(message = F, warning = F, eval=F)
 #  
 
 ## -----------------------------------------------------------------------------
-#  WYbhco <- spClipPoly(polyv = USAco,
+#  WYbhco <- spClipPoly(polyv = WYco,
 #                               clippolyv = WYbh)
 #  
 
 ## -----------------------------------------------------------------------------
 #  head(WYbhco)
-#  plot(sf::st_geometry(WYbhco['NAME_2']), col = sf.colors(nrow(WYbhco)))
-#  coords <- sf::st_coordinates(st_centroid(sf::st_geometry(WYbhco)))
+#  plot(sf::st_geometry(WYbhco['NAME_2']), col = sf::sf.colors(nrow(WYbhco)))
+#  coords <- sf::st_coordinates(sf::st_centroid(sf::st_geometry(WYbhco)))
 #  text(coords[,"X"], coords[,"Y"], WYbhco[["NAME_2"]])
 
 ## -----------------------------------------------------------------------------
@@ -217,10 +220,10 @@ knitr::opts_chunk$set(message = F, warning = F, eval=F)
 #                             outfolder = outfolder)
 
 ## -----------------------------------------------------------------------------
-#  WYbhMWprj <- crsCompare(WYbhMW,
-#                          rasterInfo(WYbhMW.fornf)$crs)$x
-#  raster::plot(raster::raster(WYbhMW.fornf))
-#  plot(st_geometry(WYbhMWprj),
+#  WYbhMWprj <- FIESTAutils::crsCompare(WYbhMW,
+#                          FIESTAutils::rasterInfo(WYbhMW.fornf)$crs)$x
+#  terra::plot(terra::rast(WYbhMW.fornf))
+#  plot(sf::st_geometry(WYbhMWprj),
 #       border = "red",
 #       add = TRUE)
 
@@ -277,13 +280,15 @@ knitr::opts_chunk$set(message = F, warning = F, eval=F)
 #                        v = "slope",
 #                        unit = "degrees",
 #                        filename = slpfn,
-#                        overwrite = TRUE)
+#                        overwrite = TRUE,
+#                        NAflag = -99999.0)
 #  aspfn <- paste0(outfolder, "/WYbh_asp.img")
 #  asp <- terra::terrain(dem,
 #                        v = "aspect",
 #                        unit = "degrees",
 #                        filename = aspfn,
-#                        overwrite = TRUE)
+#                        overwrite = TRUE,
+#                        NAflag = -99999.0)
 
 ## -----------------------------------------------------------------------------
 #  rastlst.cont <- c(demfn, slp, asp)
@@ -434,7 +439,7 @@ knitr::opts_chunk$set(message = F, warning = F, eval=F)
 #                           polyv2 = WYbh,
 #                           areacalc = TRUE)
 #  
-#  plot(st_geometry(polyUnion))
+#  plot(sf::st_geometry(polyUnion))
 #  head(polyUnion)
 
 ## -----------------------------------------------------------------------------
@@ -454,7 +459,7 @@ knitr::opts_chunk$set(message = F, warning = F, eval=F)
 #  outname
 #  rasterfile
 
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 #  # deletes raster data
 #  unlink("gadm36_USA_2_sp.rds")
 

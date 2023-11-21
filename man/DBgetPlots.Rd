@@ -20,7 +20,7 @@ DBgetPlots(
   isseed = FALSE,
   biojenk = FALSE,
   greenwt = FALSE,
-  plotgeom = FALSE,
+  addplotgeom = FALSE,
   othertables = NULL,
   getxy = TRUE,
   xy_datsource = NULL,
@@ -80,7 +80,7 @@ for a list of options.}
 \item{puniqueid}{String. Name of unique identifier in plot_layer in dbTabs.}
 
 \item{invtype}{String. Type of FIA inventory to extract ('PERIODIC',
-'ANNUAL').  Only one inventory type (PERIODIC/ANNUAL) at a time.}
+'ANNUAL', 'BOTH').}
 
 \item{intensity1}{Logical. If TRUE, includes only plots where INTENSITY = 1.}
 
@@ -95,7 +95,7 @@ database (SUBPLOT, SUBP_COND).}
 
 \item{greenwt}{Logical. If TRUE, green weight biomass is calculated.}
 
-\item{plotgeom}{Logical. If TRUE, variables from the PLOTGEOM table are
+\item{addplotgeom}{Logical. If TRUE, variables from the PLOTGEOM table are
 appended to the plot table.}
 
 \item{othertables}{String Vector. Name of other table(s) in FIADB to include
@@ -148,7 +148,7 @@ in query.  See notes for variable descriptions.}
 are included in dataset (NF_SAMPLING_STATUS_CD = 1). See below for more
 details.}
 
-\item{subcycle99}{Logical. If TRUE, excludes plots with SUBCYCLE = 99. These
+\item{subcycle99}{Logical. If TRUE, includes plots with SUBCYCLE = 99. These
 plots are plots that are measured more than once and are not included in the
 estimation process.}
 
@@ -350,7 +350,7 @@ available states in database (states=NULL, RS=NULL).
 \tab Cur \tab Most current measurement of plot in database\cr
 \tab Endyr \tab Most current measurement of plot in database in or
 before year\cr
-\tab All \tab All years for invtype (ANNUAL or PERIODIC)\cr
+\tab All \tab All years for invtype (ANNUAL or PERIODIC or BOTH)\cr
 \tab Type \tab Type of custom Evaluation (response)\cr 
 \tab invyrs \tab Specified inventory years (e.g., 2015:2018)\cr }
 

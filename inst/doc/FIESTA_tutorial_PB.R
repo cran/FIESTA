@@ -2,7 +2,7 @@
 library(knitr)
 knitr::opts_chunk$set(message = F, warning = F)
 
-## ---- include=FALSE-----------------------------------------------------------
+## ----include=FALSE------------------------------------------------------------
 # Sets up output folding
 hooks = knitr::knit_hooks$get()
 hook_foldable = function(type) {
@@ -24,7 +24,10 @@ knitr::knit_hooks$set(
   plot = hook_foldable("plot")
 )
 
-## ---- results = 'asis', echo=FALSE--------------------------------------------
+## ----echo=-1------------------------------------------------------------------
+data.table::setDTthreads(2)
+
+## ----results = 'asis', echo=FALSE---------------------------------------------
 stratdat.lut <- data.frame(
   Variable = c("ESTN_UNIT", "STRATUMCD", "P1POINTCNT", "n.strata", "n.total", "ACRES", "strwt"),
   Description = c("Estimation unit", "Strata value", "Number of pixels by strata and estimation unit", 
@@ -57,7 +60,7 @@ kable(pltdom.lut,
   # padding = 2         # inner spacing
 )
 
-## ---- results = 'asis', echo=FALSE--------------------------------------------
+## ----results = 'asis', echo=FALSE---------------------------------------------
 
 nonratio <- data.frame(
   Variable = c("phat", "phat.var", "phat.se", "phat.cv", "est", "est.var"), 
@@ -151,7 +154,7 @@ kable(all,
   # padding = 2         # inner spacing
 )
 
-## ---- warning = F, message = F------------------------------------------------
+## ----warning = F, message = F-------------------------------------------------
 library(FIESTA)
 
 ## -----------------------------------------------------------------------------

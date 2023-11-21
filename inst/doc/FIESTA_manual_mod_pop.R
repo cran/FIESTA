@@ -2,7 +2,7 @@
 library(knitr)
 knitr::opts_chunk$set(message = F, warning = F)
 
-## ---- include=FALSE-----------------------------------------------------------
+## ----include=FALSE------------------------------------------------------------
 # Sets up output folding
 hooks = knitr::knit_hooks$get()
 hook_foldable = function(type) {
@@ -24,7 +24,10 @@ knitr::knit_hooks$set(
   plot = hook_foldable("plot")
 )
 
-## ---- results = 'asis', echo=FALSE--------------------------------------------
+## ----echo=-1------------------------------------------------------------------
+data.table::setDTthreads(2)
+
+## ----results = 'asis', echo=FALSE---------------------------------------------
 
 #stratdat.lut <- read.csv("C:/_tsf/_GitHub/meta/stratdat_variables.csv", stringsAsFactors=FALSE)
 #source("C:/_tsf/_GitHub/meta/undataframe.R")
@@ -46,7 +49,7 @@ kable(stratdat.lut,
 ) 
 
 
-## ---- results = 'asis', echo=FALSE--------------------------------------------
+## ----results = 'asis', echo=FALSE---------------------------------------------
 
 #required.lut <- read.table("C:/_tsf/_GitHub/meta/required_variables.txt", header=TRUE, sep="\t")
 

@@ -37,7 +37,7 @@ DBgetCSV <- function(DBtable,
 
   ## Set options
   opts <- options()
-  options(timeout = max(5000, getOption("timeout")))
+  options(timeout = max(80000, getOption("timeout")))
   on.exit(options(opts))
 
   # Stop if no arguments passed. No GUI available for this function
@@ -127,15 +127,16 @@ DBgetCSV <- function(DBtable,
         }
       )
       if (is.null(tab)) {
-        message(tab, " is not available")
+        message(DBtable, " is not available")
         return(NULL)
       }
 
       filenm <- utils::unzip(temp, exdir=tempdir)
       tab <- fread(filenm, integer64="character")
       if (nrow(tab) == 0) {
-        stop("invalid table in datamart")
-      }
+        message(DBtable, " has 0 rows")
+		return(NULL)
+	  }
       tab <- changeclass(tab)
 
       unlink(temp)

@@ -1,7 +1,7 @@
 ## ----setup, include=FALSE-----------------------------------------------------
 knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
-## ---- include=FALSE-----------------------------------------------------------
+## ----include=FALSE------------------------------------------------------------
 # Sets up output folding
 hooks = knitr::knit_hooks$get()
 hook_foldable = function(type) {
@@ -23,7 +23,10 @@ knitr::knit_hooks$set(
   plot = hook_foldable("plot")
 )
 
-## ---- warning = F, message = F------------------------------------------------
+## ----echo=-1------------------------------------------------------------------
+data.table::setDTthreads(2)
+
+## ----warning = F, message = F-------------------------------------------------
 library(FIESTA)
 
 ## -----------------------------------------------------------------------------
@@ -50,13 +53,15 @@ slp <- terra::terrain(dem,
                       v = "slope",
                       unit = "degrees",
                       filename = slpfn, 
-                      overwrite = TRUE)
+                      overwrite = TRUE,
+                      NAflag = -99999.0)
 aspfn <- paste0(outfolder, "/WYbh_asp.img")
 asp <- terra::terrain(dem,
                       v = "aspect",
                       unit = "degrees", 
                       filename = aspfn,
-                      overwrite = TRUE)
+                      overwrite = TRUE,
+                      NAflag = -99999.0)
 
 ## -----------------------------------------------------------------------------
 WYspplt <- spMakeSpatialPoints(
@@ -72,7 +77,7 @@ rastlst.cont.name <- c("dem", "slp", "asp")
 rastlst.cat <- fornffn
 rastlst.cat.name <- "fornf"
 
-## ---- results='hide'----------------------------------------------------------
+## ----results='hide'-----------------------------------------------------------
 
 modeldat <- spGetAuxiliary(
   xyplt = WYspplt,
@@ -95,7 +100,6 @@ str(modeldat, max.level = 1)
 
 ## -----------------------------------------------------------------------------
 MApopdat <- modMApop(popTabs = list(tree = WYtree, cond = WYcond),
-                     pltassgn = WYpltassgn,
                      auxdat = modeldat)
 
 ## -----------------------------------------------------------------------------
@@ -105,7 +109,7 @@ str(MApopdat, max.level = 1)
 area1 <- modMAarea(
   MApopdat = MApopdat, # pop - population calculations for WY, post-stratification
   MAmethod = "greg", # est - model-assisted method
-  landarea = "FOREST", # est - forest land filter
+  landarea = "FOREST" # est - forest land filter
   )
 
 

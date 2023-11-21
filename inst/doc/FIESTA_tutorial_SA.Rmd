@@ -34,6 +34,10 @@ knitr::knit_hooks$set(
 )
 ```
 
+```{r, echo=-1}
+data.table::setDTthreads(2)
+```
+
 ## Small Area (SA) module overview
 
 `FIESTA`'s Small Area (SA) module was set up as a platform to integrate with current Small Area Estimators available on CRAN including the `JoSAE` (Breidenbach 2015), `sae` (Molina and Marhuenda 2015), and `hbsae` (Boonstra 2012) packages that use unit-level and area-level models such as the Empirical Best Linear Unbiased Prediction (EBLUP) estimation strategy and the hierarchical Bayesian estimation strategy. Rao (2003) discusses the benefits of the EBLUP for balancing potential bias of synthetic estimators against the instability of a direct estimator. White et al (2021) discusses the benefits of Small Area Estimation in a hierarchical Bayesian context, especially for forestry data. The module includes functional steps for checking, compiling, and formatting FIA plot data and auxiliary spatial information for input to R packages, such as `JoSAE` (Breidenbach 2015), `sae` (Molina and Marhuenda 2015), or `hbsae` (Boonstra 2012) and translates integrated package output to `FIESTA` output format. 
@@ -102,8 +106,8 @@ outfolder <- tempdir()
 Now that we've loaded `FIESTA` and setup our outfolder, we can retrieve the data needed to run the examples. First, we point to some external data and predictor layers stored in `FIESTA` and derive new predictor layers using the `terra` package. 
 
 ```{r}
-# File names for external spatial data
 
+# File names for external spatial data
 WYbhfn <- system.file("extdata", "sp_data/WYbighorn_adminbnd.shp", package="FIESTA")
 WYbhdistfn <- system.file("extdata", "sp_data/WYbighorn_districtbnd.shp", package="FIESTA")
 WYbhdist.att <- "DISTRICTNA"
@@ -119,13 +123,15 @@ slp <- terra::terrain(dem,
                       v = "slope",
                       unit = "degrees",
                       filename = slpfn, 
-                      overwrite = TRUE)
+                      overwrite = TRUE, 
+                      NAflag = -99999.0)
 aspfn <- paste0(outfolder, "/WYbh_asp.img")
 asp <- terra::terrain(dem,
                       v = "aspect",
                       unit = "degrees", 
                       filename = aspfn,
-                      overwrite = TRUE)
+                      overwrite = TRUE, 
+                      NAflag = -99999.0)
 ```
 
 Next, we set up our small area domains with `FIESTA::spGetSAdoms`. For more information on how to use this function, please see the `sp` vignette included with `FIESTA` (link). 
@@ -189,6 +195,7 @@ auxdat <- spGetAuxiliary(
   savedata = FALSE
 )
 names(auxdat)
+
 ```
 
 ```{r}
@@ -241,12 +248,14 @@ all_preds <- c("slp", "dem", "asp_cos", "asp_sin", "fornf")
 Next, we fit the unit-level EBLUP with the `JoSAE` R package. 
 
 ```{r}
+
 area1 <- modSAarea(
   SApopdatlst = SApopdat,        # pop - population calculations for WY, post-stratification
-  prednames = all_preds,         # est - charater vector of predictors to be used in the model
+  prednames = all_preds,         # est - character vector of predictors to be used in the model
   SApackage = "JoSAE",           # est - character string of the R package to do the estimation
   SAmethod = "unit"              # est - method of small area estimation. Either "unit" or "area"
   )
+
 ```
 
 The `modSAarea` function outputs a list, and we can see our estimates and estimation method.
@@ -274,10 +283,11 @@ In this example, we fit an area level EBLUP with `JoSAE`, while only using slp a
 
 ```{r}
 area2 <- modSAarea(
-  SApopdatlst = SApopdat,         # pop - population calculations for WY, post-stratification
-  prednames = "slp",          # est - charater vector of predictors to be used in the model
-  SApackage = "JoSAE",            # est - character string of the R package to do the estimation
-  SAmethod = "area"               # est - method of small area estimation. Either "unit" or "area"
+  SApopdatlst = SApopdat,   # pop - population calculations for WY, post-stratification
+  prednames = "slp",        # est - character vector of predictors to be used in the model
+  SApackage = "JoSAE",      # est - character string of the R package to do the estimation
+  SAmethod = "area",        # est - method of small area estimation. Either "unit" or "area"
+  multest = TRUE
   )
 ```
 
@@ -306,10 +316,11 @@ Notably, the `hbsae` models returned NAs with this model, likely due to computat
 
 ```{r}
 area3 <- modSAarea(
-  SApopdatlst = SApopdat,           # pop - population calculations for WY, post-stratification
-  prednames = all_preds,            # est - character vector of predictors to be used in the model
-  SApackage = "hbsae",              # est - character string of the R package to do the estimation
-  SAmethod = "unit"                 # est - method of small area estimation. Either "unit" or "area"
+  SApopdatlst = SApopdat,   # pop - population calculations for WY, post-stratification
+  prednames = all_preds,    # est - character vector of predictors to be used in the model
+  SApackage = "hbsae",      # est - character string of the R package to do the estimation
+  SAmethod = "unit",        # est - method of small area estimation. Either "unit" or "area"
+  multest = TRUE
   )
 ```
 
@@ -332,11 +343,11 @@ Notably, we can also set priors on the ratio of between and within area variatio
 
 ```{r}
 area4 <- modSAarea(
-  SApopdatlst = SApopdat,           # pop - population calculations for WY, post-stratification
-  prednames = all_preds,            # est - charater vector of predictors to be used in the model
-  SApackage = "hbsae",              # est - character string of the R package to do the estimation
-  SAmethod = "unit",                # est - method of small area estimation. Either "unit" or "area"
-  prior = function(x) 1             # est - prior on ratio of between and within area variation
+  SApopdatlst = SApopdat,     # pop - population calculations for WY, post-stratification
+  prednames = all_preds,      # est - character vector of predictors to be used in the model
+  SApackage = "hbsae",        # est - character string of the R package to do the estimation
+  SAmethod = "unit",          # est - method of small area estimation. Either "unit" or "area"
+  prior = function(x) 1       # est - prior on ratio of between and within area variation
   )
 ```
 
@@ -365,7 +376,7 @@ Due to rounding we do in `FIESTA`, we see the same result. However, the estimate
 ```{r}
 area5 <- modSAarea(
   SApopdatlst = SApopdat,      # pop - population calculations for WY, post-stratification
-  prednames = all_preds,       # est - charater vector of predictors to be used in the model
+  prednames = all_preds,       # est - character vector of predictors to be used in the model
   SApackage = "JoSAE",         # est - character string of the R package to do the estimation
   SAmethod = "unit",           # est - method of small area estimation. Either "unit" or "area"
   modelselect = TRUE           # est - elastic net variable selection
@@ -430,7 +441,7 @@ We can bring the `modelselect` parameter into play with `modSAtree` as well as `
 ```{r}
 tree2 <- modSAtree(
     SApopdatlst = SApopdat,      # pop - population calculations for WY, post-stratification
-    prednames = all_preds,       # est - charater vector of predictors to be used in the model
+    prednames = all_preds,       # est - character vector of predictors to be used in the model
     SApackage = "JoSAE",         # est - character string of the R package to do the estimation
     SAmethod = "unit",           # est - method of small area estimation. Either "unit" or "area"  
     landarea = "FOREST",         # est - forest land filter
@@ -459,7 +470,7 @@ We can also use different response variables to estimate, and in this example we
 ```{r}
 tree3 <- modSAtree(
     SApopdatlst = SApopdat,      # pop - population calculations for WY, post-stratification
-    prednames = all_preds,       # est - charater vector of predictors to be used in the model
+    prednames = all_preds,       # est - character vector of predictors to be used in the model
     SApackage = "JoSAE",         # est - character string of the R package to do the estimation
     SAmethod = "unit",           # est - method of small area estimation. Either "unit" or "area"  
     landarea = "FOREST",         # est - forest land filter
@@ -493,7 +504,7 @@ Now, we can of course fit a different model to estimate basal area. In this case
 ```{r}
 tree4 <- modSAtree(
     SApopdatlst = SApopdat,      # pop - population calculations for WY, post-stratification
-    prednames = "dem",       # est - charater vector of predictors to be used in the model
+    prednames = "dem",       # est - character vector of predictors to be used in the model
     SApackage = "sae",         # est - character string of the R package to do the estimation
     SAmethod = "area",           # est - method of small area estimation. Either "unit" or "area"  
     landarea = "FOREST",         # est - forest land filter
@@ -521,7 +532,7 @@ One may want to easily save `FIESTA` output to your computer, rather than just h
 ```{r}
 tree5 <- modSAtree(
     SApopdatlst = SApopdat,      # pop - population calculations for WY, post-stratification
-    prednames = all_preds,       # est - charater vector of predictors to be used in the model
+    prednames = all_preds,       # est - character vector of predictors to be used in the model
     SApackage = "JoSAE",         # est - character string of the R package to do the estimation
     SAmethod = "unit",           # est - method of small area estimation. Either "unit" or "area"  
     landarea = "FOREST",         # est - forest land filter
@@ -546,7 +557,7 @@ We can also of course use a different model to predict basal area, and in this c
 ```{r}
 tree6 <- modSAtree(
     SApopdatlst = SApopdat,      # pop - population calculations for WY, post-stratification
-    prednames = all_preds,       # est - charater vector of predictors to be used in the model
+    prednames = all_preds,       # est - character vector of predictors to be used in the model
     SApackage = "hbsae",         # est - character string of the R package to do the estimation
     SAmethod = "unit",           # est - method of small area estimation. Either "unit" or "area"  
     landarea = "FOREST",         # est - forest land filter

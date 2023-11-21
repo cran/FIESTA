@@ -35,6 +35,10 @@ knitr::knit_hooks$set(
 )
 ```
 
+```{r, echo=-1}
+data.table::setDTthreads(2)
+```
+
 ## `FIESTA` Overview
 The R package, `FIESTA` (Forest Inventory ESTimation and Analysis) is a research estimation tool for analysts that work with sample-based inventory data from the U.S. Department of Agriculture, Forest Service, Forest Inventory and Analysis (FIA) Program to accommodate: unique population boundaries, different evaluation time periods, customized stratification schemes, non-standard variance equations, integration of multi-scale remotely-sensed data and other ancillary information, and interaction with other modeling and estimation tools from CRAN R's library of packages. `FIESTA` contains a collection of functions that can access FIA databases, summarize and compile plot and spatial data, and generate estimates with associated sampling errors. 
 
@@ -76,7 +80,7 @@ FUNCTION  | DESCRIPTION
 [spExtractRast()](#spExtractRast) | Extracts point attribute values from raster layer(s).
 [spGetXY()](#spGetXY) | Wrapper: Extracts XY coordinates and subsets to boundary.
 [spGetPlots()](#spGetXY) | Wrapper: Extracts plot data and subsets to boundary.
-[spGetAuxiliary()](#spGetAuxiliary) | Wrapper: Extracts point attribute values, area for estimation unit(s), and zonal statitics for strata predictor layers.
+[spGetAuxiliary()](#spGetAuxiliary) | Wrapper: Extracts point attribute values, area for estimation unit(s), and zonal statistics for strata predictor layers.
 [spGetEstUnit()](#spGetEstUnit) | Wrapper: Extracts point attribute values and area for estimation unit(s).
 [spGetStrata()](#spGetStrata) | Wrapper: Extracts point attribute values, area for estimation unit(s), and pixel counts for strata spatial layer.
 [spUnionPoly()](#spUnionPoly) | Generates one Spatial polygons object from two Spatial polygons layers.
@@ -376,10 +380,10 @@ The `spClipPoly` function clips (intersects) a polygon vector layer with another
 <details>
   <summary>View Example</summary>
   
-We first subsect the USAco `SpatialPolygons` layer with `WYbighorn`. Note: you must download USAco from the `geodata` package. See the "Set Up" section above.
+We first subsect the WYco `SpatialPolygons` layer with `WYbighorn`. Note: you must download USAco from the `geodata` package and subset to Wyoming. See the "Set Up" section above.
   
 ```{r}
-WYbhco <- spClipPoly(polyv = USAco,
+WYbhco <- spClipPoly(polyv = WYco,
                              clippolyv = WYbh)
 
 ```
@@ -388,8 +392,8 @@ We can now check and display `WYbighorn_co` with labels.
 
 ```{r}
 head(WYbhco)
-plot(sf::st_geometry(WYbhco['NAME_2']), col = sf.colors(nrow(WYbhco)))
-coords <- sf::st_coordinates(st_centroid(sf::st_geometry(WYbhco)))
+plot(sf::st_geometry(WYbhco['NAME_2']), col = sf::sf.colors(nrow(WYbhco)))
+coords <- sf::st_coordinates(sf::st_centroid(sf::st_geometry(WYbhco)))
 text(coords[,"X"], coords[,"Y"], WYbhco[["NAME_2"]])
 ```
 
@@ -423,10 +427,10 @@ WYbhMW.fornf <- spClipRast(fornffn,
 
 Finally, we display the results:
 ```{r}
-WYbhMWprj <- crsCompare(WYbhMW, 
-                        rasterInfo(WYbhMW.fornf)$crs)$x
-raster::plot(raster::raster(WYbhMW.fornf))
-plot(st_geometry(WYbhMWprj), 
+WYbhMWprj <- FIESTAutils::crsCompare(WYbhMW, 
+                        FIESTAutils::rasterInfo(WYbhMW.fornf)$crs)$x
+terra::plot(terra::rast(WYbhMW.fornf))
+plot(sf::st_geometry(WYbhMWprj), 
      border = "red", 
      add = TRUE)
 ```
@@ -533,13 +537,15 @@ slp <- terra::terrain(dem,
                       v = "slope",
                       unit = "degrees",
                       filename = slpfn, 
-                      overwrite = TRUE)
+                      overwrite = TRUE,
+                      NAflag = -99999.0)
 aspfn <- paste0(outfolder, "/WYbh_asp.img")
 asp <- terra::terrain(dem,
                       v = "aspect",
                       unit = "degrees", 
                       filename = aspfn,
-                      overwrite = TRUE)
+                      overwrite = TRUE,
+                      NAflag = -99999.0)
 ```
 
 Finally, we extract estimation unit and zonal raster statistics (i.e., mean).
@@ -774,7 +780,7 @@ polyUnion <- spUnionPoly(polyv1 = USAco[USAco$NAME_1 == "Wyoming",],
                          polyv2 = WYbh, 
                          areacalc = TRUE)
 
-plot(st_geometry(polyUnion))
+plot(sf::st_geometry(polyUnion))
 head(polyUnion)
 ```
 

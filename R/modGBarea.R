@@ -17,7 +17,7 @@
 #' \tabular{llll}{ \tab \bold{Data} 
 #' \tab \bold{Variable} \tab \bold{Description}\cr 
 #' \tab cond \tab cuniqueid \tab Unique identifier for each plot, to link to pltassgn (ex. PLT_CN).\cr \tab
-#' \tab CONDID \tab Unique identfier of each condition on plot.  Set CONDID=1,
+#' \tab CONDID \tab Unique identifier of each condition on plot.  Set CONDID=1,
 #' if only 1 condition per plot.\cr 
 #' \tab \tab CONDPROP_UNADJ \tab Unadjusted proportion of condition on each plot. Set CONDPROP_UNADJ=1, if only 1
 #' condition per plot.\cr 
@@ -222,6 +222,7 @@
 #' Station, p.53-77.
 #' @keywords data
 #' @examples
+#' \donttest{
 #' GBpopdat <- modGBpop(
 #' popTabs = list(cond = FIESTA::WYcond,  
 #'                tree = FIESTA::WYtree,        
@@ -251,6 +252,7 @@
 #' sumunits = TRUE            
 #' )
 #' str(forest_area_by_forest_type, max.level = 1)
+#' }
 #' @export modGBarea
 modGBarea <- function(GBpopdat,
                       landarea = "FOREST", 
@@ -295,8 +297,7 @@ modGBarea <- function(GBpopdat,
   rawdata <- TRUE
   
   ## Set global variables
-  ONEUNIT=n.total=n.strata=strwt=TOTAL=rowvar.filter=colvar.filter=
-    rawfolder <- NULL
+  ONEUNIT=n.total=n.strata=strwt=TOTAL=rawfolder <- NULL
   #estvar <- "CONDPROP_ADJ"
   
   ##################################################################
@@ -466,8 +467,7 @@ modGBarea <- function(GBpopdat,
   ###################################################################################
   rowcolinfo <- check.rowcol(gui=gui, esttype=esttype, 
                   condf=pltcondf, cuniqueid=cuniqueid, 
-                  rowvar=rowvar, rowvar.filter=rowvar.filter, 
-                  colvar=colvar, colvar.filter=colvar.filter, 
+                  rowvar=rowvar, colvar=colvar, 
                   row.FIAname=row.FIAname, col.FIAname=col.FIAname, 
                   row.orderby=row.orderby, col.orderby=col.orderby, 
                   row.add0=row.add0, col.add0=col.add0, 

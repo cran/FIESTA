@@ -69,36 +69,24 @@
 #' 'ANNUAL').  Only one inventory type (PERIODIC/ANNUAL) at a time.
 #' @param intensity1 Logical. If TRUE, includes only XY coordinates where 
 #' INTENSITY = 1 (FIA base grid).
-#' @param issubp Logical. If TRUE, subplot tables are extracted from FIA
-#' database (SUBPLOT, SUBP_COND).
-#' @param istree Logical. If TRUE, include tree data.
-#' @param isseed Logical. If TRUE, include seedling data.
-#' @param biojenk Logical. If TRUE, Jenkins biomass is calculated.
-#' @param greenwt Logical. If TRUE, green weight biomass is calculated.
-#' @param plotgeom Logical. If TRUE, variables from the PLOTGEOM table are
-#' appended to the plot table.
-#' @param othertables String Vector. Name of other table(s) in FIADB to include
-#' in output. The table must have PLT_CN as unique identifier of a plot.
-#' @param ACI Logical. If TRUE, the data from All Condition Inventories (ACI)
-#' are included in dataset (NF_SAMPLING_STATUS_CD = 1). See below for more
-#' details.
 #' @param clipxy Logical. If TRUE, clips xy data to bnd.
 #' @param pjoinid String. Variable in plt to join to XY data. Not necessary to
 #' be unique. If using most current XY coordinates, use identifier for a plot
 #' (e.g., PLOT_ID).
 #' @param showsteps Logical. If TRUE, display data in device window.
+#' @param returnxy Logical. If TRUE, save xy coordinates to outfolder.
 #' @param returndata Logical. If TRUE, returns data objects.
 #' @param savedata Logical. If TRUE, saves data to outfolder.
-#' @param savebnd Logical. If TRUE, saves bnd. If out_fmt='sqlite', saves to a
-#' SpatiaLite database.
-#' @param returnxy Logical. If TRUE, save xy coordinates to outfolder.
-#' @param exportsp Logical. If returnxy=TRUE, if TRUE, saves xy data as 
+#' @param savexy Logical. If TRUE, saves XY data to outfolder.
+#' @param savebnd Logical. If TRUE, and savedata=TRUE, saves bnd. If 
+#' out_fmt='sqlite', saves to a SpatiaLite database.
+#' @param exportsp Logical. If TRUE, and savexy=TRUE, saves xy data as 
 #' spatial data. If FALSE, saves xy data as table.
 #' @param savedata_opts List. See help(savedata_options()) for a list
 #' of options. Only used when savedata = TRUE. 
 #' @param spXYdat R list object. Output from spGetXY().
 #' @param gui Logical. If TRUE, uses gui interface. 
-#' @param ... parameters passed to DBgetPlot().
+#' @param ... parameters passed to DBgetPlots().
 #' 
 #' @return \item{xypltx}{ sf object. Input xy data clipped to boundary. }
 #' \item{bndx}{ sf object. Input bnd. } \item{tabs}{ list object. List of input
@@ -170,24 +158,17 @@ spGetPlots <- function(bnd = NULL,
                        dbTabs = dbTables(),
                        eval = "FIA",
                        eval_opts = NULL,
-                       puniqueid = "CN", 
+                       puniqueid = "CN",
                        invtype = "ANNUAL", 
-                       intensity1 = FALSE, 
-                       issubp = FALSE, 
-                       istree = FALSE,
-                       isseed = TRUE,
-                       biojenk = FALSE,
-                       greenwt = FALSE,
-                       plotgeom = FALSE, 
-                       othertables = NULL, 
-                       ACI = FALSE, 
+                       intensity1 = FALSE,  
                        clipxy = TRUE, 
                        pjoinid = NULL, 
                        showsteps = FALSE, 
+					   returnxy = TRUE,
                        returndata = TRUE,
                        savedata = FALSE,
+					   savexy = FALSE,
                        savebnd = FALSE, 
-                       returnxy = TRUE, 
                        exportsp = FALSE, 
                        savedata_opts = NULL,
                        spXYdat = NULL,
@@ -211,7 +192,7 @@ spGetPlots <- function(bnd = NULL,
   ##############################################################################
 
   ## Set global variables
-  xydat=stateFilter=countyfips=xypltx=evalidst=PLOT_ID=INVYR=
+  xydat=stateFilter=stateFilterDB=countyfips=xypltx=evalidst=PLOT_ID=INVYR=
 	othertabnms=stcds=spxy=stbnd=invasive_subplot_spp=subp=subpc=dbconn=
 	bndx=evalInfo <- NULL
   isveg=ischng=isdwm <- FALSE
@@ -229,11 +210,12 @@ spGetPlots <- function(bnd = NULL,
   ##################################################################
   ## CHECK PARAMETER NAMES
   ##################################################################
-  args <- as.list(match.call()[-1])
+  args <- as.list(match.call()[-1], list(...))
 
   ## Check input parameters
   input.params <- names(as.list(match.call()))[-1]
-  formallst <- unique(c(names(formals(spGetPlots)), "isveg", "ischng", "isdwm"))
+  formallst <- unique(c(names(formals(spGetPlots)), names(formals(DBgetPlots)), 
+			"isveg", "ischng", "isdwm"))
   if (!all(input.params %in% formallst)) {
     miss <- input.params[!input.params %in% formallst]
     stop("invalid parameter: ", toString(miss))
@@ -242,6 +224,17 @@ spGetPlots <- function(bnd = NULL,
   ## Check parameter lists
   pcheck.params(input.params, savedata_opts=savedata_opts, eval_opts=eval_opts,
 			xy_opts=xy_opts)
+
+  if ("stateFilter" %in% names(args)) {
+    stop("cannot use stateFilter parameter at this time in spGetPlots")
+  }
+  if ("getxy" %in% input.params) {
+    stop("cannot use getxy parameter at this time in spGetPlots")    
+  }
+  if ("evalInfo" %in% input.params) {
+    stop("cannot use evalInfo parameter at this time in spGetPlots")    
+  }
+
 
   ## Set dbTables defaults
   dbTables_defaults_list <- formals(dbTables)[-length(formals(dbTables))] 
@@ -328,7 +321,7 @@ spGetPlots <- function(bnd = NULL,
       }
     }
   }
- 
+
   ##################################################################################
   ## CHECK PARAMETER INPUTS
   ##################################################################################      
@@ -353,7 +346,7 @@ spGetPlots <- function(bnd = NULL,
   datsource <- pcheck.varchar(var2check=datsource, varnm="datsource", 
 		gui=gui, checklst=datsourcelst, caption="Plot data source?",
            stopifinvalid=TRUE)
-
+ 
   if (is.null(xy_datsource) && is.null(datsource)) {
     stop("xy_datsource and/or datsource are invalid")
   } else if (is.null(xy_datsource)) {
@@ -383,69 +376,37 @@ spGetPlots <- function(bnd = NULL,
     }
   }
 
+  ## Message for data sources
+  if (datsource == xy_datsource) {
+    message("source of xy data and plot data is ", datsource)
+  } else {
+    message("source of xy data is ", xy_datsource, " and plot data is ", datsource) 
+  }
+
   ## Check database connection - xy_dsn
   ########################################################
   if (xy_datsource == "sqlite" && !is.null(xy_dsn)) {
-    xyconn <- DBtestSQLite(xy_dsn, dbconnopen=TRUE, showlist=FALSE)
-    xytablst <- DBI::dbListTables(xyconn)
-    if (length(xytablst) == 0) {
-      stop("no data in ", xy_datsource)
-    }
+    suppressMessages(DBtestSQLite(xy_dsn, showlist=FALSE))
   }
  
   ## Check database connection - data_dsn
   ########################################################
   if (datsource == "sqlite" && !is.null(data_dsn)) {
-    dbconn <- DBtestSQLite(data_dsn, dbconnopen=TRUE, showlist=FALSE)
-    dbtablst <- DBI::dbListTables(dbconn)
-    if (length(dbtablst) == 0) {
-      stop("no data in ", datsource)
-    }
+    suppressMessages(DBtestSQLite(data_dsn, showlist=FALSE))
+    #conn <- suppressMessages(DBtestSQLite(data_dsn, showlist=FALSE, dbconnopen=TRUE))
+    #dbtablst <- DBI::dbListTables(conn)
+    #DBI::dbDisconnect(conn)
   }
-
+  
   ## GETS DATA TABLES (OTHER THAN PLOT/CONDITION) IF NULL
   ###########################################################
   if (gui) {
-    Typelst <- c("ALL", "CURR", "VOL", "P2VEG", "DWM", "INV", "GROW", "MORT", "REMV", "GRM")
+    Typelst <- c("ALL", "CURR", "VOL", "P2VEG", "DWM", "INV", 
+				"GROW", "MORT", "REMV", "GRM")
     Type <- select.list(Typelst, title="eval type", 
 		preselect="VOL", multiple=TRUE)
     if (length(Type)==0) Type <- "VOL"
   } 
-
-  if (any(Type %in% c("VOL"))) {
-    if (!istree) {
-      message("eval Type includes 'VOL', but istree = FALSE... not trees are included")
-    }
-  } 
-  if (any(Type == "P2VEG")) {
-    # understory vegetation tables 
-    # (P2VEG_SUBPLOT_SPP, P2VEG_SUBP_STRUCTURE)
-    isveg=issubp <- TRUE
-  } 
-  if (any(Type == "INV")) {
-    # understory vegetation tables 
-    # (INVASIVE_SUBPLOT_SPP)
-    isinv=issubp <- TRUE
-  } 
-  if (any(Type == "DWM")) {
-    # summarized condition-level down woody debris table (COND_DWM_CALC)
-    isdwm <- TRUE
-  }
-  if (any(Type == "CHNG")) {
-    # current and previous conditions, subplot-level - sccm (SUBP_COND_CHNG_MTRX) 
-    ischng=issubp <- TRUE
-  }
-  if (any(Type %in% c("GROW", "MORT", "REMV"))) {
-    Type <- "GRM"
-  }
-  if (any(Type == "GRM")) {
-    ischng=issubp=isgrm <- TRUE
-  }
-  if (isveg && invtype == "PERIODIC") {
-    message("understory vegetation data only available for annual data\n")
-    isveg <- FALSE
-  } 
-
 
   ## Get DBgetEvalid parameters from eval_opts
   ################################################
@@ -466,7 +427,6 @@ spGetPlots <- function(bnd = NULL,
     evalCur=evalAll <- FALSE
     evalEndyr <- NULL
   }
- 
 
   ## Check spXYdat
   if (!is.null(spXYdat)) {
@@ -493,16 +453,26 @@ spGetPlots <- function(bnd = NULL,
     } 
 
   } else {   ## is.null(spXYdat) 
-
+ 
     ## Check pltids
     pltids <- pcheck.table(pltids)
- 
+
     if (!is.null(pltids)) {
       Endyr.filter <- check.logic(pltids, Endyr.filter)
 
       ## Check xyjoinid
       xyjoinid <- pcheck.varchar(var2check=xyjoinid, varnm="xyjoinid", 
-		checklst=names(pltids), gui=gui, caption="JoinID in pltids?", stopifnull=TRUE)  
+		checklst=names(pltids), gui=gui, caption="JoinID in pltids?",
+ 		stopifnull=FALSE)  
+	  if (is.null(xyjoinid)) {
+	    message("xyjoinid is NULL... using xy.uniqueid: ", xy.uniqueid)
+	    xyjoinid <- xy.uniqueid
+
+        ## Check xyjoinid
+        xyjoinid <- pcheck.varchar(var2check=xyjoinid, varnm="xyjoinid", 
+		  checklst=names(pltids), gui=gui, caption="JoinID in pltids?",
+ 		  stopifnull=TRUE)
+      }		  
  
       ## Check stbnd.att
       stbnd.att <- pcheck.varchar(var2check=stbnd.att, varnm="stbnd.att", 
@@ -585,12 +555,13 @@ spGetPlots <- function(bnd = NULL,
       if (!is.null(states)) {
         states <- pcheck.states(states)
       }
-  
+
       if (clipxy) {
         ###########################################################################
         ## Get XY
         ###########################################################################
- 
+        message("getting xy data...")
+
         if (!is.null(Endyr.filter)) {
           ## Get XY data inside filter
           #######################################
@@ -679,6 +650,9 @@ spGetPlots <- function(bnd = NULL,
                          clipxy = clipxy, 
                          showsteps = FALSE, 
                          returnxy = TRUE)
+          if (is.null(xydat)) {
+            return(NULL)
+          }
           spxy <- xydat$spxy
           pltids <- xydat$pltids
           states <- xydat$states
@@ -771,6 +745,11 @@ spGetPlots <- function(bnd = NULL,
   returndata <- pcheck.logical(returndata, varnm="returndata", 
                       title="Return data?", first="YES", gui=gui)  
 
+  ## Check savexy
+  #############################################################################
+  savexy <- pcheck.logical(savexy, varnm="savexy", 
+                           title="Save XY data?", first="NO", gui=gui)
+
   ## Check savedata
   #############################################################################
   savedata <- pcheck.logical(savedata, varnm="savedata", 
@@ -812,7 +791,7 @@ spGetPlots <- function(bnd = NULL,
   ## Initialize lists
   tabs2save <- {}
 
-  msg <- "getting data for... "
+  msg <- "getting plot data for... "
   if (!is.null(evalid)) {
     iseval=savePOP <- TRUE
     evalid <- unlist(evalid)
@@ -884,7 +863,7 @@ spGetPlots <- function(bnd = NULL,
         countyfips1 <- formatC(as.numeric(countyfips1), width=5, digits=5, flag="0")
         stcnty1 <- countyfips1[startsWith(countyfips1, formatC(stcd, width=2, flag="0"))]
         countycds1 <- sort(as.numeric(unique(substr(stcnty1, 3, 5))))
-        stateFilter1 <- paste("p.countycd IN(", toString(countycds1), ")")
+        stateFilterDB1 <- paste("p.countycd IN(", toString(countycds1), ")")
       }
 
       ## Subset evalInfo
@@ -935,6 +914,11 @@ spGetPlots <- function(bnd = NULL,
         evalInfo2st <- NULL
       }
 
+      if ("stateFilter" %in% input.params) {
+        stateFilterDB1 <- paste(stateFilter, "&", stateFilterDB1) 
+        rm(stateFilter)
+      }
+
       dat1 <- DBgetPlots(states = stcd, 
                          datsource = datsource,
                          data_dsn = data_dsn, 
@@ -942,21 +926,12 @@ spGetPlots <- function(bnd = NULL,
                          eval = eval,
                          eval_opts = eval_opts1,
                          puniqueid = puniqueid, 
-                         invtype = invtype, 
-                         intensity1 = intensity1, 
                          pjoinid = pjoinid, 
-                         istree = istree,
-                         isseed = isseed,
-                         plotgeom = plotgeom, 
-                         othertables = othertables, 
                          getxy = FALSE,
-                         ACI = ACI, 
-                         biojenk = biojenk,
-                         greenwt = greenwt,
-                         savePOP = savePOP,
-                         stateFilter = stateFilter1, 
+                         stateFilter = stateFilterDB1, 
                          returndata = TRUE,
-                         evalInfo = evalInfo1st
+                         evalInfo = evalInfo1st,
+                         ...
                          )
       tabs1 <- dat1$tabs
       tabIDs <- dat1$tabIDs
@@ -1016,8 +991,14 @@ spGetPlots <- function(bnd = NULL,
         countyfips2 <- formatC(as.numeric(countyfips2), width=5, digits=5, flag="0")
         stcnty2 <- countyfips2[startsWith(countyfips2, formatC(stcd, width=2, flag="0"))]
         countycds2 <- sort(as.numeric(unique(substr(stcnty2, 3, 5))))
-        stateFilter2 <- paste("p.countycd IN(", toString(countycds2), ")")
+        stateFilterDB2 <- paste("p.countycd IN(", toString(countycds2), ")")
       }
+
+      if ("stateFilter" %in% input.params) {
+        stateFilterDB2 <- paste(stateFilter, "&", stateFilterDB2) 
+        rm(stateFilter)
+      }
+
       dat2 <- DBgetPlots(states = stcd, 
                          datsource = datsource,
                          data_dsn = data_dsn, 
@@ -1025,21 +1006,12 @@ spGetPlots <- function(bnd = NULL,
                          eval = eval,
                          eval_opts = eval_opts2,
                          puniqueid = puniqueid,
-                         invtype = invtype, 
-                         intensity1 = intensity1, 
                          pjoinid = pjoinid, 
-                         istree = istree,
-                         isseed = isseed,
-                         plotgeom = plotgeom, 
-                         othertables = othertables, 
                          getxy = FALSE,
-                         ACI = ACI, 
-                         biojenk = biojenk,
-                         greenwt = greenwt,
-                         savePOP = savePOP,
-                         stateFilter = stateFilter2, 
+                         stateFilter = stateFilterDB2, 
                          returndata = TRUE,
-                         evalInfo = evalInfo2st
+                         evalInfo = evalInfo2st,
+                         ...
                          )
       tabs2 <- dat2$tabs
       pop_plot_stratum_assgn2 <- dat2$pop_plot_stratum_assgn
@@ -1079,7 +1051,7 @@ spGetPlots <- function(bnd = NULL,
         countyfips <- formatC(as.numeric(countyfips), width=5, digits=5, flag="0")
         stcnty <- countyfips[startsWith(countyfips, formatC(stcd, width=2, flag="0"))]
         countycds <- sort(as.numeric(unique(substr(stcnty, 3, 5))))
-        stateFilter <- paste("p.countycd IN(", toString(countycds), ")")
+        stateFilterDB <- paste("p.countycd IN(", toString(countycds), ")")
       }
  
       if (!is.null(evalInfo)) {
@@ -1105,6 +1077,11 @@ spGetPlots <- function(bnd = NULL,
         evalInfost <- NULL
       }
  
+      if ("stateFilter" %in% input.params) {
+        stateFilterDB <- paste(stateFilterDB, "&", stateFilter) 
+        rm(stateFilter)
+      }
+
       dat <- DBgetPlots(states = stcd, 
                          datsource = datsource,
                          data_dsn = data_dsn, 
@@ -1112,22 +1089,13 @@ spGetPlots <- function(bnd = NULL,
                          eval = eval,
                          eval_opts = eval_opts,
                          puniqueid = puniqueid, 
-                         invtype = invtype, 
-                         intensity1 = intensity1, 
                          pjoinid = pjoinid, 
-                         istree = istree,
-                         isseed = isseed,
-                         plotgeom = plotgeom, 
-                         othertables = othertables, 
                          getxy = FALSE,
-                         ACI = ACI, 
-                         biojenk = biojenk,
-                         greenwt = greenwt,
-                         savePOP = savePOP,
-                         stateFilter = stateFilter, 
+                         stateFilter = stateFilterDB, 
                          returndata = TRUE,
-                         evalInfo = evalInfost
-                         )
+                         evalInfo = evalInfost,
+                         ...
+                         )					 
       tabs <- dat$tabs
       tabIDs <- dat$tabIDs
       pop_plot_stratum_assgn <- dat$pop_plot_stratum_assgn
@@ -1171,16 +1139,16 @@ spGetPlots <- function(bnd = NULL,
       }
 
       if (nrow(stpltids) > 0) {
-
         ## Subset data to stpltids
         plt <- PLOT[PLOT[[pjoinid]] %in% stpltids[[xyjoinid]],]
         if (nrow(plt) != nrow(stpltids)) {
           message("there are ", abs(nrow(plt) - nrow(stpltids)), 
 			" plots in ", state, " that do not match pltids")
           #spxy[!spxy[[xyjoinid]] %in% plt[[pjoinid]],] 
+          messagedf(stpltids[[xyjoinid]][!stpltids[[xyjoinid]] %in% PLOT[[pjoinid]]])
         }
         pids <- plt[[puniqueid]]
-
+		
         ## Subset other tables in list
         stcliptabs$plt <- plt
         for (tabnm in names(tabs)[names(tabs) != "plt"]) {
@@ -1256,7 +1224,7 @@ spGetPlots <- function(bnd = NULL,
                                 outfn.date = outfn.date, 
                                 add_layer = TRUE)) 
           rm(pop_plot_stratum_assgn)
-          gc()
+          # gc()
         } 
       }
       if (showsteps && !is.null(spxy) && !is.null(bndx)) {
@@ -1280,25 +1248,25 @@ spGetPlots <- function(bnd = NULL,
   #############################################################################
   ## Save tables
   #############################################################################
-  if (savebnd) {
-    spExportSpatial(bndx, 
-                    savedata_opts=list(outfolder=outfolder, 
-                                       out_fmt=out_fmt, 
-                                       out_dsn=out_dsn, 
-                                       out_layer="bnd",
-                                       outfn.pre=outfn.pre, 
-                                       outfn.date=outfn.date, 
-                                       overwrite_layer=overwrite_layer,
-                                       append_layer=append_layer, 
-                                       add_layer=TRUE))   
-  }
- 
   if (savedata) {
-    if (returnxy) {   
-      if (!is.null(spxy)) {
-        if (exportsp) {
-          spExportSpatial(spxy,
-                savedata_opts=list(outfolder=outfolder,
+    if (savebnd) {
+      spExportSpatial(bndx, 
+             savedata_opts=list(outfolder=outfolder, 
+                                out_fmt=out_fmt, 
+                                out_dsn=out_dsn, 
+                                out_layer="bnd",
+                                outfn.pre=outfn.pre, 
+                                outfn.date=outfn.date, 
+                                overwrite_layer=overwrite_layer,
+                                append_layer=append_layer, 
+                                add_layer=TRUE))   
+    }
+  }
+  if (savexy) {
+    if (!is.null(spxy)) {
+      if (exportsp) {
+        spExportSpatial(spxy,
+             savedata_opts=list(outfolder=outfolder,
                               out_fmt=out_fmt,
                               out_dsn=out_dsn,
                               out_layer="spxyplt",
@@ -1307,39 +1275,39 @@ spGetPlots <- function(bnd = NULL,
                               overwrite_layer=overwrite_layer,
                               append_layer=append_layer,
                               add_layer=TRUE))
-        } else {
-          datExportData(sf::st_drop_geometry(spxy), 
-                        savedata_opts=list(outfolder=outfolder, 
-                              out_fmt=out_fmt, 
-                              out_dsn=out_dsn, 
-                              out_layer="xyplt",
-                              outfn.pre=outfn.pre, 
-                              outfn.date=outfn.date, 
-                              overwrite_layer=overwrite_layer,
-                              append_layer=append_layer,
-                              add_layer=TRUE)) 
-        }
-      }
+      } else {
+        datExportData(sf::st_drop_geometry(spxy), 
+                    savedata_opts=list(outfolder=outfolder, 
+                    out_fmt=out_fmt, 
+                    out_dsn=out_dsn, 
+                    out_layer="xyplt",
+                    outfn.pre=outfn.pre, 
+                    outfn.date=outfn.date, 
+                    overwrite_layer=overwrite_layer,
+                    append_layer=append_layer,
+                    add_layer=TRUE)) 
+	  }
     } else {
       datExportData(pltids, 
-        savedata_opts=list(outfolder=outfolder, 
-                              out_fmt=out_fmt, 
-                              out_dsn=out_dsn, 
-                              out_layer="pltids",
-                              outfn.pre=outfn.pre, 
-                              outfn.date=outfn.date, 
-                              overwrite_layer=overwrite_layer,
-                              append_layer=append_layer,
-                              add_layer=TRUE)) 
-    }
-  } 
+          savedata_opts=list(outfolder=outfolder, 
+                           out_fmt=out_fmt, 
+                           out_dsn=out_dsn, 
+                           out_layer="pltids",
+                           outfn.pre=outfn.pre, 
+                           outfn.date=outfn.date, 
+                           overwrite_layer=overwrite_layer,
+                           append_layer=append_layer,
+                           add_layer=TRUE)) 
+    } 
+  }
   
+  if (returnxy && !is.null(spxy)) {
+    returnlst$spxy <- spxy
+  }
+ 
   if (returndata) {
     returnlst$tabs <- tabs2save
     returnlst$tabIDs <- tabIDs
-    if (returnxy && !is.null(spxy)) {
-      returnlst$spxy <- spxy
-    }
     returnlst$pltids <- pltids
     #returnlst$clip_polyv <- bndx
 

@@ -1,9 +1,12 @@
-check.popdataVOL <- function(tabs, tabIDs, pltassgnx, pltassgnid,
-	pfromqry, palias, pjoinid, whereqry, adj, ACI, pltx=NULL, puniqueid="CN", 
-	dsn=NULL, dbconn=NULL, condid="CONDID", areawt="CONDPROP_UNADJ", areawt2 = NULL,
-	MICRO_BREAKPOINT_DIA=5, MACRO_BREAKPOINT_DIA=NULL, diavar="DIA",
-	areawt_micr="MICRPROP_UNADJ", areawt_subp="SUBPPROP_UNADJ", areawt_macr="MACRPROP_UNADJ",
-	nonsamp.cfilter=NULL, nullcheck=FALSE, cvars2keep=NULL, gui=FALSE){
+check.popdataVOL <- function(tabs, tabIDs, pltassgnx, pltassgnid, 
+    pfromqry, palias, pjoinid, whereqry, adj, ACI, 
+	pltx = NULL, puniqueid = "CN", dsn = NULL, dbconn = NULL, 
+	condid = "CONDID", areawt = "CONDPROP_UNADJ", areawt2 = NULL,
+    MICRO_BREAKPOINT_DIA = 5, MACRO_BREAKPOINT_DIA = NULL, diavar = "DIA",
+    areawt_micr = "MICRPROP_UNADJ", areawt_subp = "SUBPPROP_UNADJ",   
+    areawt_macr = "MACRPROP_UNADJ", defaultVars = FALSE,
+    nonsamp.cfilter = NULL, nullcheck = FALSE, pvars2keep = NULL, 
+	cvars2keep = NULL, gui = FALSE){
 
   ###################################################################################
   ## DESCRIPTION: Checks data inputs for AREA/VOL estimation
@@ -38,10 +41,10 @@ check.popdataVOL <- function(tabs, tabIDs, pltassgnx, pltassgnid,
   ###################################################################################
 
   ## Set global variables
-  COND_STATUS_CD=CONDID=CONDPROP_UNADJ=SUBPPROP_UNADJ=MICRPROP_UNADJ=MACRPROP_UNADJ=
-	STATECD=cndnmlst=PROP_BASIS=ACI.filter=condsampcnt=
-	NF_COND_STATUS_CD=TPA_UNADJ=condqry=treeqry=seedqry=cfromqry=tfromqry=
-	tpropvars=treex <- NULL
+  COND_STATUS_CD=CONDID=CONDPROP_UNADJ=STATECD=NF_COND_STATUS_CD=
+	SUBPPROP_UNADJ=MICRPROP_UNADJ=MACRPROP_UNADJ=TPA_UNADJ=
+	cndnmlst=PROP_BASIS=ACI.filter=condsampcnt=
+	condqry=treeqry=seedqry=cfromqry=tfromqry=tpropvars=treex <- NULL
 
   ###################################################################################
   ## Define necessary plot and condition level variables
@@ -57,6 +60,7 @@ check.popdataVOL <- function(tabs, tabIDs, pltassgnx, pltassgnid,
   }
   cuniqueid <- tabIDs[["cond"]]
 
+
   ###################################################################################
   ## Database queries
   ###################################################################################
@@ -67,17 +71,22 @@ check.popdataVOL <- function(tabs, tabIDs, pltassgnx, pltassgnid,
       dbconn <- DBtestSQLite(dsn, dbconnopen=TRUE, showlist=FALSE)
     }
     tablst <- DBI::dbListTables(dbconn)
+    #DBI::dbDisconnect(dbconn)
     chk <- TRUE
     SCHEMA.<- NULL
     dbqueries <- list()
-
 
     ## Create query for cond
     #########################################
     if (all(!is.null(cond), is.character(cond), cond %in% tablst)) {
       dbcvars <- DBI::dbListFields(dbconn, cond)
-      cvars <-  DBvars.default()$condvarlst
-      cvars <- cvars[cvars %in% dbcvars]
+      if (defaultVars) {
+        cvars <-  DBvars.default()$condvarlst
+        cvars <- cvars[cvars %in% dbcvars]
+		cvars <- cvars[cvars %in% dbcvars]
+      } else {
+        cvars <- dbcvars
+      }
 
       if (is.null(pfromqry)) {
         cfromqry <- paste0(SCHEMA., cond, " c")
@@ -95,10 +104,15 @@ check.popdataVOL <- function(tabs, tabIDs, pltassgnx, pltassgnid,
     #########################################
     if (all(!is.null(tree), is.character(tree), tree %in% tablst)) {
       dbtvars <- DBI::dbListFields(dbconn, tree)
-      treevars <-  DBvars.default(istree=TRUE)$treevarlst
-      tsumvars <-  DBvars.default(istree=TRUE)$tsumvarlst
-      tvars <- unique(c(treevars, tsumvars))
-      tvars <- tvars[tvars %in% dbtvars]
+
+      if (defaultVars) {
+        treevars <-  DBvars.default(istree=TRUE)$treevarlst
+        tsumvars <-  DBvars.default(istree=TRUE)$tsumvarlst
+        tvars <- unique(c(treevars, tsumvars))
+		tvars <- tvars[tvars %in% dbtvars]
+      } else {
+        tvars <- dbtvars
+      }
 
       if (!is.null(pfromqry)) {
         tfromqry <- paste0(pfromqry, " JOIN ", SCHEMA., tree,
@@ -106,9 +120,8 @@ check.popdataVOL <- function(tabs, tabIDs, pltassgnx, pltassgnid,
       } else {
         tfromqry <- paste(tree, "t")
       }
-      treeqry <- paste("select distinct", toString(paste0("t.", tvars)), 
+      treeqry <- paste("select", toString(paste0("t.", tvars)), 
 				"from", tfromqry, whereqry)
-      #treeqry <- paste("select distinct t.* from", tfromqry, whereqry)
       dbqueries$tree <- treeqry
     }
 
@@ -121,7 +134,7 @@ check.popdataVOL <- function(tabs, tabIDs, pltassgnx, pltassgnid,
       } else {
         sfromqry <- paste(seed, "s")
       }
-      seedqry <- paste("select distinct s.* from", sfromqry, whereqry)
+      seedqry <- paste("select s.* from", sfromqry, whereqry)
       dbqueries$seed <- seedqry
     }
   }
@@ -132,16 +145,15 @@ check.popdataVOL <- function(tabs, tabIDs, pltassgnx, pltassgnid,
   if (is.null(cond)) {
     stop("must include cond table")
   }
-  condx <- suppressMessages(pcheck.table(cond, tab_dsn=dsn, 
-           tabnm="cond", caption="cond table?",
-		nullcheck=nullcheck, tabqry=condqry, returnsf=FALSE))
-  treex <- suppressMessages(pcheck.table(tree, tab_dsn=dsn, 
-           tabnm="tree", caption="Tree table?",
-		nullcheck=nullcheck, gui=gui, tabqry=treeqry, returnsf=FALSE))
+  condx <- pcheck.table(cond, conn = dbconn,
+           tabnm = "cond", caption = "cond table?",
+		   nullcheck = nullcheck, tabqry = condqry, returnsf = FALSE)
+  treex <- pcheck.table(tree, conn = dbconn,
+           tabnm = "tree", caption = "tree table?",
+		   nullcheck = nullcheck, tabqry = treeqry, returnsf = FALSE)
  
   ## Define cdoms2keep
   cdoms2keep <- names(condx)
-
 
   ###############################################################################
   ## Check uniqueids and merge cond with plt
@@ -205,7 +217,6 @@ check.popdataVOL <- function(tabs, tabIDs, pltassgnx, pltassgnid,
     cvars <- unique(c(cuniqueid, names(condx)[!names(condx) %in% names(pltx)])) 
     condx <- condx[, cvars, with=FALSE]
 
-
     ## Check if class of puniqueid in pltx matches class of puniqueid in condx
     tabchk <- check.matchclass(condx, pltx, cuniqueid, puniqueid)
     condx <- tabchk$tab1
@@ -253,6 +264,13 @@ check.popdataVOL <- function(tabs, tabIDs, pltassgnx, pltassgnid,
   ## Check condition data
   ###################################################################################
   pltcondnmlst <- names(pltcondx)
+
+  ## Check for pvars2keep
+  #############################################################################
+  if (!all(pvars2keep %in% pltcondnmlst)) {
+    pvars2keep <- pvars2keep[!pvars2keep %in% pltcondnmlst] 
+    message("variables not in dataset: ", toString(pvars2keep))
+  }
 
   ## Check for COND_STATUS_CD and create ACI filter
   #############################################################################
@@ -437,8 +455,10 @@ check.popdataVOL <- function(tabs, tabIDs, pltassgnx, pltassgnid,
   ###################################################################################
   ## Check seedling data
   ###################################################################################
-  seedx <- pcheck.table(seed, tab_dsn=dsn, tabnm="seed", caption="Seedling table?",
-		nullcheck=nullcheck, gui=gui, tabqry=seedqry, returnsf=FALSE)
+  seedx <- pcheck.table(seed, tab_dsn=dsn, conn=dbconn, 
+                        tabnm="seed", caption="Seedling table?", 
+                        nullcheck=nullcheck, gui=gui, 
+                        tabqry=seedqry, returnsf=FALSE)
   if (!is.null(seedx)) {
     suniqueid <- tabIDs[["seed"]]
 
@@ -502,7 +522,7 @@ check.popdataVOL <- function(tabs, tabIDs, pltassgnx, pltassgnid,
 		paste(names(svars.na[svars.na > 0]), collapse=", "))
     }
   }
-
+ 
   ########################################################################
   ## Separate tables for estimation
   ########################################################################
@@ -526,15 +546,15 @@ check.popdataVOL <- function(tabs, tabIDs, pltassgnx, pltassgnid,
 
   if (!is.null(treex)) {
     ## Check that the values of tuniqueid in treex are all in cuniqueid in pltcondx
-    treef <- check.matchval(treex, pltcondx, tuniqueid, cuniqueid, tab1txt="tree",
-		tab2txt="cond", subsetrows=TRUE)
+    treef <- check.matchval(treex, pltcondx, tuniqueid, cuniqueid, 
+	    tab1txt="tree", tab2txt="cond", subsetrows=TRUE)
     returnlst$treef <- treef
     returnlst$tuniqueid <- tuniqueid
   }
   if (!is.null(seedx)) {
     ## Check that the values of tuniqueid in seedx are all in cuniqueid in pltcondx
-    seedf <- check.matchval(seedx, pltcondx, suniqueid, cuniqueid, tab1txt="seed",
-		tab2txt="cond", subsetrows=TRUE)
+    seedf <- check.matchval(seedx, pltcondx, suniqueid, cuniqueid, 
+	    tab1txt="seed", tab2txt="cond", subsetrows=TRUE)
     returnlst$seedf <- seedf
   }
  

@@ -16,7 +16,7 @@
 #' Necessary variables:\cr \tabular{llll}{ \tab \bold{Data} \tab
 #' \bold{Variable} \tab \bold{Description}\cr \tab cond \tab cuniqueid \tab
 #' Unique identifier for each plot, to link to pltassgn (ex. PLT_CN).\cr \tab
-#' \tab CONDID \tab Unique identfier of each condition on plot.  Set CONDID=1,
+#' \tab CONDID \tab Unique identifier of each condition on plot.  Set CONDID=1,
 #' if only 1 condition per plot.\cr \tab \tab CONDPROP_UNADJ \tab Unadjusted
 #' proportion of condition on each plot.  Set CONDPROP_UNADJ=1, if only 1
 #' condition per plot.\cr \tab \tab COND_STATUS_CD \tab Status of each forested
@@ -261,7 +261,7 @@ modGBdwm <- function(GBpopdat = NULL,
   returnlst <- list()
   
   ## Set global variables
-  ONEUNIT=n.total=n.strata=strwt=TOTAL=rowvar.filter=colvar.filter=
+  ONEUNIT=n.total=n.strata=strwt=TOTAL=
     rawfolder=estvard.name <- NULL
   #estvar <- "CONDPROP_ADJ"
   
@@ -475,8 +475,7 @@ modGBdwm <- function(GBpopdat = NULL,
   ### Check row and column data
   ###################################################################################
   rowcolinfo <- check.rowcol(gui=gui, esttype="AREA", condf=pltcondf, 
-                  cuniqueid=cuniqueid, rowvar=rowvar, rowvar.filter=rowvar.filter, 
-                  colvar=colvar, colvar.filter=colvar.filter, 
+                  cuniqueid=cuniqueid, rowvar=rowvar, colvar=colvar, 
                   row.FIAname=row.FIAname, col.FIAname=col.FIAname, 
                   row.orderby=row.orderby, col.orderby=col.orderby, 
                   row.add0=row.add0, col.add0=col.add0, 
