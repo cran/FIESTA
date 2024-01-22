@@ -220,6 +220,7 @@ tree1 <- modSAtree(
     estvar.filter = live_trees   # est - live trees only
     )
 
+
 ## -----------------------------------------------------------------------------
 tree1$est
 tree1$multest

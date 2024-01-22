@@ -698,14 +698,14 @@ output
 </summary>
 <pre><code>## List of 4
 ##  $ est    :Classes &#39;data.table&#39; and &#39;data.frame&#39;:    1 obs. of  3 variables:
-##   ..$ ONEUNIT               : num 1
+##   ..$ ONEUNIT               : chr &quot;1&quot;
 ##   ..$ Estimate              : num 660395
 ##   ..$ Percent Sampling Error: num 9.42
 ##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
 ##   ..- attr(*, &quot;sorted&quot;)= chr &quot;ONEUNIT&quot;
 ##  $ raw    :List of 9
 ##   ..$ unit_totest  :&#39;data.frame&#39;:    1 obs. of  18 variables:
-##   ..$ domdat       :&#39;data.frame&#39;:    66 obs. of  19 variables:
+##   ..$ domdat       :&#39;data.frame&#39;:    66 obs. of  20 variables:
 ##   ..$ module       : chr &quot;MA&quot;
 ##   ..$ esttype      : chr &quot;AREA&quot;
 ##   ..$ MAmethod     : chr &quot;greg&quot;
@@ -752,14 +752,14 @@ output
 </summary>
 <pre><code>## List of 4
 ##  $ est    :Classes &#39;data.table&#39; and &#39;data.frame&#39;:    1 obs. of  3 variables:
-##   ..$ ONEUNIT               : num 1
-##   ..$ Estimate              : num 669219
-##   ..$ Percent Sampling Error: num 9.36
+##   ..$ ONEUNIT               : chr &quot;1&quot;
+##   ..$ Estimate              : num 662773
+##   ..$ Percent Sampling Error: num 9.39
 ##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
 ##   ..- attr(*, &quot;sorted&quot;)= chr &quot;ONEUNIT&quot;
 ##  $ raw    :List of 9
 ##   ..$ unit_totest  :&#39;data.frame&#39;:    1 obs. of  18 variables:
-##   ..$ domdat       :&#39;data.frame&#39;:    66 obs. of  19 variables:
+##   ..$ domdat       :&#39;data.frame&#39;:    66 obs. of  20 variables:
 ##   ..$ module       : chr &quot;MA&quot;
 ##   ..$ esttype      : chr &quot;AREA&quot;
 ##   ..$ MAmethod     : chr &quot;gregEN&quot;
@@ -777,8 +777,8 @@ output
 <summary>
 output
 </summary>
-<pre><code>##    ONEUNIT TOTAL           dem         slp     asp_cos asp_sin     fornf2
-## 1:       1     1 -0.0001558203 0.008902244 0.001901744       0 -0.3313874</code></pre>
+<pre><code>##    ONEUNIT TOTAL           dem        slp    asp_cos     asp_sin     fornf2
+## 1:       1     1 -0.0001148301 0.00823534 0.01911225 -0.02821132 -0.4021036</code></pre>
 </details>
 <p>Notably, we can see that <code>dem</code>, <code>slp</code>,
 <code>asp_cos</code>, and <code>asp_sin</code> were removed from the
@@ -920,7 +920,7 @@ output
 ## [1] &quot;ONEUNIT&quot;
 ## 
 ## $title.ref
-## [1] &quot;, 2011-2013&quot;
+## [1] &quot;Wyoming, 2011-2013&quot;
 ## 
 ## $outfn.estpse
 ## [1] &quot;area_FORTYPCD_forestland&quot;
@@ -935,7 +935,7 @@ output
 ## [1] &quot;Forest type&quot;
 ## 
 ## $title.row
-## [1] &quot;Area, in acres, on forest land by forest type; , 2011-2013&quot;
+## [1] &quot;Area, in acres, on forest land by forest type; Wyoming, 2011-2013&quot;
 ## 
 ## $title.unitsn
 ## [1] &quot;acres&quot;</code></pre>
@@ -1064,27 +1064,27 @@ output
 <summary>
 output
 </summary>
-<pre><code>##   ONEUNIT                      Forest type       nhat     nhat.var NBRPLT
-## 1       1                      Douglas-fir 0.03834336 0.0005392280     56
-## 2       1                 Engelmann spruce 0.04307505 0.0008523855     56
-## 3       1 Engelmann spruce / subalpine fir 0.06386110 0.0007557639     56
-## 4       1                    Subalpine fir 0.03552668 0.0005973938     56
-## 5       1                   Lodgepole pine 0.36640782 0.0034566717     56
-## 6       1                            Aspen 0.02238906 0.0003052203     56
-##   NBRPLT.gt0 FORTYPCD ACRES_GIS AREAUSED       est    est.var   est.se
-## 1          2      201   1112412  1112412  42653.63  667273775 25831.64
-## 2          4      265   1112412  1112412  47917.21 1054793996 32477.59
-## 3          5      266   1112412  1112412  71039.88  935228490 30581.51
-## 4          3      268   1112412  1112412  39520.32  739251639 27189.18
-## 5         23      281   1112412  1112412 407596.59 4277497216 65402.58
-## 6          1      901   1112412  1112412  24905.87  377698351 19434.46
-##      est.cv      pse CI99left CI99right  CI95left CI95right   CI68left
-## 1 0.6056142 60.56142      0.0 109191.53      0.00  93282.72  16965.145
-## 2 0.6777855 67.77855      0.0 131573.95      0.00 111572.13  15619.617
-## 3 0.4304836 43.04836      0.0 149812.62  11101.23 130978.53  40627.860
-## 4 0.6879799 68.79799      0.0 109555.01      0.00  92810.14  12481.820
-## 5 0.1604591 16.04591 239130.7 576062.46 279409.89 535783.28 342556.478
-## 6 0.7803167 78.03167      0.0  74965.72      0.00  62996.71   5579.111
+<pre><code>##   ONEUNIT FORTYPCD       nhat     nhat.var NBRPLT NBRPLT.gt0
+## 1       1      201 0.03834336 0.0005392280     56          2
+## 2       1      265 0.04307505 0.0008523855     56          4
+## 3       1      266 0.06386110 0.0007557639     56          5
+## 4       1      268 0.03552668 0.0005973938     56          3
+## 5       1      281 0.36640782 0.0034566717     56         23
+## 6       1      901 0.02238906 0.0003052203     56          1
+##                        Forest type ACRES_GIS AREAUSED       est    est.var
+## 1                      Douglas-fir   1112412  1112412  42653.63  667273775
+## 2                 Engelmann spruce   1112412  1112412  47917.21 1054793996
+## 3 Engelmann spruce / subalpine fir   1112412  1112412  71039.88  935228490
+## 4                    Subalpine fir   1112412  1112412  39520.32  739251639
+## 5                   Lodgepole pine   1112412  1112412 407596.59 4277497216
+## 6                            Aspen   1112412  1112412  24905.87  377698351
+##     est.se    est.cv      pse CI99left CI99right  CI95left CI95right   CI68left
+## 1 25831.64 0.6056142 60.56142      0.0 109191.53      0.00  93282.72  16965.145
+## 2 32477.59 0.6777855 67.77855      0.0 131573.95      0.00 111572.13  15619.617
+## 3 30581.51 0.4304836 43.04836      0.0 149812.62  11101.23 130978.53  40627.860
+## 4 27189.18 0.6879799 68.79799      0.0 109555.01      0.00  92810.14  12481.820
+## 5 65402.58 0.1604591 16.04591 239130.7 576062.46 279409.89 535783.28 342556.478
+## 6 19434.46 0.7803167 78.03167      0.0  74965.72      0.00  62996.71   5579.111
 ##   CI68right
 ## 1  68342.11
 ## 2  80214.81
@@ -1105,11 +1105,11 @@ output
 <summary>
 output
 </summary>
-<pre><code>##   ONEUNIT Stand-size class       nhat     nhat.var NBRPLT NBRPLT.gt0 STDSZCD
-## 1       1   Large diameter 0.24052605 0.0025935705     56         18       1
-## 2       1  Medium diameter 0.22991178 0.0019845421     56         14       2
-## 3       1   Small diameter 0.09916524 0.0013761149     56          6       3
-## 4       1       Nonstocked 0.02405726 0.0002336838     56          1       5
+<pre><code>##   ONEUNIT STDSZCD       nhat     nhat.var NBRPLT NBRPLT.gt0 Stand-size class
+## 1       1       1 0.24052605 0.0025935705     56         18   Large diameter
+## 2       1       2 0.22991178 0.0019845421     56         14  Medium diameter
+## 3       1       3 0.09916524 0.0013761149     56          6   Small diameter
+## 4       1       5 0.02405726 0.0002336838     56          1       Nonstocked
 ##   ACRES_GIS AREAUSED       est    est.var   est.se    est.cv      pse  CI99left
 ## 1   1112412  1112412 267564.15 3209443017 56651.95 0.2117322 21.17322 121638.40
 ## 2   1112412  1112412 255756.70 2455793975 49555.97 0.1937621 19.37621 128108.99
@@ -1133,41 +1133,34 @@ output
 <summary>
 output
 </summary>
-<pre><code>##   ONEUNIT                                           grpvar        nhat
-## 1       1                       Douglas-fir#Large diameter 0.020973074
-## 2       1                       Douglas-fir#Small diameter 0.017370285
-## 3       1                  Engelmann spruce#Large diameter 0.033164010
-## 4       1                 Engelmann spruce#Medium diameter 0.009911038
-## 5       1  Engelmann spruce / subalpine fir#Large diameter 0.036216716
-## 6       1 Engelmann spruce / subalpine fir#Medium diameter 0.012983698
-##       nhat.var NBRPLT NBRPLT.gt0                      Forest type
-## 1 2.745298e-04     56          1                      Douglas-fir
-## 2 2.964436e-04     56          1                      Douglas-fir
-## 3 6.048455e-04     56          3                 Engelmann spruce
-## 4 3.013453e-04     56          1                 Engelmann spruce
-## 5 6.243626e-04     56          3 Engelmann spruce / subalpine fir
-## 6 7.410764e-05     56          1 Engelmann spruce / subalpine fir
-##   Stand-size class STDSZCD FORTYPCD ACRES_GIS AREAUSED      est   est.var
-## 1   Large diameter       1      201   1112412  1112412 23330.71 339719955
-## 2   Small diameter       3      201   1112412  1112412 19322.92 366837446
-## 3   Large diameter       1      265   1112412  1112412 36892.05 748472910
-## 4  Medium diameter       2      265   1112412  1112412 11025.16 372903083
-## 5   Large diameter       1      266   1112412  1112412 40287.92 772624533
-## 6  Medium diameter       2      266   1112412  1112412 14443.23  91705337
-##     est.se    est.cv       pse CI99left CI99right CI95left CI95right   CI68left
-## 1 18431.49 0.7900101  79.00101        0  70807.09        0  59455.77  5001.3621
-## 2 19153.00 0.9912064  99.12064        0  68657.78        0  56862.11   276.0668
-## 3 27358.23 0.7415752  74.15752        0 107362.19        0  90513.21  9685.4439
-## 4 19310.70 1.7515118 175.15118        0  60766.22        0  48873.43     0.0000
-## 5 27796.12 0.6899369  68.99369        0 111885.99        0  94767.33 12645.8475
-## 6  9576.29 0.6630299  66.30299        0  39110.12        0  33212.41  4920.0086
-##   CI68right
-## 1  41660.05
-## 2  38369.77
-## 3  64098.66
-## 4  30228.84
-## 5  67930.00
-## 6  23966.44</code></pre>
+<pre><code>##   ONEUNIT grpvar        nhat     nhat.var NBRPLT NBRPLT.gt0 FORTYPCD STDSZCD
+## 1       1  201#1 0.020973074 2.745298e-04     56          1      201       1
+## 2       1  201#3 0.017370285 2.964436e-04     56          1      201       3
+## 3       1  265#1 0.033164010 6.048455e-04     56          3      265       1
+## 4       1  265#2 0.009911038 3.013453e-04     56          1      265       2
+## 5       1  266#1 0.036216716 6.243626e-04     56          3      266       1
+## 6       1  266#2 0.012983698 7.410764e-05     56          1      266       2
+##   Stand-size class                      Forest type ACRES_GIS AREAUSED      est
+## 1   Large diameter                      Douglas-fir   1112412  1112412 23330.71
+## 2   Small diameter                      Douglas-fir   1112412  1112412 19322.92
+## 3   Large diameter                 Engelmann spruce   1112412  1112412 36892.05
+## 4  Medium diameter                 Engelmann spruce   1112412  1112412 11025.16
+## 5   Large diameter Engelmann spruce / subalpine fir   1112412  1112412 40287.92
+## 6  Medium diameter Engelmann spruce / subalpine fir   1112412  1112412 14443.23
+##     est.var   est.se    est.cv       pse CI99left CI99right CI95left CI95right
+## 1 339719955 18431.49 0.7900101  79.00101        0  70807.09        0  59455.77
+## 2 366837446 19153.00 0.9912064  99.12064        0  68657.78        0  56862.11
+## 3 748472910 27358.23 0.7415752  74.15752        0 107362.19        0  90513.21
+## 4 372903083 19310.70 1.7515118 175.15118        0  60766.22        0  48873.43
+## 5 772624533 27796.12 0.6899369  68.99369        0 111885.99        0  94767.33
+## 6  91705337  9576.29 0.6630299  66.30299        0  39110.12        0  33212.41
+##     CI68left CI68right
+## 1  5001.3621  41660.05
+## 2   276.0668  38369.77
+## 3  9685.4439  64098.66
+## 4     0.0000  30228.84
+## 5 12645.8475  67930.00
+## 6  4920.0086  23966.44</code></pre>
 </details>
 <div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>grpest)      <span class="co"># estimates by row and column for population (i.e., WY)</span></span></code></pre></div>
 <details>
@@ -1199,28 +1192,28 @@ output
 ## [1] &quot;ONEUNIT&quot;
 ## 
 ## $title.ref
-## [1] &quot;, 2011-2013&quot;
+## [1] &quot;Wyoming, 2011-2013&quot;
 ## 
 ## $outfn.estpse
-## [1] &quot;WY_area_FORTYPNM_STDSZNM_forestland&quot;
+## [1] &quot;WY_area_FORTYPCD_STDSZCD_forestland&quot;
 ## 
 ## $outfn.rawdat
-## [1] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata&quot;
+## [1] &quot;WY_area_FORTYPCD_STDSZCD_forestland_rawdata&quot;
 ## 
 ## $outfn.param
-## [1] &quot;WY_area_FORTYPNM_STDSZNM_forestland_parameters&quot;
+## [1] &quot;WY_area_FORTYPCD_STDSZCD_forestland_parameters&quot;
 ## 
 ## $title.rowvar
 ## [1] &quot;Forest type&quot;
 ## 
 ## $title.row
-## [1] &quot;Area, in acres (percent sampling error), by forest type on forest land; , 2011-2013&quot;
+## [1] &quot;Area, in acres (percent sampling error), by forest type on forest land; Wyoming, 2011-2013&quot;
 ## 
 ## $title.colvar
 ## [1] &quot;Stand-size class&quot;
 ## 
 ## $title.col
-## [1] &quot;Area, in acres (percent sampling error), by stand-size class on forest land; , 2011-2013&quot;
+## [1] &quot;Area, in acres (percent sampling error), by stand-size class on forest land; Wyoming, 2011-2013&quot;
 ## 
 ## $title.unitsn
 ## [1] &quot;acres&quot;</code></pre>
@@ -1231,28 +1224,28 @@ output
 <summary>
 output
 </summary>
-<pre><code>## [1] &quot;WY_area_FORTYPNM_STDSZNM_forestland.csv&quot;                
-## [2] &quot;WY_area_FORTYPNM_STDSZNM_forestland_modMA_mase_greg.csv&quot;</code></pre>
+<pre><code>## [1] &quot;WY_area_FORTYPCD_STDSZCD_forestland.csv&quot;                
+## [2] &quot;WY_area_FORTYPCD_STDSZCD_forestland_modMA_mase_greg.csv&quot;</code></pre>
 </details>
 <div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" tabindex="-1"></a><span class="fu">list.files</span>(<span class="fu">paste0</span>(outfolder, <span class="st">&quot;/rawdata&quot;</span>), <span class="at">pattern =</span> <span class="st">&quot;WY_area&quot;</span>)</span></code></pre></div>
 <details>
 <summary>
 output
 </summary>
-<pre><code>##  [1] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_colest.csv&quot;                     
-##  [2] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_domdat.csv&quot;                     
-##  [3] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_grpest.csv&quot;                     
-##  [4] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_modMA_mase_greg_domdat.csv&quot;     
-##  [5] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_modMA_mase_greg_unit_colest.csv&quot;
-##  [6] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_modMA_mase_greg_unit_grpest.csv&quot;
-##  [7] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_modMA_mase_greg_unit_rowest.csv&quot;
-##  [8] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_modMA_mase_greg_unit_totest.csv&quot;
-##  [9] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_rowest.csv&quot;                     
-## [10] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_totest.csv&quot;                     
-## [11] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_unit_colest.csv&quot;                
-## [12] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_unit_grpest.csv&quot;                
-## [13] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_unit_rowest.csv&quot;                
-## [14] &quot;WY_area_FORTYPNM_STDSZNM_forestland_rawdata_unit_totest.csv&quot;</code></pre>
+<pre><code>##  [1] &quot;WY_area_FORTYPCD_STDSZCD_forestland_rawdata_colest.csv&quot;                     
+##  [2] &quot;WY_area_FORTYPCD_STDSZCD_forestland_rawdata_domdat.csv&quot;                     
+##  [3] &quot;WY_area_FORTYPCD_STDSZCD_forestland_rawdata_grpest.csv&quot;                     
+##  [4] &quot;WY_area_FORTYPCD_STDSZCD_forestland_rawdata_modMA_mase_greg_domdat.csv&quot;     
+##  [5] &quot;WY_area_FORTYPCD_STDSZCD_forestland_rawdata_modMA_mase_greg_unit_colest.csv&quot;
+##  [6] &quot;WY_area_FORTYPCD_STDSZCD_forestland_rawdata_modMA_mase_greg_unit_grpest.csv&quot;
+##  [7] &quot;WY_area_FORTYPCD_STDSZCD_forestland_rawdata_modMA_mase_greg_unit_rowest.csv&quot;
+##  [8] &quot;WY_area_FORTYPCD_STDSZCD_forestland_rawdata_modMA_mase_greg_unit_totest.csv&quot;
+##  [9] &quot;WY_area_FORTYPCD_STDSZCD_forestland_rawdata_rowest.csv&quot;                     
+## [10] &quot;WY_area_FORTYPCD_STDSZCD_forestland_rawdata_totest.csv&quot;                     
+## [11] &quot;WY_area_FORTYPCD_STDSZCD_forestland_rawdata_unit_colest.csv&quot;                
+## [12] &quot;WY_area_FORTYPCD_STDSZCD_forestland_rawdata_unit_grpest.csv&quot;                
+## [13] &quot;WY_area_FORTYPCD_STDSZCD_forestland_rawdata_unit_rowest.csv&quot;                
+## [14] &quot;WY_area_FORTYPCD_STDSZCD_forestland_rawdata_unit_totest.csv&quot;</code></pre>
 </details>
 </details>
 </div>
@@ -1338,8 +1331,8 @@ output
 </summary>
 <pre><code>## List of 5
 ##  $ est     :Classes &#39;data.table&#39; and &#39;data.frame&#39;:   1 obs. of  3 variables:
-##   ..$ ONEUNIT               : num 1
-##   ..$ Estimate              : num 1.16e+09
+##   ..$ ONEUNIT               : chr &quot;1&quot;
+##   ..$ Estimate              : num 1.15e+09
 ##   ..$ Percent Sampling Error: num 14.9
 ##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
 ##   ..- attr(*, &quot;sorted&quot;)= chr &quot;ONEUNIT&quot;
@@ -1356,7 +1349,7 @@ output
 ##   ..$ title.unitsn : chr &quot;cubic feet&quot;
 ##  $ raw     :List of 13
 ##   ..$ unit_totest  :&#39;data.frame&#39;:    1 obs. of  18 variables:
-##   ..$ domdat       :&#39;data.frame&#39;:    66 obs. of  19 variables:
+##   ..$ domdat       :&#39;data.frame&#39;:    66 obs. of  20 variables:
 ##   ..$ plotweights  :List of 1
 ##   ..$ estvar       : chr &quot;VOLCFNET&quot;
 ##   ..$ estvar.filter: chr &quot;STATUSCD == 1&quot;
@@ -1367,7 +1360,7 @@ output
 ##   ..$ rowvar       : chr &quot;TOTAL&quot;
 ##   ..$ colvar       : chr &quot;NONE&quot;
 ##   ..$ areaunits    : chr &quot;acres&quot;
-##   ..$ estunits     : num 1
+##   ..$ estunits     : Factor w/ 1 level &quot;1&quot;: 1
 ##  $ statecd : int 56
 ##  $ invyr   : int [1:3] 2011 2012 2013</code></pre>
 </details>
@@ -1379,8 +1372,8 @@ output
 output
 </summary>
 <pre><code>## $totest
-##    ONEUNIT TOTAL      dem       slp  asp_cos   asp_sin    fornf2
-## 1:       1     1 0.535073 -55.87839 27.81163 -473.1724 -1186.413</code></pre>
+##    ONEUNIT TOTAL       dem       slp  asp_cos   asp_sin    fornf2
+## 1:       1     1 0.5465389 -56.39939 32.42545 -483.4348 -1206.324</code></pre>
 </details>
 <p>Notably, we can see that [INSERT CORRECT PREDS] <code>dem</code>,
 <code>slp</code>, <code>asp_cos</code>, and <code>asp_sin</code> were
@@ -1692,34 +1685,34 @@ output
 <summary>
 output
 </summary>
-<pre><code>##   ONEUNIT                      Forest type      nhat    nhat.var NBRPLT
-## 1       1                      Douglas-fir  13.87585    78.39277     56
-## 2       1                 Engelmann spruce 153.92033 11805.74969     56
-## 3       1 Engelmann spruce / subalpine fir 106.66472  5065.31148     56
-## 4       1                    Subalpine fir  38.65592   795.74932     56
-## 5       1                   Lodgepole pine 713.09845 19575.13714     56
-## 6       1                            Aspen   0.00000     0.00000     56
-##   NBRPLT.gt0 FORTYPCD ACRES_GIS AREAUSED       est      est.var    est.se
-## 1          2      201   1112412  1112412  15435672 9.700801e+13   9849265
-## 2          4      265   1112412  1112412 171222876 1.460916e+16 120868349
-## 3          5      266   1112412  1112412 118655149 6.268127e+15  79171501
-## 4          2      268   1112412  1112412  43001325 9.847089e+14  31380072
-## 5         23      281   1112412  1112412 793259527 2.422347e+16 155638920
-## 6          0      901   1112412  1112412         0 0.000000e+00         0
-##      est.cv      pse  CI99left  CI99right  CI95left  CI95right  CI68left
-## 1 0.6380846 63.80846         0   40805697         0   34739876   5640993
-## 2 0.7059124 70.59124         0  482559110         0  408120486  51024394
-## 3 0.6672403 66.72403         0  322587423         0  273828441  39922426
-## 4 0.7297466 72.97466         0  123831035         0  104505137  11795164
-## 5 0.1962018 19.62018 392360235 1194158819 488212849 1098306206 638483176
-## 6       NaN      NaN         0          0         0          0         0
-##   CI68right
-## 1  25230351
-## 2 291421358
-## 3 197387873
-## 4  74207485
-## 5 948035879
-## 6         0</code></pre>
+<pre><code>##   ONEUNIT FORTYPCD      nhat    nhat.var NBRPLT NBRPLT.gt0
+## 1       1      201  13.87585    78.39277     56          2
+## 2       1      265 153.92033 11805.74969     56          4
+## 3       1      266 106.66472  5065.31148     56          5
+## 4       1      268  38.65592   795.74932     56          2
+## 5       1      281 713.09845 19575.13714     56         23
+## 6       1      901   0.00000     0.00000     56          0
+##                        Forest type ACRES_GIS AREAUSED       est      est.var
+## 1                      Douglas-fir   1112412  1112412  15435672 9.700801e+13
+## 2                 Engelmann spruce   1112412  1112412 171222876 1.460916e+16
+## 3 Engelmann spruce / subalpine fir   1112412  1112412 118655149 6.268127e+15
+## 4                    Subalpine fir   1112412  1112412  43001325 9.847089e+14
+## 5                   Lodgepole pine   1112412  1112412 793259527 2.422347e+16
+## 6                            Aspen   1112412  1112412         0 0.000000e+00
+##      est.se    est.cv      pse  CI99left  CI99right  CI95left  CI95right
+## 1   9849265 0.6380846 63.80846         0   40805697         0   34739876
+## 2 120868349 0.7059124 70.59124         0  482559110         0  408120486
+## 3  79171501 0.6672403 66.72403         0  322587423         0  273828441
+## 4  31380072 0.7297466 72.97466         0  123831035         0  104505137
+## 5 155638920 0.1962018 19.62018 392360235 1194158819 488212849 1098306206
+## 6         0       NaN      NaN         0          0         0          0
+##    CI68left CI68right
+## 1   5640993  25230351
+## 2  51024394 291421358
+## 3  39922426 197387873
+## 4  11795164  74207485
+## 5 638483176 948035879
+## 6         0         0</code></pre>
 </details>
 <div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="#cb116-1" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>rowest)        <span class="co"># estimates by row for population (i.e., WY)</span></span></code></pre></div>
 <details>
@@ -1733,11 +1726,11 @@ output
 <summary>
 output
 </summary>
-<pre><code>##   ONEUNIT Stand-size class      nhat    nhat.var NBRPLT NBRPLT.gt0 STDSZCD
-## 1       1   Large diameter 610.07402 21448.59554     56         18       1
-## 2       1  Medium diameter 403.18490  9244.44106     56         14       2
-## 3       1   Small diameter  12.95635    30.85557     56          4       3
-## 4       1       Nonstocked   0.00000     0.00000     56          0       5
+<pre><code>##   ONEUNIT STDSZCD      nhat    nhat.var NBRPLT NBRPLT.gt0 Stand-size class
+## 1       1       1 610.07402 21448.59554     56         18   Large diameter
+## 2       1       2 403.18490  9244.44106     56         14  Medium diameter
+## 3       1       3  12.95635    30.85557     56          4   Small diameter
+## 4       1       5   0.00000     0.00000     56          0       Nonstocked
 ##   ACRES_GIS AREAUSED       est      est.var    est.se    est.cv      pse
 ## 1   1112412  1112412 678653882 2.654181e+16 162916561 0.2400584 24.00584
 ## 2   1112412  1112412 448507865 1.143964e+16 106956241 0.2384713 23.84713
@@ -1761,41 +1754,34 @@ output
 <summary>
 output
 </summary>
-<pre><code>##   ONEUNIT                                           grpvar       nhat
-## 1       1                       Douglas-fir#Large diameter  10.698636
-## 2       1                       Douglas-fir#Small diameter   3.177219
-## 3       1                  Engelmann spruce#Large diameter 118.648528
-## 4       1                 Engelmann spruce#Medium diameter  35.271801
-## 5       1  Engelmann spruce / subalpine fir#Large diameter  89.252961
-## 6       1 Engelmann spruce / subalpine fir#Medium diameter  12.938916
-##      nhat.var NBRPLT NBRPLT.gt0                      Forest type
-## 1   71.436815     56          1                      Douglas-fir
-## 2    9.917964     56          1                      Douglas-fir
-## 3 8748.214215     56          3                 Engelmann spruce
-## 4 3816.641843     56          1                 Engelmann spruce
-## 5 5037.268404     56          3 Engelmann spruce / subalpine fir
-## 6   73.597319     56          1 Engelmann spruce / subalpine fir
-##   Stand-size class STDSZCD FORTYPCD ACRES_GIS AREAUSED       est      est.var
-## 1   Large diameter       1      201   1112412  1112412  11901294 8.840029e+13
-## 2   Small diameter       3      201   1112412  1112412   3534378 1.227310e+13
-## 3   Large diameter       1      265   1112412  1112412 131986089 1.082558e+16
-## 4  Medium diameter       2      265   1112412  1112412  39236788 4.722946e+15
-## 5   Large diameter       1      266   1112412  1112412  99286096 6.233424e+15
-## 6  Medium diameter       2      266   1112412  1112412  14393410 9.107383e+13
-##      est.se    est.cv       pse CI99left CI99right CI95left CI95right
-## 1   9402143 0.7900101  79.00101        0  36119609        0  30329156
-## 2   3503298 0.9912064  99.12064        0  12558275        0  10400715
-## 3 104046028 0.7883106  78.83106        0 399990898        0 335912557
-## 4  68723696 1.7515118 175.15118        0 216257297        0 173932756
-## 5  78952039 0.7951973  79.51973        0 302653071        0 254029249
-## 6   9543261 0.6630299  66.30299        0  38975222        0  33097858
-##      CI68left CI68right
-## 1  2551259.40  21251329
-## 2    50495.71   7018260
-## 3 28516695.39 235455482
-## 4        0.00 107579609
-## 5 20771618.84 177800573
-## 6  4903039.08  23883781</code></pre>
+<pre><code>##   ONEUNIT grpvar       nhat    nhat.var NBRPLT NBRPLT.gt0 FORTYPCD STDSZCD
+## 1       1  201#1  10.698636   71.436815     56          1      201       1
+## 2       1  201#3   3.177219    9.917964     56          1      201       3
+## 3       1  265#1 118.648528 8748.214215     56          3      265       1
+## 4       1  265#2  35.271801 3816.641843     56          1      265       2
+## 5       1  266#1  89.252961 5037.268404     56          3      266       1
+## 6       1  266#2  12.938916   73.597319     56          1      266       2
+##   Stand-size class                      Forest type ACRES_GIS AREAUSED
+## 1   Large diameter                      Douglas-fir   1112412  1112412
+## 2   Small diameter                      Douglas-fir   1112412  1112412
+## 3   Large diameter                 Engelmann spruce   1112412  1112412
+## 4  Medium diameter                 Engelmann spruce   1112412  1112412
+## 5   Large diameter Engelmann spruce / subalpine fir   1112412  1112412
+## 6  Medium diameter Engelmann spruce / subalpine fir   1112412  1112412
+##         est      est.var    est.se    est.cv       pse CI99left CI99right
+## 1  11901294 8.840029e+13   9402143 0.7900101  79.00101        0  36119609
+## 2   3534378 1.227310e+13   3503298 0.9912064  99.12064        0  12558275
+## 3 131986089 1.082558e+16 104046028 0.7883106  78.83106        0 399990898
+## 4  39236788 4.722946e+15  68723696 1.7515118 175.15118        0 216257297
+## 5  99286096 6.233424e+15  78952039 0.7951973  79.51973        0 302653071
+## 6  14393410 9.107383e+13   9543261 0.6630299  66.30299        0  38975222
+##   CI95left CI95right    CI68left CI68right
+## 1        0  30329156  2551259.40  21251329
+## 2        0  10400715    50495.71   7018260
+## 3        0 335912557 28516695.39 235455482
+## 4        0 173932756        0.00 107579609
+## 5        0 254029249 20771618.84 177800573
+## 6        0  33097858  4903039.08  23883781</code></pre>
 </details>
 <div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb124-1"><a href="#cb124-1" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>grpest)        <span class="co"># estimates by row and column for population (i.e., WY)</span></span></code></pre></div>
 <details>
@@ -1837,13 +1823,13 @@ output
 ## [1] &quot;Wyoming, 2011-2013&quot;
 ## 
 ## $outfn.estpse
-## [1] &quot;WY_tree_VOLCFNET_FORTYPNM_STDSZNM_forestland&quot;
+## [1] &quot;WY_tree_VOLCFNET_FORTYPCD_STDSZCD_forestland&quot;
 ## 
 ## $outfn.rawdat
-## [1] &quot;WY_tree_VOLCFNET_FORTYPNM_STDSZNM_forestland_rawdata&quot;
+## [1] &quot;WY_tree_VOLCFNET_FORTYPCD_STDSZCD_forestland_rawdata&quot;
 ## 
 ## $outfn.param
-## [1] &quot;WY_tree_VOLCFNET_FORTYPNM_STDSZNM_forestland_parameters&quot;
+## [1] &quot;WY_tree_VOLCFNET_FORTYPCD_STDSZCD_forestland_parameters&quot;
 ## 
 ## $title.rowvar
 ## [1] &quot;Forest type&quot;
@@ -1866,28 +1852,28 @@ output
 <summary>
 output
 </summary>
-<pre><code>## [1] &quot;WY_tree_VOLCFNET_FORTYPNM_STDSZNM_forestland.csv&quot;                
-## [2] &quot;WY_tree_VOLCFNET_FORTYPNM_STDSZNM_forestland_modMA_mase_greg.csv&quot;</code></pre>
+<pre><code>## [1] &quot;WY_tree_VOLCFNET_FORTYPCD_STDSZCD_forestland.csv&quot;                
+## [2] &quot;WY_tree_VOLCFNET_FORTYPCD_STDSZCD_forestland_modMA_mase_greg.csv&quot;</code></pre>
 </details>
 <div class="sourceCode" id="cb132"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb132-1"><a href="#cb132-1" tabindex="-1"></a><span class="fu">list.files</span>(<span class="fu">paste0</span>(outfolder, <span class="st">&quot;/rawdata&quot;</span>), <span class="at">pattern =</span> <span class="st">&quot;WY_tree&quot;</span>)</span></code></pre></div>
 <details>
 <summary>
 output
 </summary>
-<pre><code>##  [1] &quot;WY_tree_VOLCFNET_FORTYPNM_STDSZNM_forestland_rawdata_colest.csv&quot;                     
-##  [2] &quot;WY_tree_VOLCFNET_FORTYPNM_STDSZNM_forestland_rawdata_domdat.csv&quot;                     
-##  [3] &quot;WY_tree_VOLCFNET_FORTYPNM_STDSZNM_forestland_rawdata_grpest.csv&quot;                     
-##  [4] &quot;WY_tree_VOLCFNET_FORTYPNM_STDSZNM_forestland_rawdata_modMA_mase_greg_domdat.csv&quot;     
-##  [5] &quot;WY_tree_VOLCFNET_FORTYPNM_STDSZNM_forestland_rawdata_modMA_mase_greg_unit_colest.csv&quot;
-##  [6] &quot;WY_tree_VOLCFNET_FORTYPNM_STDSZNM_forestland_rawdata_modMA_mase_greg_unit_grpest.csv&quot;
-##  [7] &quot;WY_tree_VOLCFNET_FORTYPNM_STDSZNM_forestland_rawdata_modMA_mase_greg_unit_rowest.csv&quot;
-##  [8] &quot;WY_tree_VOLCFNET_FORTYPNM_STDSZNM_forestland_rawdata_modMA_mase_greg_unit_totest.csv&quot;
-##  [9] &quot;WY_tree_VOLCFNET_FORTYPNM_STDSZNM_forestland_rawdata_rowest.csv&quot;                     
-## [10] &quot;WY_tree_VOLCFNET_FORTYPNM_STDSZNM_forestland_rawdata_totest.csv&quot;                     
-## [11] &quot;WY_tree_VOLCFNET_FORTYPNM_STDSZNM_forestland_rawdata_unit_colest.csv&quot;                
-## [12] &quot;WY_tree_VOLCFNET_FORTYPNM_STDSZNM_forestland_rawdata_unit_grpest.csv&quot;                
-## [13] &quot;WY_tree_VOLCFNET_FORTYPNM_STDSZNM_forestland_rawdata_unit_rowest.csv&quot;                
-## [14] &quot;WY_tree_VOLCFNET_FORTYPNM_STDSZNM_forestland_rawdata_unit_totest.csv&quot;</code></pre>
+<pre><code>##  [1] &quot;WY_tree_VOLCFNET_FORTYPCD_STDSZCD_forestland_rawdata_colest.csv&quot;                     
+##  [2] &quot;WY_tree_VOLCFNET_FORTYPCD_STDSZCD_forestland_rawdata_domdat.csv&quot;                     
+##  [3] &quot;WY_tree_VOLCFNET_FORTYPCD_STDSZCD_forestland_rawdata_grpest.csv&quot;                     
+##  [4] &quot;WY_tree_VOLCFNET_FORTYPCD_STDSZCD_forestland_rawdata_modMA_mase_greg_domdat.csv&quot;     
+##  [5] &quot;WY_tree_VOLCFNET_FORTYPCD_STDSZCD_forestland_rawdata_modMA_mase_greg_unit_colest.csv&quot;
+##  [6] &quot;WY_tree_VOLCFNET_FORTYPCD_STDSZCD_forestland_rawdata_modMA_mase_greg_unit_grpest.csv&quot;
+##  [7] &quot;WY_tree_VOLCFNET_FORTYPCD_STDSZCD_forestland_rawdata_modMA_mase_greg_unit_rowest.csv&quot;
+##  [8] &quot;WY_tree_VOLCFNET_FORTYPCD_STDSZCD_forestland_rawdata_modMA_mase_greg_unit_totest.csv&quot;
+##  [9] &quot;WY_tree_VOLCFNET_FORTYPCD_STDSZCD_forestland_rawdata_rowest.csv&quot;                     
+## [10] &quot;WY_tree_VOLCFNET_FORTYPCD_STDSZCD_forestland_rawdata_totest.csv&quot;                     
+## [11] &quot;WY_tree_VOLCFNET_FORTYPCD_STDSZCD_forestland_rawdata_unit_colest.csv&quot;                
+## [12] &quot;WY_tree_VOLCFNET_FORTYPCD_STDSZCD_forestland_rawdata_unit_grpest.csv&quot;                
+## [13] &quot;WY_tree_VOLCFNET_FORTYPCD_STDSZCD_forestland_rawdata_unit_rowest.csv&quot;                
+## [14] &quot;WY_tree_VOLCFNET_FORTYPCD_STDSZCD_forestland_rawdata_unit_totest.csv&quot;</code></pre>
 </details>
 </details>
 </div>
@@ -1928,12 +1914,12 @@ output
 output
 </summary>
 <pre><code>##            Species    Estimate Percent Sampling Error
-## 1    quaking aspen  11153476.9                  73.73
-## 2      limber pine   4461866.7                  90.07
-## 3 Engelmann spruce  50806944.2                  29.77
-## 4    subalpine fir  68658860.9                  29.14
-## 5   lodgepole pine 184898322.4                  18.59
-## 6      Douglas-fir    24655901                  73.84
+## 1    subalpine fir  68658860.9                  29.14
+## 2 Engelmann spruce  50806944.2                  29.77
+## 3   lodgepole pine 184898322.4                  18.59
+## 4      limber pine   4461866.7                  90.07
+## 5      Douglas-fir    24655901                  73.84
+## 6    quaking aspen  11153476.9                  73.73
 ## 7            Total 344635372.3                  13.07</code></pre>
 </details>
 </details>
@@ -1999,12 +1985,12 @@ output
 output
 </summary>
 <pre><code>##            Species    Estimate Percent Sampling Error
-## 1    quaking aspen  11153476.9                  73.73
-## 2      limber pine   4461866.7                  90.07
-## 3 Engelmann spruce  50806944.2                  29.77
-## 4    subalpine fir  68658860.9                  29.14
-## 5   lodgepole pine 184898322.4                  18.59
-## 6      Douglas-fir    24655901                  73.84</code></pre>
+## 1    subalpine fir  68658860.9                  29.14
+## 2 Engelmann spruce  50806944.2                  29.77
+## 3   lodgepole pine 184898322.4                  18.59
+## 4      limber pine   4461866.7                  90.07
+## 5      Douglas-fir    24655901                  73.84
+## 6    quaking aspen  11153476.9                  73.73</code></pre>
 </details>
 <div class="sourceCode" id="cb147"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb147-1"><a href="#cb147-1" tabindex="-1"></a><span class="fu">head</span>(tree6<span class="sc">$</span>est)</span></code></pre></div>
 <details>

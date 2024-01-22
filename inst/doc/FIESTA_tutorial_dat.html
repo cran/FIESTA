@@ -1258,18 +1258,18 @@ output
 ##  [9] &quot;FORINDCD&quot;                &quot;FORTYPCD&quot;               
 ## [11] &quot;FORTYPGRPCD&quot;             &quot;GSSTKCD&quot;                
 ## [13] &quot;KINDCD&quot;                  &quot;LAND_COVER_CLASS_CD&quot;    
-## [15] &quot;LANDCLCD&quot;                &quot;LANDUSECD&quot;              
-## [17] &quot;MIST_CL_CD&quot;              &quot;NF_COND_STATUS_CD&quot;      
-## [19] &quot;NF_PLOT_STATUS_CD&quot;       &quot;OWNCD&quot;                  
-## [21] &quot;OWNGRPCD&quot;                &quot;PHYSCLCD&quot;               
-## [23] &quot;PLOT_STATUS_CD&quot;          &quot;PRESNFCD&quot;               
-## [25] &quot;RDDISTCD&quot;                &quot;RESERVCD&quot;               
-## [27] &quot;SITECLCD&quot;                &quot;SPGRPCD&quot;                
-## [29] &quot;STATIONCD&quot;               &quot;STATUSCD&quot;               
-## [31] &quot;STDORGCD&quot;                &quot;STDSZCD&quot;                
-## [33] &quot;SURVEY&quot;                  &quot;TIMBERCD&quot;               
-## [35] &quot;TIMBERCD.PROD&quot;           &quot;TREECLCD&quot;               
-## [37] &quot;TRTCD&quot;</code></pre>
+## [15] &quot;LANDCLCD&quot;                &quot;LANDSTATUSCD&quot;           
+## [17] &quot;LANDUSECD&quot;               &quot;MIST_CL_CD&quot;             
+## [19] &quot;NF_COND_STATUS_CD&quot;       &quot;NF_PLOT_STATUS_CD&quot;      
+## [21] &quot;OWNCD&quot;                   &quot;OWNGRPCD&quot;               
+## [23] &quot;PHYSCLCD&quot;                &quot;PLOT_STATUS_CD&quot;         
+## [25] &quot;PRESNFCD&quot;                &quot;RDDISTCD&quot;               
+## [27] &quot;RESERVCD&quot;                &quot;SITECLCD&quot;               
+## [29] &quot;SPGRPCD&quot;                 &quot;STATIONCD&quot;              
+## [31] &quot;STATUSCD&quot;                &quot;STDORGCD&quot;               
+## [33] &quot;STDSZCD&quot;                 &quot;SURVEY&quot;                 
+## [35] &quot;TIMBERCD&quot;                &quot;TIMBERCD.PROD&quot;          
+## [37] &quot;TREECLCD&quot;                &quot;TRTCD&quot;</code></pre>
 </details>
 <p>Next, we set the code descriptions for FIA disturbance variable.</p>
 <div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" tabindex="-1"></a>ref_dstrbcd <span class="ot">&lt;-</span> FIESTAutils<span class="sc">::</span>ref_codes[FIESTAutils<span class="sc">::</span>ref_codes<span class="sc">$</span>VARIABLE <span class="sc">==</span> <span class="st">&quot;DSTRBCD&quot;</span>,]</span>

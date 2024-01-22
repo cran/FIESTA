@@ -127,7 +127,6 @@ GBpopdat <- modGBpop(
   )
 
 
-
 ## ----results = T--------------------------------------------------------------
 names(GBpopdat)
 
@@ -423,7 +422,6 @@ titlelst2.1
 
 
 ## -----------------------------------------------------------------------------
-
 area2.2 <- modGBarea(
     GBpopdat = GBpopdat.bh,        # pop - population calculations for Bighorn NF, post-stratification
     landarea = "FOREST",           # est - forest land filter
@@ -802,6 +800,7 @@ names(tree2.1)
 head(tree2.1$est)
 
 ## -----------------------------------------------------------------------------
+
 ## Net cubic-foot volume of dead trees (at least 5 inches diameter) by species and cause of death, 
 ##    Wyoming, 2011-2013
 tree2.2 <- modGBtree(
