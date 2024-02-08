@@ -790,6 +790,7 @@ tree2.1 <- modGBtree(
     returntitle = TRUE,          # out - return title information
     table_opts = tab_opts
     )
+tree2.1$est
 
 
 ## -----------------------------------------------------------------------------

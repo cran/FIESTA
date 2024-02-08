@@ -632,9 +632,9 @@ output
 ##  $ condx      :Classes &#39;data.table&#39; and &#39;data.frame&#39;:    66 obs. of  17 variables:
 ##   ..- attr(*, &quot;sorted&quot;)= chr [1:2] &quot;PLT_CN&quot; &quot;CONDID&quot;
 ##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
-##  $ pltcondx   :Classes &#39;data.table&#39; and &#39;data.frame&#39;:    66 obs. of  29 variables:
+##  $ pltcondx   :Classes &#39;data.table&#39; and &#39;data.frame&#39;:    66 obs. of  30 variables:
 ##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
-##   ..- attr(*, &quot;sorted&quot;)= chr [1:2] &quot;PLT_CN&quot; &quot;CONDID&quot;
+##   ..- attr(*, &quot;sorted&quot;)= chr &quot;DSTRBCD1&quot;
 ##  $ cuniqueid  : chr &quot;PLT_CN&quot;
 ##  $ condid     : chr &quot;CONDID&quot;
 ##  $ ACI.filter : chr &quot;COND_STATUS_CD == 1&quot;
@@ -699,8 +699,8 @@ output
 <pre><code>## List of 4
 ##  $ est    :Classes &#39;data.table&#39; and &#39;data.frame&#39;:    1 obs. of  3 variables:
 ##   ..$ ONEUNIT               : chr &quot;1&quot;
-##   ..$ Estimate              : num 660395
-##   ..$ Percent Sampling Error: num 9.42
+##   ..$ Estimate              : num 652879
+##   ..$ Percent Sampling Error: num 9.5
 ##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
 ##   ..- attr(*, &quot;sorted&quot;)= chr &quot;ONEUNIT&quot;
 ##  $ raw    :List of 9
@@ -722,7 +722,7 @@ output
 output
 </summary>
 <pre><code>##    ONEUNIT Estimate Percent Sampling Error
-## 1:       1 660395.1                   9.42</code></pre>
+## 1:       1 652879.1                    9.5</code></pre>
 </details>
 </details>
 </div>
@@ -753,8 +753,8 @@ output
 <pre><code>## List of 4
 ##  $ est    :Classes &#39;data.table&#39; and &#39;data.frame&#39;:    1 obs. of  3 variables:
 ##   ..$ ONEUNIT               : chr &quot;1&quot;
-##   ..$ Estimate              : num 662773
-##   ..$ Percent Sampling Error: num 9.39
+##   ..$ Estimate              : num 668772
+##   ..$ Percent Sampling Error: num 10.5
 ##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
 ##   ..- attr(*, &quot;sorted&quot;)= chr &quot;ONEUNIT&quot;
 ##  $ raw    :List of 9
@@ -777,8 +777,8 @@ output
 <summary>
 output
 </summary>
-<pre><code>##    ONEUNIT TOTAL           dem        slp    asp_cos     asp_sin     fornf2
-## 1:       1     1 -0.0001148301 0.00823534 0.01911225 -0.02821132 -0.4021036</code></pre>
+<pre><code>##    ONEUNIT TOTAL dem slp asp_cos asp_sin fornf2
+## 1:       1     1   0   0       0       0      0</code></pre>
 </details>
 <p>Notably, we can see that <code>dem</code>, <code>slp</code>,
 <code>asp_cos</code>, and <code>asp_sin</code> were removed from the
@@ -823,14 +823,14 @@ output
 output
 </summary>
 <pre><code>##   Forest type Estimate Percent Sampling Error
-## 1         201  42653.6                  60.56
-## 2         265  47917.2                  67.78
-## 3         266  71039.9                  43.05
-## 4         268  39520.3                   68.8
-## 5         281 407596.6                  16.05
-## 6         901  24905.9                  78.03
-## 7         999  26761.6                  63.54
-## 8       Total 660395.1                   9.42</code></pre>
+## 1         201  44286.4                   85.2
+## 2         265  89101.3                  52.03
+## 3         266  97017.3                   42.4
+## 4         268 112697.6                  34.19
+## 5         281 618425.6                  13.59
+## 6         901  38648.7                  75.39
+## 7         999    36765                  64.92
+## 8       Total    Total                  Total</code></pre>
 </details>
 <p>Along with raw data and titles:</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="do">## Raw data (list object) for estimate</span></span>
@@ -850,11 +850,11 @@ output
 output
 </summary>
 <pre><code>##   ONEUNIT      nhat    nhat.var NBRPLT NBRPLT.gt0 ACRES_GIS AREAUSED      est
-## 1       1 0.5936603 0.003129767     56         37   1112412  1112412 660395.1
-##      est.var   est.se     est.cv      pse CI99left CI99right CI95left CI95right
-## 1 3872964796 62233.15 0.09423624 9.423624 500093.1    820697 538420.4  782369.8
+## 1       1 0.5869038 0.003106112     56         37   1112412  1112412 652879.1
+##      est.var   est.se    est.cv     pse CI99left CI99right CI95left CI95right
+## 1 3843693079 61997.52 0.0949602 9.49602   493184  812574.1 531366.2    774392
 ##   CI68left CI68right
-## 1 598506.8  722283.3</code></pre>
+## 1 591225.1    714533</code></pre>
 </details>
 <div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a>raw3<span class="sc">$</span>totest            <span class="co"># estimates for population (i.e., WY)</span></span></code></pre></div>
 <details>
@@ -869,26 +869,26 @@ output
 output
 </summary>
 <pre><code>##   ONEUNIT Forest type       nhat     nhat.var NBRPLT NBRPLT.gt0 ACRES_GIS
-## 1       1         201 0.03834336 0.0005392280     56          2   1112412
-## 2       1         265 0.04307505 0.0008523855     56          4   1112412
-## 3       1         266 0.06386110 0.0007557639     56          5   1112412
-## 4       1         268 0.03552668 0.0005973938     56          3   1112412
-## 5       1         281 0.36640782 0.0034566717     56         23   1112412
-## 6       1         901 0.02238906 0.0003052203     56          1   1112412
-##   AREAUSED       est    est.var   est.se    est.cv      pse CI99left CI99right
-## 1  1112412  42653.63  667273775 25831.64 0.6056142 60.56142      0.0 109191.53
-## 2  1112412  47917.21 1054793996 32477.59 0.6777855 67.77855      0.0 131573.95
-## 3  1112412  71039.88  935228490 30581.51 0.4304836 43.04836      0.0 149812.62
-## 4  1112412  39520.32  739251639 27189.18 0.6879799 68.79799      0.0 109555.01
-## 5  1112412 407596.59 4277497216 65402.58 0.1604591 16.04591 239130.7 576062.46
-## 6  1112412  24905.87  377698351 19434.46 0.7803167 78.03167      0.0  74965.72
+## 1       1         201 0.03981113 0.0011505987     37          2   1112412
+## 2       1         265 0.08009738 0.0017367503     37          4   1112412
+## 3       1         266 0.08721348 0.0013673266     37          5   1112412
+## 4       1         268 0.10130923 0.0012000844     37          3   1112412
+## 5       1         281 0.55593198 0.0057107487     37         23   1112412
+## 6       1         901 0.03474316 0.0006861348     37          1   1112412
+##   AREAUSED       est    est.var   est.se    est.cv      pse  CI99left CI99right
+## 1  1112412  44286.39 1423821285 37733.56 0.8520351 85.20351      0.00  141481.6
+## 2  1112412  89101.31 2149161132 46359.05 0.5202959 52.02959      0.00  208514.3
+## 3  1112412  97017.35 1692013618 41134.09 0.4239870 42.39870      0.00  202971.7
+## 4  1112412 112697.64 1485057928 38536.45 0.3419455 34.19455  13434.33  211961.0
+## 5  1112412 618425.60 7066830141 84064.44 0.1359330 13.59330 401889.95  834961.3
+## 6  1112412  38648.72  849065242 29138.72 0.7539376 75.39376      0.00  113705.1
 ##    CI95left CI95right   CI68left CI68right
-## 1      0.00  93282.72  16965.145  68342.11
-## 2      0.00 111572.13  15619.617  80214.81
-## 3  11101.23 130978.53  40627.860 101451.90
-## 4      0.00  92810.14  12481.820  66558.81
-## 5 279409.89 535783.28 342556.478 472636.70
-## 6      0.00  62996.71   5579.111  44232.62</code></pre>
+## 1      0.00 118242.80   6761.956  81810.82
+## 2      0.00 179963.37  42999.193 135203.43
+## 3  16396.01 177638.69  56111.224 137923.47
+## 4  37167.59 188227.70  74374.767 151020.52
+## 5 453662.33 783188.88 534827.056 702024.15
+## 6      0.00  95759.57   9671.489  67625.96</code></pre>
 </details>
 <div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a><span class="fu">head</span>(raw3<span class="sc">$</span>rowest)      <span class="co"># estimates by row for population (i.e., WY)</span></span></code></pre></div>
 <details>
@@ -979,24 +979,24 @@ in the same cell with the <code>allin1</code> argument in
 <summary>
 output
 </summary>
-<pre><code>##                         Forest type     Large diameter    Medium diameter
-## 1:                      Douglas-fir  23,330.7 ( 79.00)        -- (    --)
-## 2:                 Engelmann spruce  36,892.1 ( 74.16)  11,025.2 (175.15)
-## 3: Engelmann spruce / subalpine fir  40,287.9 ( 68.99)  14,443.2 ( 66.30)
-## 4:                    Subalpine fir  26,255.3 ( 75.29)        -- (    --)
-## 5:                   Lodgepole pine 140,798.2 ( 33.20) 230,288.3 ( 20.42)
-## 6:                            Aspen        -- (    --)        -- (    --)
-## 7:                       Nonstocked        -- (    --)        -- (    --)
-## 8:                            Total 267,564.1 ( 21.17) 255,756.7 ( 19.38)
-##        Small diameter        Nonstocked              Total
-## 1:  19,322.9 ( 99.12)       -- (    --)  42,653.6 ( 60.56)
-## 2:        -- (    --)       -- (    --)  47,917.2 ( 67.78)
-## 3:  16,308.7 ( 71.46)       -- (    --)  71,039.9 ( 43.05)
-## 4:  13,265.0 (141.72)       -- (    --)  39,520.3 ( 68.80)
-## 5:  36,510.1 ( 74.46)       -- (    --) 407,596.6 ( 16.05)
-## 6:  24,905.9 ( 78.03)       -- (    --)  24,905.9 ( 78.03)
-## 7:        -- (    --) 26,761.6 ( 63.54)  26,761.6 ( 63.54)
-## 8: 110,312.6 ( 37.41) 26,761.6 ( 63.54) 660,395.1 (  9.42)</code></pre>
+<pre><code>##                         Forest type      Large diameter     Medium diameter
+## 1:                      Douglas-fir  28,381.5 (  95.01)        -- (     --)
+## 2:                 Engelmann spruce  97,387.6 (  40.28)  -8,286.3 (-339.39)
+## 3: Engelmann spruce / subalpine fir  42,290.6 (  91.23)  28,627.2 (  48.64)
+## 4:                    Subalpine fir  36,053.1 (  81.54)        -- (     --)
+## 5:                   Lodgepole pine 221,069.2 (  28.62) 289,086.8 (  20.06)
+## 6:                            Aspen        -- (     --)        -- (     --)
+## 7:                       Nonstocked        -- (     --)        -- (     --)
+## 8:                            Total 425,182.1 (  15.23) 309,427.6 (  19.74)
+##         Small diameter         Nonstocked               Total
+## 1:  15,904.9 ( 179.36)       -- (     --)  44,286.4 (  85.20)
+## 2:        -- (     --)       -- (     --)  89,101.3 (  52.03)
+## 3:  26,099.5 (  65.28)       -- (     --)  97,017.3 (  42.40)
+## 4:  76,644.6 (  33.27)       -- (     --) 112,697.6 (  34.19)
+## 5: 108,269.6 (  35.83)       -- (     --) 618,425.6 (  13.59)
+## 6:  38,648.7 (  75.39)       -- (     --)  38,648.7 (  75.39)
+## 7:        -- (     --) 36,765.0 (  64.92)  36,765.0 (  64.92)
+## 8: 265,567.3 (  20.58) 36,765.0 (  64.92) 652,879.1 (   9.50)</code></pre>
 </details>
 <p>We can again look at the output list, estimates, raw data, and
 titles:</p>
@@ -1014,20 +1014,20 @@ output
 <summary>
 output
 </summary>
-<pre><code>##                         Forest type     Large diameter    Medium diameter
-## 1:                      Douglas-fir  23,330.7 ( 79.00)        -- (    --)
-## 2:                 Engelmann spruce  36,892.1 ( 74.16)  11,025.2 (175.15)
-## 3: Engelmann spruce / subalpine fir  40,287.9 ( 68.99)  14,443.2 ( 66.30)
-## 4:                    Subalpine fir  26,255.3 ( 75.29)        -- (    --)
-## 5:                   Lodgepole pine 140,798.2 ( 33.20) 230,288.3 ( 20.42)
-## 6:                            Aspen        -- (    --)        -- (    --)
-##       Small diameter  Nonstocked              Total
-## 1: 19,322.9 ( 99.12) -- (    --)  42,653.6 ( 60.56)
-## 2:       -- (    --) -- (    --)  47,917.2 ( 67.78)
-## 3: 16,308.7 ( 71.46) -- (    --)  71,039.9 ( 43.05)
-## 4: 13,265.0 (141.72) -- (    --)  39,520.3 ( 68.80)
-## 5: 36,510.1 ( 74.46) -- (    --) 407,596.6 ( 16.05)
-## 6: 24,905.9 ( 78.03) -- (    --)  24,905.9 ( 78.03)</code></pre>
+<pre><code>##                         Forest type      Large diameter     Medium diameter
+## 1:                      Douglas-fir  28,381.5 (  95.01)        -- (     --)
+## 2:                 Engelmann spruce  97,387.6 (  40.28)  -8,286.3 (-339.39)
+## 3: Engelmann spruce / subalpine fir  42,290.6 (  91.23)  28,627.2 (  48.64)
+## 4:                    Subalpine fir  36,053.1 (  81.54)        -- (     --)
+## 5:                   Lodgepole pine 221,069.2 (  28.62) 289,086.8 (  20.06)
+## 6:                            Aspen        -- (     --)        -- (     --)
+##         Small diameter   Nonstocked               Total
+## 1:  15,904.9 ( 179.36) -- (     --)  44,286.4 (  85.20)
+## 2:        -- (     --) -- (     --)  89,101.3 (  52.03)
+## 3:  26,099.5 (  65.28) -- (     --)  97,017.3 (  42.40)
+## 4:  76,644.6 (  33.27) -- (     --) 112,697.6 (  34.19)
+## 5: 108,269.6 (  35.83) -- (     --) 618,425.6 (  13.59)
+## 6:  38,648.7 (  75.39) -- (     --)  38,648.7 (  75.39)</code></pre>
 </details>
 <div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" tabindex="-1"></a><span class="do">## Raw data (list object) for estimate</span></span>
 <span id="cb46-2"><a href="#cb46-2" tabindex="-1"></a>raw4 <span class="ot">&lt;-</span> area4<span class="sc">$</span>raw      <span class="co"># extract raw data list object from output</span></span>
@@ -1046,11 +1046,11 @@ output
 output
 </summary>
 <pre><code>##   ONEUNIT      nhat    nhat.var NBRPLT NBRPLT.gt0 ACRES_GIS AREAUSED      est
-## 1       1 0.5936603 0.003129767     56         37   1112412  1112412 660395.1
-##      est.var   est.se     est.cv      pse CI99left CI99right CI95left CI95right
-## 1 3872964796 62233.15 0.09423624 9.423624 500093.1    820697 538420.4  782369.8
+## 1       1 0.5869038 0.003106112     56         37   1112412  1112412 652879.1
+##      est.var   est.se    est.cv     pse CI99left CI99right CI95left CI95right
+## 1 3843693079 61997.52 0.0949602 9.49602   493184  812574.1 531366.2    774392
 ##   CI68left CI68right
-## 1 598506.8  722283.3</code></pre>
+## 1 591225.1    714533</code></pre>
 </details>
 <div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>totest)      <span class="co"># estimates for population (i.e., WY)</span></span></code></pre></div>
 <details>
@@ -1065,33 +1065,33 @@ output
 output
 </summary>
 <pre><code>##   ONEUNIT FORTYPCD       nhat     nhat.var NBRPLT NBRPLT.gt0
-## 1       1      201 0.03834336 0.0005392280     56          2
-## 2       1      265 0.04307505 0.0008523855     56          4
-## 3       1      266 0.06386110 0.0007557639     56          5
-## 4       1      268 0.03552668 0.0005973938     56          3
-## 5       1      281 0.36640782 0.0034566717     56         23
-## 6       1      901 0.02238906 0.0003052203     56          1
+## 1       1      201 0.03981113 0.0011505987     37          2
+## 2       1      265 0.08009738 0.0017367503     37          4
+## 3       1      266 0.08721348 0.0013673266     37          5
+## 4       1      268 0.10130923 0.0012000844     37          3
+## 5       1      281 0.55593198 0.0057107487     37         23
+## 6       1      901 0.03474316 0.0006861348     37          1
 ##                        Forest type ACRES_GIS AREAUSED       est    est.var
-## 1                      Douglas-fir   1112412  1112412  42653.63  667273775
-## 2                 Engelmann spruce   1112412  1112412  47917.21 1054793996
-## 3 Engelmann spruce / subalpine fir   1112412  1112412  71039.88  935228490
-## 4                    Subalpine fir   1112412  1112412  39520.32  739251639
-## 5                   Lodgepole pine   1112412  1112412 407596.59 4277497216
-## 6                            Aspen   1112412  1112412  24905.87  377698351
-##     est.se    est.cv      pse CI99left CI99right  CI95left CI95right   CI68left
-## 1 25831.64 0.6056142 60.56142      0.0 109191.53      0.00  93282.72  16965.145
-## 2 32477.59 0.6777855 67.77855      0.0 131573.95      0.00 111572.13  15619.617
-## 3 30581.51 0.4304836 43.04836      0.0 149812.62  11101.23 130978.53  40627.860
-## 4 27189.18 0.6879799 68.79799      0.0 109555.01      0.00  92810.14  12481.820
-## 5 65402.58 0.1604591 16.04591 239130.7 576062.46 279409.89 535783.28 342556.478
-## 6 19434.46 0.7803167 78.03167      0.0  74965.72      0.00  62996.71   5579.111
-##   CI68right
-## 1  68342.11
-## 2  80214.81
-## 3 101451.90
-## 4  66558.81
-## 5 472636.70
-## 6  44232.62</code></pre>
+## 1                      Douglas-fir   1112412  1112412  44286.39 1423821285
+## 2                 Engelmann spruce   1112412  1112412  89101.31 2149161132
+## 3 Engelmann spruce / subalpine fir   1112412  1112412  97017.35 1692013618
+## 4                    Subalpine fir   1112412  1112412 112697.64 1485057928
+## 5                   Lodgepole pine   1112412  1112412 618425.60 7066830141
+## 6                            Aspen   1112412  1112412  38648.72  849065242
+##     est.se    est.cv      pse  CI99left CI99right  CI95left CI95right
+## 1 37733.56 0.8520351 85.20351      0.00  141481.6      0.00 118242.80
+## 2 46359.05 0.5202959 52.02959      0.00  208514.3      0.00 179963.37
+## 3 41134.09 0.4239870 42.39870      0.00  202971.7  16396.01 177638.69
+## 4 38536.45 0.3419455 34.19455  13434.33  211961.0  37167.59 188227.70
+## 5 84064.44 0.1359330 13.59330 401889.95  834961.3 453662.33 783188.88
+## 6 29138.72 0.7539376 75.39376      0.00  113705.1      0.00  95759.57
+##     CI68left CI68right
+## 1   6761.956  81810.82
+## 2  42999.193 135203.43
+## 3  56111.224 137923.47
+## 4  74374.767 151020.52
+## 5 534827.056 702024.15
+## 6   9671.489  67625.96</code></pre>
 </details>
 <div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>rowest)      <span class="co"># estimates by row for population (i.e., WY)</span></span></code></pre></div>
 <details>
@@ -1106,20 +1106,20 @@ output
 output
 </summary>
 <pre><code>##   ONEUNIT STDSZCD       nhat     nhat.var NBRPLT NBRPLT.gt0 Stand-size class
-## 1       1       1 0.24052605 0.0025935705     56         18   Large diameter
-## 2       1       2 0.22991178 0.0019845421     56         14  Medium diameter
-## 3       1       3 0.09916524 0.0013761149     56          6   Small diameter
-## 4       1       5 0.02405726 0.0002336838     56          1       Nonstocked
-##   ACRES_GIS AREAUSED       est    est.var   est.se    est.cv      pse  CI99left
-## 1   1112412  1112412 267564.15 3209443017 56651.95 0.2117322 21.17322 121638.40
-## 2   1112412  1112412 255756.70 2455793975 49555.97 0.1937621 19.37621 128108.99
-## 3   1112412  1112412 110312.64 1702888801 41266.07 0.3740829 37.40829   4018.28
-## 4   1112412  1112412  26761.59  289174599 17005.13 0.6354306 63.54306      0.00
-##   CI99right  CI95left CI95right   CI68left CI68right
-## 1 413489.89 156528.37 378599.92 211226.172 323902.12
-## 2 383404.42 158628.79 352884.62 206475.381 305038.03
-## 3 216607.00  29432.62 191192.66  69275.269 151350.01
-## 4  70563.91      0.00  60091.04   9850.701  43672.48</code></pre>
+## 1       1       1 0.38221627 0.0033901272     37         18   Large diameter
+## 2       1       2 0.27815912 0.0030155927     37         14  Medium diameter
+## 3       1       3 0.23873097 0.0024143561     37          6   Small diameter
+## 4       1       5 0.03304982 0.0004603932     37          1       Nonstocked
+##   ACRES_GIS AREAUSED       est    est.var   est.se    est.cv      pse CI99left
+## 1   1112412  1112412 425182.10 4195150958 64769.99 0.1523347 15.23347 258345.7
+## 2   1112412  1112412 309427.64 3731679124 61087.47 0.1974209 19.74209 152076.7
+## 3   1112412  1112412 265567.28 2987672110 54659.60 0.2058220 20.58220 124773.5
+## 4   1112412  1112412  36765.03  569718693 23868.78 0.6492251 64.92251      0.0
+##   CI99right CI95left CI95right  CI68left CI68right
+## 1 592018.52 298235.3 552128.93 360771.07 489593.12
+## 2 466778.53 189698.4 429156.88 248678.72 370176.55
+## 3 406361.09 158436.4 372698.13 211210.61 319923.96
+## 4  98246.94      0.0  83546.98  13028.53  60501.53</code></pre>
 </details>
 <div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>colest)      <span class="co"># estimates by column for population (i.e., WY)</span></span></code></pre></div>
 <details>
@@ -1133,34 +1133,34 @@ output
 <summary>
 output
 </summary>
-<pre><code>##   ONEUNIT grpvar        nhat     nhat.var NBRPLT NBRPLT.gt0 FORTYPCD STDSZCD
-## 1       1  201#1 0.020973074 2.745298e-04     56          1      201       1
-## 2       1  201#3 0.017370285 2.964436e-04     56          1      201       3
-## 3       1  265#1 0.033164010 6.048455e-04     56          3      265       1
-## 4       1  265#2 0.009911038 3.013453e-04     56          1      265       2
-## 5       1  266#1 0.036216716 6.243626e-04     56          3      266       1
-## 6       1  266#2 0.012983698 7.410764e-05     56          1      266       2
-##   Stand-size class                      Forest type ACRES_GIS AREAUSED      est
-## 1   Large diameter                      Douglas-fir   1112412  1112412 23330.71
-## 2   Small diameter                      Douglas-fir   1112412  1112412 19322.92
-## 3   Large diameter                 Engelmann spruce   1112412  1112412 36892.05
-## 4  Medium diameter                 Engelmann spruce   1112412  1112412 11025.16
-## 5   Large diameter Engelmann spruce / subalpine fir   1112412  1112412 40287.92
-## 6  Medium diameter Engelmann spruce / subalpine fir   1112412  1112412 14443.23
-##     est.var   est.se    est.cv       pse CI99left CI99right CI95left CI95right
-## 1 339719955 18431.49 0.7900101  79.00101        0  70807.09        0  59455.77
-## 2 366837446 19153.00 0.9912064  99.12064        0  68657.78        0  56862.11
-## 3 748472910 27358.23 0.7415752  74.15752        0 107362.19        0  90513.21
-## 4 372903083 19310.70 1.7515118 175.15118        0  60766.22        0  48873.43
-## 5 772624533 27796.12 0.6899369  68.99369        0 111885.99        0  94767.33
-## 6  91705337  9576.29 0.6630299  66.30299        0  39110.12        0  33212.41
-##     CI68left CI68right
-## 1  5001.3621  41660.05
-## 2   276.0668  38369.77
-## 3  9685.4439  64098.66
-## 4     0.0000  30228.84
-## 5 12645.8475  67930.00
-## 6  4920.0086  23966.44</code></pre>
+<pre><code>##   ONEUNIT grpvar         nhat     nhat.var NBRPLT NBRPLT.gt0 FORTYPCD STDSZCD
+## 1       1  201#1  0.025513469 0.0005875578     37          1      201       1
+## 2       1  201#3  0.014297657 0.0006576539     37          1      201       3
+## 3       1  265#1  0.087546327 0.0012436962     37          3      265       1
+## 4       1  265#2 -0.007448949 0.0006391340     37          1      265       2
+## 5       1  266#1  0.038017056 0.0012029502     37          3      266       1
+## 6       1  266#2  0.025734305 0.0001566975     37          1      266       2
+##   Stand-size class                      Forest type ACRES_GIS AREAUSED
+## 1   Large diameter                      Douglas-fir   1112412  1112412
+## 2   Small diameter                      Douglas-fir   1112412  1112412
+## 3   Large diameter                 Engelmann spruce   1112412  1112412
+## 4  Medium diameter                 Engelmann spruce   1112412  1112412
+## 5   Large diameter Engelmann spruce / subalpine fir   1112412  1112412
+## 6  Medium diameter Engelmann spruce / subalpine fir   1112412  1112412
+##         est    est.var   est.se     est.cv        pse CI99left CI99right
+## 1 28381.499  727079950 26964.42  0.9500703   95.00703        0  97837.24
+## 2 15904.890  813821229 28527.55  1.7936340  179.36340        0  89386.99
+## 3 97387.615 1539025822 39230.42  0.4028276   40.28276        0 198438.48
+## 4 -8286.303  790903534 28123.01 -3.3939149 -339.39149        0  64153.76
+## 5 42290.643 1488604221 38582.43  0.9123161   91.23161        0 141672.41
+## 6 28627.159  193907140 13925.05  0.4864281   48.64281        0  64495.72
+##    CI95left CI95right  CI68left CI68right
+## 1     0.000  81230.79  1566.518  55196.48
+## 2     0.000  71817.86     0.000  44274.34
+## 3 20497.406 174277.82 58374.615 136400.62
+## 4     0.000  46833.78     0.000  19680.84
+## 5     0.000 117910.82  3922.037  80659.25
+## 6  1334.554  55919.76 14779.279  42475.04</code></pre>
 </details>
 <div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>grpest)      <span class="co"># estimates by row and column for population (i.e., WY)</span></span></code></pre></div>
 <details>
@@ -1292,11 +1292,11 @@ output
 output
 </summary>
 <pre><code>##   ONEUNIT     nhat nhat.var NBRPLT NBRPLT.gt0 ACRES_GIS AREAUSED        est
-## 1       1 1026.215 23835.98     56         34   1112412  1112412 1141574550
-##       est.var    est.se    est.cv      pse  CI99left  CI99right  CI95left
-## 1 2.94961e+16 171744283 0.1504451 15.04451 699190593 1583958507 804961940
+## 1       1 1029.962 22849.33     56         34   1112412  1112412 1145742756
+##        est.var    est.se    est.cv      pse  CI99left  CI99right  CI95left
+## 1 2.827516e+16 168152198 0.1467626 14.67626 712611397 1578874115 816170504
 ##    CI95right  CI68left  CI68right
-## 1 1478187159 970782094 1312367006</code></pre>
+## 1 1475315008 978522477 1312963035</code></pre>
 </details>
 </details>
 </div>
@@ -1332,8 +1332,8 @@ output
 <pre><code>## List of 5
 ##  $ est     :Classes &#39;data.table&#39; and &#39;data.frame&#39;:   1 obs. of  3 variables:
 ##   ..$ ONEUNIT               : chr &quot;1&quot;
-##   ..$ Estimate              : num 1.15e+09
-##   ..$ Percent Sampling Error: num 14.9
+##   ..$ Estimate              : num 1.16e+09
+##   ..$ Percent Sampling Error: num 14.5
 ##   ..- attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt; 
 ##   ..- attr(*, &quot;sorted&quot;)= chr &quot;ONEUNIT&quot;
 ##  $ titlelst:List of 10
@@ -1372,8 +1372,8 @@ output
 output
 </summary>
 <pre><code>## $totest
-##    ONEUNIT TOTAL       dem       slp  asp_cos   asp_sin    fornf2
-## 1:       1     1 0.5465389 -56.39939 32.42545 -483.4348 -1206.324</code></pre>
+##    ONEUNIT TOTAL       dem       slp asp_cos   asp_sin    fornf2
+## 1:       1     1 0.5879692 -64.56315       0 -566.3432 -1247.736</code></pre>
 </details>
 <p>Notably, we can see that [INSERT CORRECT PREDS] <code>dem</code>,
 <code>slp</code>, <code>asp_cos</code>, and <code>asp_sin</code> were
@@ -1416,14 +1416,15 @@ output
 output
 </summary>
 <pre><code>##   Forest type     Estimate Percent Sampling Error
-## 1         201   15435672.3                  63.81
-## 2         265  171222876.3                  70.59
-## 3         266  118655149.3                  66.72
-## 4         268   43001324.8                  72.97
-## 5         281  793259527.2                  19.62
+## 1         201   17386950.9                  82.45
+## 2         265  308069606.4                  55.88
+## 3         266  124752652.1                  87.24
+## 4         268   56756979.9                  82.14
+## 5         281 1095829416.3                  19.18
 ## 6         901           --                     --
 ## 7         999           --                     --
-## 8       Total 1141574549.9                  15.04</code></pre>
+## 8          NA           --                     --
+## 9       Total        Total                  Total</code></pre>
 </details>
 <div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" tabindex="-1"></a><span class="do">## Raw data (list object) for estimate</span></span>
 <span id="cb87-2"><a href="#cb87-2" tabindex="-1"></a>raw3 <span class="ot">&lt;-</span> tree3<span class="sc">$</span>raw      <span class="co"># extract raw data list object from output</span></span>
@@ -1443,11 +1444,11 @@ output
 output
 </summary>
 <pre><code>##   ONEUNIT     nhat nhat.var NBRPLT NBRPLT.gt0 ACRES_GIS AREAUSED        est
-## 1       1 1026.215 23835.98     56         34   1112412  1112412 1141574550
-##       est.var    est.se    est.cv      pse  CI99left  CI99right  CI95left
-## 1 2.94961e+16 171744283 0.1504451 15.04451 699190593 1583958507 804961940
+## 1       1 1029.962 22849.33     56         34   1112412  1112412 1145742756
+##        est.var    est.se    est.cv      pse  CI99left  CI99right  CI95left
+## 1 2.827516e+16 168152198 0.1467626 14.67626 712611397 1578874115 816170504
 ##    CI95right  CI68left  CI68right
-## 1 1478187159 970782094 1312367006</code></pre>
+## 1 1475315008 978522477 1312963035</code></pre>
 </details>
 <div class="sourceCode" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" tabindex="-1"></a><span class="fu">head</span>(raw3<span class="sc">$</span>totest)        <span class="co"># estimates for population (i.e., WY)</span></span></code></pre></div>
 <details>
@@ -1461,27 +1462,27 @@ output
 <summary>
 output
 </summary>
-<pre><code>##   ONEUNIT Forest type      nhat    nhat.var NBRPLT NBRPLT.gt0 ACRES_GIS
-## 1       1         201  13.87585    78.39277     56          2   1112412
-## 2       1         265 153.92033 11805.74969     56          4   1112412
-## 3       1         266 106.66472  5065.31148     56          5   1112412
-## 4       1         268  38.65592   795.74932     56          2   1112412
-## 5       1         281 713.09845 19575.13714     56         23   1112412
-## 6       1         901   0.00000     0.00000     56          0   1112412
-##   AREAUSED       est      est.var    est.se    est.cv      pse  CI99left
-## 1  1112412  15435672 9.700801e+13   9849265 0.6380846 63.80846         0
-## 2  1112412 171222876 1.460916e+16 120868349 0.7059124 70.59124         0
-## 3  1112412 118655149 6.268127e+15  79171501 0.6672403 66.72403         0
-## 4  1112412  43001325 9.847089e+14  31380072 0.7297466 72.97466         0
-## 5  1112412 793259527 2.422347e+16 155638920 0.1962018 19.62018 392360235
-## 6  1112412         0 0.000000e+00         0       NaN      NaN         0
-##    CI99right  CI95left  CI95right  CI68left CI68right
-## 1   40805697         0   34739876   5640993  25230351
-## 2  482559110         0  408120486  51024394 291421358
-## 3  322587423         0  273828441  39922426 197387873
-## 4  123831035         0  104505137  11795164  74207485
-## 5 1194158819 488212849 1098306206 638483176 948035879
-## 6          0         0          0         0         0</code></pre>
+<pre><code>##   ONEUNIT Forest type      nhat   nhat.var NBRPLT NBRPLT.gt0 ACRES_GIS AREAUSED
+## 1       1         201  15.62995   166.0663     37          2   1112412  1112412
+## 2       1         265 276.93832 23952.0386     37          4   1112412  1112412
+## 3       1         266 112.14605  9572.0563     37          5   1112412  1112412
+## 4       1         268  51.02153  1756.4496     37          2   1112412  1112412
+## 5       1         281 985.09282 35687.1045     37         23   1112412  1112412
+## 6       1         901   0.00000     0.0000     37          0   1112412  1112412
+##          est      est.var    est.se    est.cv      pse  CI99left  CI99right
+## 1   17386951 2.055007e+14  14335294 0.8244858 82.44858         0   54312222
+## 2  308069606 2.963972e+16 172161899 0.5588409 55.88409         0  751529271
+## 3  124752652 1.184505e+16 108834961 0.8724060 87.24060         0  405092933
+## 4   56756980 2.173538e+15  46621222 0.8214183 82.14183         0  176845290
+## 5 1095829416 4.416141e+16 210146160 0.1917690 19.17690 554528778 1637130054
+## 6          0 0.000000e+00         0       NaN      NaN         0          0
+##    CI95left  CI95right  CI68left  CI68right
+## 1         0   45483612   3131104   31642797
+## 2         0  645500728 136861849  479277364
+## 3         0  338065256  16520867  232984437
+## 4         0  148132896  10394138  103119822
+## 5 683950510 1507708322 886847910 1304810922
+## 6         0          0         0          0</code></pre>
 </details>
 <div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" tabindex="-1"></a><span class="fu">head</span>(raw3<span class="sc">$</span>rowest)        <span class="co"># estimates by row for population (i.e., WY)</span></span></code></pre></div>
 <details>
@@ -1550,7 +1551,7 @@ output
 <summary>
 plot
 </summary>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 </details>
 <p>And a fancier barplot:</p>
 <div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" tabindex="-1"></a><span class="do">## Create fancier barplot</span></span>
@@ -1568,7 +1569,7 @@ plot
 <summary>
 plot
 </summary>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 </details>
 </details>
 </div>
@@ -1621,33 +1622,33 @@ output
 <summary>
 output
 </summary>
-<pre><code>##                         Forest type         Large diameter
-## 1:                      Douglas-fir  11,901,294.4 ( 79.00)
-## 2:                 Engelmann spruce 131,986,088.6 ( 78.83)
-## 3: Engelmann spruce / subalpine fir  99,286,096.2 ( 79.52)
-## 4:                    Subalpine fir  43,001,324.8 ( 72.97)
-## 5:                   Lodgepole pine 392,479,077.5 ( 34.99)
-## 6:                            Aspen            -- (    --)
-## 7:                       Nonstocked            -- (    --)
-## 8:                            Total 678,653,881.6 ( 24.01)
-##           Medium diameter        Small diameter  Nonstocked
-## 1:            -- (    --)  3,534,377.8 ( 99.12) -- (    --)
-## 2:  39,236,787.7 (175.15)           -- (    --) -- (    --)
-## 3:  14,393,410.2 ( 66.30)  4,975,642.9 ( 71.46) -- (    --)
-## 4:            -- (    --)           -- (    --) -- (    --)
-## 5: 394,877,667.0 ( 21.98)  5,902,782.7 ( 76.80) -- (    --)
-## 6:            -- (    --)           -- (    --) -- (    --)
-## 7:            -- (    --)           -- (    --) -- (    --)
-## 8: 448,507,864.9 ( 23.85) 14,412,803.4 ( 42.87) -- (    --)
-##                       Total
-## 1:    15,435,672.3 ( 63.81)
-## 2:   171,222,876.3 ( 70.59)
-## 3:   118,655,149.3 ( 66.72)
-## 4:    43,001,324.8 ( 72.97)
-## 5:   793,259,527.2 ( 19.62)
-## 6:              -- (    --)
-## 7:              -- (    --)
-## 8: 1,141,574,549.9 ( 15.04)</code></pre>
+<pre><code>##                         Forest type            Large diameter
+## 1:                      Douglas-fir    14,477,768.8 (  95.01)
+## 2:                 Engelmann spruce   337,559,236.7 (  44.35)
+## 3: Engelmann spruce / subalpine fir    88,261,500.4 ( 124.07)
+## 4:                    Subalpine fir    56,756,979.9 (  82.14)
+## 5:                   Lodgepole pine   590,014,944.8 (  31.92)
+## 6:                            Aspen              -- (     --)
+## 7:                       Nonstocked              -- (     --)
+## 8:                            Total 1,087,070,430.7 (  17.29)
+##            Medium diameter         Small diameter   Nonstocked
+## 1:            -- (     --)  2,909,182.1 ( 179.36) -- (     --)
+## 2: -29,489,630.3 (-339.39)           -- (     --) -- (     --)
+## 3:  28,528,421.9 (  48.64)  7,962,729.8 (  65.28) -- (     --)
+## 4:            -- (     --)           -- (     --) -- (     --)
+## 5: 487,026,140.7 (  22.47) 18,788,330.8 (  34.12) -- (     --)
+## 6:            -- (     --)           -- (     --) -- (     --)
+## 7:            -- (     --)           -- (     --) -- (     --)
+## 8: 486,064,932.3 (  28.02) 29,660,242.6 (  29.35) -- (     --)
+##                        Total
+## 1:    17,386,950.9 (  82.45)
+## 2:   308,069,606.4 (  55.88)
+## 3:   124,752,652.1 (  87.24)
+## 4:    56,756,979.9 (  82.14)
+## 5: 1,095,829,416.3 (  19.18)
+## 6:              -- (     --)
+## 7:              -- (     --)
+## 8: 1,145,742,756.1 (  14.68)</code></pre>
 </details>
 <div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" tabindex="-1"></a><span class="do">## Raw data (list object) for estimate</span></span>
 <span id="cb108-2"><a href="#cb108-2" tabindex="-1"></a>raw4 <span class="ot">&lt;-</span> tree4<span class="sc">$</span>raw      <span class="co"># extract raw data list object from output</span></span>
@@ -1667,11 +1668,11 @@ output
 output
 </summary>
 <pre><code>##   ONEUNIT     nhat nhat.var NBRPLT NBRPLT.gt0 ACRES_GIS AREAUSED        est
-## 1       1 1026.215 23835.98     56         34   1112412  1112412 1141574550
-##       est.var    est.se    est.cv      pse  CI99left  CI99right  CI95left
-## 1 2.94961e+16 171744283 0.1504451 15.04451 699190593 1583958507 804961940
+## 1       1 1029.962 22849.33     56         34   1112412  1112412 1145742756
+##        est.var    est.se    est.cv      pse  CI99left  CI99right  CI95left
+## 1 2.827516e+16 168152198 0.1467626 14.67626 712611397 1578874115 816170504
 ##    CI95right  CI68left  CI68right
-## 1 1478187159 970782094 1312367006</code></pre>
+## 1 1475315008 978522477 1312963035</code></pre>
 </details>
 <div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>totest)        <span class="co"># estimates for population (i.e., WY)</span></span></code></pre></div>
 <details>
@@ -1685,34 +1686,34 @@ output
 <summary>
 output
 </summary>
-<pre><code>##   ONEUNIT FORTYPCD      nhat    nhat.var NBRPLT NBRPLT.gt0
-## 1       1      201  13.87585    78.39277     56          2
-## 2       1      265 153.92033 11805.74969     56          4
-## 3       1      266 106.66472  5065.31148     56          5
-## 4       1      268  38.65592   795.74932     56          2
-## 5       1      281 713.09845 19575.13714     56         23
-## 6       1      901   0.00000     0.00000     56          0
-##                        Forest type ACRES_GIS AREAUSED       est      est.var
-## 1                      Douglas-fir   1112412  1112412  15435672 9.700801e+13
-## 2                 Engelmann spruce   1112412  1112412 171222876 1.460916e+16
-## 3 Engelmann spruce / subalpine fir   1112412  1112412 118655149 6.268127e+15
-## 4                    Subalpine fir   1112412  1112412  43001325 9.847089e+14
-## 5                   Lodgepole pine   1112412  1112412 793259527 2.422347e+16
-## 6                            Aspen   1112412  1112412         0 0.000000e+00
+<pre><code>##   ONEUNIT FORTYPCD      nhat   nhat.var NBRPLT NBRPLT.gt0
+## 1       1      201  15.62995   166.0663     37          2
+## 2       1      265 276.93832 23952.0386     37          4
+## 3       1      266 112.14605  9572.0563     37          5
+## 4       1      268  51.02153  1756.4496     37          2
+## 5       1      281 985.09282 35687.1045     37         23
+## 6       1      901   0.00000     0.0000     37          0
+##                        Forest type ACRES_GIS AREAUSED        est      est.var
+## 1                      Douglas-fir   1112412  1112412   17386951 2.055007e+14
+## 2                 Engelmann spruce   1112412  1112412  308069606 2.963972e+16
+## 3 Engelmann spruce / subalpine fir   1112412  1112412  124752652 1.184505e+16
+## 4                    Subalpine fir   1112412  1112412   56756980 2.173538e+15
+## 5                   Lodgepole pine   1112412  1112412 1095829416 4.416141e+16
+## 6                            Aspen   1112412  1112412          0 0.000000e+00
 ##      est.se    est.cv      pse  CI99left  CI99right  CI95left  CI95right
-## 1   9849265 0.6380846 63.80846         0   40805697         0   34739876
-## 2 120868349 0.7059124 70.59124         0  482559110         0  408120486
-## 3  79171501 0.6672403 66.72403         0  322587423         0  273828441
-## 4  31380072 0.7297466 72.97466         0  123831035         0  104505137
-## 5 155638920 0.1962018 19.62018 392360235 1194158819 488212849 1098306206
+## 1  14335294 0.8244858 82.44858         0   54312222         0   45483612
+## 2 172161899 0.5588409 55.88409         0  751529271         0  645500728
+## 3 108834961 0.8724060 87.24060         0  405092933         0  338065256
+## 4  46621222 0.8214183 82.14183         0  176845290         0  148132896
+## 5 210146160 0.1917690 19.17690 554528778 1637130054 683950510 1507708322
 ## 6         0       NaN      NaN         0          0         0          0
-##    CI68left CI68right
-## 1   5640993  25230351
-## 2  51024394 291421358
-## 3  39922426 197387873
-## 4  11795164  74207485
-## 5 638483176 948035879
-## 6         0         0</code></pre>
+##    CI68left  CI68right
+## 1   3131104   31642797
+## 2 136861849  479277364
+## 3  16520867  232984437
+## 4  10394138  103119822
+## 5 886847910 1304810922
+## 6         0          0</code></pre>
 </details>
 <div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="#cb116-1" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>rowest)        <span class="co"># estimates by row for population (i.e., WY)</span></span></code></pre></div>
 <details>
@@ -1727,20 +1728,20 @@ output
 output
 </summary>
 <pre><code>##   ONEUNIT STDSZCD      nhat    nhat.var NBRPLT NBRPLT.gt0 Stand-size class
-## 1       1       1 610.07402 21448.59554     56         18   Large diameter
-## 2       1       2 403.18490  9244.44106     56         14  Medium diameter
-## 3       1       3  12.95635    30.85557     56          4   Small diameter
-## 4       1       5   0.00000     0.00000     56          0       Nonstocked
-##   ACRES_GIS AREAUSED       est      est.var    est.se    est.cv      pse
-## 1   1112412  1112412 678653882 2.654181e+16 162916561 0.2400584 24.00584
-## 2   1112412  1112412 448507865 1.143964e+16 106956241 0.2384713 23.84713
-## 3   1112412  1112412  14412803 3.818257e+13   6179205 0.4287302 42.87302
-## 4   1112412  1112412         0 0.000000e+00         0       NaN      NaN
-##    CI99left  CI99right  CI95left CI95right  CI68left CI68right
-## 1 259008631 1098299132 359343290 997964473 516640224 840667539
-## 2 173006845  724008885 238877484 658138246 342144388 554871342
-## 3         0   30329380   2301785  26523822   8267845  20557762
-## 4         0          0         0         0         0         0</code></pre>
+## 1       1       1 977.21895 28542.07717     37         18   Large diameter
+## 2       1       2 436.94672 14991.78126     37         14  Medium diameter
+## 3       1       3  26.66299    61.25535     37          4   Small diameter
+## 4       1       5   0.00000     0.00000     37          0       Nonstocked
+##   ACRES_GIS AREAUSED        est      est.var    est.se    est.cv      pse
+## 1   1112412  1112412 1087070431 3.531971e+16 187935399 0.1728824 17.28824
+## 2   1112412  1112412  486064932 1.855175e+16 136204803 0.2802194 28.02194
+## 3   1112412  1112412   29660243 7.580112e+13   8706384 0.2935372 29.35372
+## 4   1112412  1112412          0 0.000000e+00         0       NaN      NaN
+##    CI99left  CI99right  CI95left  CI95right  CI68left  CI68right
+## 1 602980922 1571159939 718723817 1455417045 900176591 1273964270
+## 2 135224610  836905254 219108425  753021440 350614993  621514872
+## 3   7234084   52086401  12596044   46724441  21002111   38318375
+## 4         0          0         0          0         0          0</code></pre>
 </details>
 <div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb120-1"><a href="#cb120-1" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>colest)        <span class="co"># estimates by column for population (i.e., WY)</span></span></code></pre></div>
 <details>
@@ -1754,13 +1755,13 @@ output
 <summary>
 output
 </summary>
-<pre><code>##   ONEUNIT grpvar       nhat    nhat.var NBRPLT NBRPLT.gt0 FORTYPCD STDSZCD
-## 1       1  201#1  10.698636   71.436815     56          1      201       1
-## 2       1  201#3   3.177219    9.917964     56          1      201       3
-## 3       1  265#1 118.648528 8748.214215     56          3      265       1
-## 4       1  265#2  35.271801 3816.641843     56          1      265       2
-## 5       1  266#1  89.252961 5037.268404     56          3      266       1
-## 6       1  266#2  12.938916   73.597319     56          1      266       2
+<pre><code>##   ONEUNIT grpvar       nhat   nhat.var NBRPLT NBRPLT.gt0 FORTYPCD STDSZCD
+## 1       1  201#1  13.014750   152.8914     37          1      201       1
+## 2       1  201#3   2.615201    22.0028     37          1      201       3
+## 3       1  265#1 303.447940 18110.8690     37          3      265       1
+## 4       1  265#2 -26.509621  8094.8527     37          1      265       2
+## 5       1  266#1  79.342431  9690.2120     37          3      266       1
+## 6       1  266#2  25.645546   155.6185     37          1      266       2
 ##   Stand-size class                      Forest type ACRES_GIS AREAUSED
 ## 1   Large diameter                      Douglas-fir   1112412  1112412
 ## 2   Small diameter                      Douglas-fir   1112412  1112412
@@ -1768,20 +1769,20 @@ output
 ## 4  Medium diameter                 Engelmann spruce   1112412  1112412
 ## 5   Large diameter Engelmann spruce / subalpine fir   1112412  1112412
 ## 6  Medium diameter Engelmann spruce / subalpine fir   1112412  1112412
-##         est      est.var    est.se    est.cv       pse CI99left CI99right
-## 1  11901294 8.840029e+13   9402143 0.7900101  79.00101        0  36119609
-## 2   3534378 1.227310e+13   3503298 0.9912064  99.12064        0  12558275
-## 3 131986089 1.082558e+16 104046028 0.7883106  78.83106        0 399990898
-## 4  39236788 4.722946e+15  68723696 1.7515118 175.15118        0 216257297
-## 5  99286096 6.233424e+15  78952039 0.7951973  79.51973        0 302653071
-## 6  14393410 9.107383e+13   9543261 0.6630299  66.30299        0  38975222
+##         est      est.var    est.se     est.cv        pse CI99left CI99right
+## 1  14477769 1.891972e+14  13754899  0.9500703   95.00703        0  49908040
+## 2   2909182 2.722761e+13   5218008  1.7936340  179.36340        0  16349880
+## 3 337559237 2.241150e+16 149704704  0.4434917   44.34917        0 723173001
+## 4 -29489630 1.001707e+16 100085296 -3.3939149 -339.39149        0 228313008
+## 5  88261500 1.199126e+16 109504620  1.2406839  124.06839        0 370326709
+## 6  28528422 1.925718e+14  13877026  0.4864281   48.64281        0  64273272
 ##   CI95left CI95right    CI68left CI68right
-## 1        0  30329156  2551259.40  21251329
-## 2        0  10400715    50495.71   7018260
-## 3        0 335912557 28516695.39 235455482
-## 4        0 173932756        0.00 107579609
-## 5        0 254029249 20771618.84 177800573
-## 6        0  33097858  4903039.08  23883781</code></pre>
+## 1        0  41436875    799101.3  28156436
+## 2        0  13136290         0.0   8098271
+## 3 44143408 630975066 188684213.4 486434260
+## 4        0 166673945         0.0  70040981
+## 5        0 302886611         0.0 197159233
+## 6  1329951  55726893  14728304.3  42328540</code></pre>
 </details>
 <div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb124-1"><a href="#cb124-1" tabindex="-1"></a><span class="fu">head</span>(raw4<span class="sc">$</span>grpest)        <span class="co"># estimates by row and column for population (i.e., WY)</span></span></code></pre></div>
 <details>
@@ -1913,14 +1914,15 @@ output
 <summary>
 output
 </summary>
-<pre><code>##            Species    Estimate Percent Sampling Error
-## 1    subalpine fir  68658860.9                  29.14
-## 2 Engelmann spruce  50806944.2                  29.77
-## 3   lodgepole pine 184898322.4                  18.59
-## 4      limber pine   4461866.7                  90.07
-## 5      Douglas-fir    24655901                  73.84
-## 6    quaking aspen  11153476.9                  73.73
-## 7            Total 344635372.3                  13.07</code></pre>
+<pre><code>##                  Species    Estimate Percent Sampling Error
+## 1          subalpine fir 117036939.1                  20.78
+## 2 Rocky Mountain juniper          --                     --
+## 3       Engelmann spruce 123334760.1                  15.94
+## 4         lodgepole pine 260668686.6                  18.14
+## 5            limber pine   4996348.9                 125.15
+## 6            Douglas-fir  25445385.3                 109.24
+## 7          quaking aspen  15095940.7                   86.1
+## 8                  Total       Total                  Total</code></pre>
 </details>
 </details>
 </div>
@@ -1969,14 +1971,15 @@ output
 <summary>
 output
 </summary>
-<pre><code>##            Species    Estimate Percent Sampling Error
-## 1    subalpine fir 396440112.5                  23.94
-## 2 Engelmann spruce 107965157.9                  33.92
-## 3   lodgepole pine 251790363.6                  18.03
-## 4      limber pine  38477186.7                  92.27
-## 5      Douglas-fir  49218941.8                  80.24
-## 6    quaking aspen 105867206.7                  60.84
-## 7            Total 949758969.2                  16.07</code></pre>
+<pre><code>##                  Species    Estimate Percent Sampling Error
+## 1          subalpine fir 795266354.7                  13.82
+## 2 Rocky Mountain juniper          --                     --
+## 3       Engelmann spruce 226522023.3                  22.37
+## 4         lodgepole pine 333518419.3                  17.97
+## 5            limber pine  45851027.5                  117.1
+## 6            Douglas-fir  56082522.7                 105.42
+## 7          quaking aspen 153434173.9                  64.29
+## 8                  Total       Total                  Total</code></pre>
 </details>
 <div class="sourceCode" id="cb145"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb145-1"><a href="#cb145-1" tabindex="-1"></a><span class="do">## Compare estimates with and without seedlings</span></span>
 <span id="cb145-2"><a href="#cb145-2" tabindex="-1"></a><span class="fu">head</span>(tree5<span class="sc">$</span>est)</span></code></pre></div>
@@ -1984,26 +1987,26 @@ output
 <summary>
 output
 </summary>
-<pre><code>##            Species    Estimate Percent Sampling Error
-## 1    subalpine fir  68658860.9                  29.14
-## 2 Engelmann spruce  50806944.2                  29.77
-## 3   lodgepole pine 184898322.4                  18.59
-## 4      limber pine   4461866.7                  90.07
-## 5      Douglas-fir    24655901                  73.84
-## 6    quaking aspen  11153476.9                  73.73</code></pre>
+<pre><code>##                  Species    Estimate Percent Sampling Error
+## 1          subalpine fir 117036939.1                  20.78
+## 2 Rocky Mountain juniper          --                     --
+## 3       Engelmann spruce 123334760.1                  15.94
+## 4         lodgepole pine 260668686.6                  18.14
+## 5            limber pine   4996348.9                 125.15
+## 6            Douglas-fir  25445385.3                 109.24</code></pre>
 </details>
 <div class="sourceCode" id="cb147"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb147-1"><a href="#cb147-1" tabindex="-1"></a><span class="fu">head</span>(tree6<span class="sc">$</span>est)</span></code></pre></div>
 <details>
 <summary>
 output
 </summary>
-<pre><code>##            Species    Estimate Percent Sampling Error
-## 1    subalpine fir 396440112.5                  23.94
-## 2 Engelmann spruce 107965157.9                  33.92
-## 3   lodgepole pine 251790363.6                  18.03
-## 4      limber pine  38477186.7                  92.27
-## 5      Douglas-fir  49218941.8                  80.24
-## 6    quaking aspen 105867206.7                  60.84</code></pre>
+<pre><code>##                  Species    Estimate Percent Sampling Error
+## 1          subalpine fir 795266354.7                  13.82
+## 2 Rocky Mountain juniper          --                     --
+## 3       Engelmann spruce 226522023.3                  22.37
+## 4         lodgepole pine 333518419.3                  17.97
+## 5            limber pine  45851027.5                  117.1
+## 6            Douglas-fir  56082522.7                 105.42</code></pre>
 </details>
 </details>
 <!-- #### Example 11: Number of seedlings by species, Wyoming, 2011-2013 -->

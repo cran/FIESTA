@@ -1540,7 +1540,7 @@ output
 ## 4            Barren     11.8                  19.53
 ## 5        Impervious     10.8                  19.38
 ## 6             Water     23.1                  15.47
-## 7             Total      100                      0</code></pre>
+## 7             Total    Total                  Total</code></pre>
 </details>
 </details>
 </div>
@@ -1586,7 +1586,7 @@ output
 ## 4            Barren 108670.5                  19.53
 ## 5        Impervious  99267.8                  19.38
 ## 6             Water 213333.3                  15.47
-## 7             Total   922543                      0</code></pre>
+## 7             Total    Total                  Total</code></pre>
 </details>
 <p>We can now use the <code>PBpoparea</code> set of population data to
 run percent estimates as well. Let’s save the data to the outfolder and
@@ -1627,7 +1627,7 @@ output
 ## 4            Barren     11.8                  19.53
 ## 5        Impervious     10.8                  19.38
 ## 6             Water     23.1                  15.47
-## 7             Total      100                      0</code></pre>
+## 7             Total    Total                  Total</code></pre>
 </details>
 <p>And titles:</p>
 <div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" tabindex="-1"></a><span class="do">## Estimate and percent sampling error of estimate</span></span>
@@ -1708,7 +1708,7 @@ output
 ## 4            Barren     16.9                  16.36
 ## 5        Impervious     11.5                  18.44
 ## 6             Water     17.2                  18.71
-## 7             Total      100                      0</code></pre>
+## 7             Total    Total                  Total</code></pre>
 </details>
 <p>Now we can compare the estimates from Time 2 with estimates from Time
 1 and look at net change. We will use the raw data with numeric
@@ -1826,7 +1826,7 @@ output
 ## 3 Removal or Loss of Vegetation      0.1                  68.17
 ## 4           Stress or Mortality      0.1                    100
 ## 5               Expected Change        5                  34.25
-## 6                         Total      100                      0</code></pre>
+## 6                         Total    Total                  Total</code></pre>
 </details>
 <p>Now, let’s get area estimates. Notice, we can change the resulting
 area units to metric units (i.e., hectares).</p>
@@ -1860,7 +1860,7 @@ output
 ## 3 Removal or Loss of Vegetation      499                  68.17
 ## 4           Stress or Mortality    187.1                    100
 ## 5               Expected Change  18651.4                  34.25
-## 6                         Total 373340.2                      0</code></pre>
+## 6                         Total    Total                  Total</code></pre>
 </details>
 <p>The resulting area units are identified in the raw data.</p>
 <div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" tabindex="-1"></a>chg_ag.area<span class="sc">$</span>raw<span class="sc">$</span>areaunits</span></code></pre></div>
@@ -1909,7 +1909,7 @@ output
 ## 3 Removal or Loss of Vegetation      0.1                  68.17
 ## 4           Stress or Mortality      0.1                    100
 ## 5               Expected Change      1.7                  50.46
-## 6                         Total       12                  23.54</code></pre>
+## 6                         Total    Total                  Total</code></pre>
 </details>
 <p>Notice, the estimate titles reflect this filter.</p>
 <div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" tabindex="-1"></a><span class="do">## Estimate and percent sampling error of estimate</span></span>
@@ -1975,7 +1975,7 @@ output
 ## 3 Removal or Loss of Vegetation      0.1                  68.17
 ## 4           Stress or Mortality      0.1                    100
 ## 5               Expected Change        5                  34.25
-## 6                         Total      100                      0</code></pre>
+## 6                         Total    Total                  Total</code></pre>
 </details>
 <div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1" tabindex="-1"></a><span class="co"># Land with observed change</span></span>
 <span id="cb115-2"><a href="#cb115-2" tabindex="-1"></a>chg_ag.plts<span class="sc">$</span>titlelst<span class="sc">$</span>title.estpse</span></code></pre></div>
@@ -1996,7 +1996,7 @@ output
 ## 3 Removal or Loss of Vegetation      0.1                  68.17
 ## 4           Stress or Mortality      0.1                    100
 ## 5               Expected Change      1.7                  50.46
-## 6                         Total       12                  23.54</code></pre>
+## 6                         Total    Total                  Total</code></pre>
 </details>
 <div class="sourceCode" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="#cb119-1" tabindex="-1"></a><span class="co"># Estimated change</span></span>
 <span id="cb119-2"><a href="#cb119-2" tabindex="-1"></a>chg_ag.pnts<span class="sc">$</span>titlelst<span class="sc">$</span>title.estpse</span></code></pre></div>
@@ -2016,7 +2016,7 @@ output
 ## 2 Removal or Loss of Vegetation      1.5                  68.82
 ## 3           Stress or Mortality      0.8                    100
 ## 4               Expected Change      7.5                  30.53
-## 5                         Total       15                  20.69</code></pre>
+## 5                         Total    Total                  Total</code></pre>
 </details>
 <p>Let’s create a barplot of estimated change by agent with the
 <code>datBarplot()</code> function from <code>FIESTA</code>.</p>
@@ -2477,7 +2477,7 @@ output
 ## 18                    Water-Barren      4.6                  39.46
 ## 19           Water-OtherVegetation      1.7                  53.25
 ## 20                     Water-Water     16.9                  19.16
-## 21                           Total      100                      0</code></pre>
+## 21                           Total    Total                  Total</code></pre>
 </details>
 <div class="sourceCode" id="cb164"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb164-1"><a href="#cb164-1" tabindex="-1"></a>cover12<span class="sc">$</span>est</span></code></pre></div>
 <details>

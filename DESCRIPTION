@@ -1,8 +1,8 @@
 Package: FIESTA
 Type: Package
 Title: Forest Inventory Estimation and Analysis
-Version: 3.6.1
-Date: 2024-01-22
+Version: 3.6.2
+Date: 2024-02-07
 Authors@R: 
     c(person(given = "Tracey",
              family = "Frescino",
@@ -32,7 +32,7 @@ Description: A research estimation tool for analysts that work with sample-based
     inventory data from the U.S. Department of Agriculture, Forest Service,
     Forest Inventory and Analysis (FIA) Program. 
 Depends: R (>= 4.2.0)
-Imports: data.table, DBI, FIESTAutils (>= 1.2.1), gdalraster,
+Imports: data.table, DBI, FIESTAutils (>= 1.2.2), gdalraster,
         grDevices, graphics, methods, RSQLite, sf, sqldf, utils
 Suggests: knitr, geodata, sp, terra, rmarkdown
 VignetteBuilder: knitr
@@ -43,9 +43,9 @@ URL: https://usdaforestservice.github.io/FIESTA/,
 BugReports: https://github.com/USDAForestService/FIESTA/issues
 LazyData: true
 Encoding: UTF-8
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 NeedsCompilation: no
-Packaged: 2024-01-22 17:03:04 UTC; grayson
+Packaged: 2024-02-07 18:13:46 UTC; grayson
 Author: Tracey Frescino [aut],
   Gretchen Moisen [aut],
   Paul Patterson [aut],
@@ -54,4 +54,4 @@ Author: Tracey Frescino [aut],
   Joshua Yamamoto [aut]
 Maintainer: Grayson White <graysonwhite13@gmail.com>
 Repository: CRAN
-Date/Publication: 2024-01-22 17:32:57 UTC
+Date/Publication: 2024-02-08 08:10:16 UTC
