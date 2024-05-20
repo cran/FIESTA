@@ -56,6 +56,7 @@
 #' @param title_opts List. See help(title_options()) for a list of options.
 #' @param savedata_opts List. See help(savedata_options()) for a list
 #' of options. Only used when savedata = TRUE.  
+#' @param cdomdat Data.frame of condition-domain data. Output from modGBchng().
 #' @param gui Logical. If gui, user is prompted for parameters.
 #' @param ...  Parameters for modGBpop() if GBpopdat is NULL.
 #' @return A list with estimates with percent sampling error for rowvar (and
@@ -235,6 +236,7 @@ modGBchng <- function(GBpopdat,
                       table_opts = NULL, 
                       title_opts = NULL, 
                       savedata_opts = NULL, 
+                      cdomdat = NULL,
                       gui = FALSE, 
                       ...){
 
@@ -409,8 +411,8 @@ modGBchng <- function(GBpopdat,
   ###################################################################################
   estdat <- check.estdata(esttype=esttype, pop_fmt=pop_fmt, pop_dsn=pop_dsn,
                 pltcondf=pltcondx, cuniqueid=cuniqueid, condid=condid,  
-                sumunits=sumunits, totals=totals, landarea=landarea, 
-				ACI.filter=ACI.filter, pcfilter=pcfilter, 
+                sumunits=sumunits, totals=totals, landarea=landarea,
+                ACI.filter=ACI.filter, pcfilter=pcfilter, 
                 allin1=allin1, estround=estround, pseround=pseround,
                 divideby=divideby, addtitle=addtitle, returntitle=returntitle, 
                 rawdata=rawdata, rawonly=rawonly, savedata=savedata, 
@@ -492,7 +494,8 @@ modGBchng <- function(GBpopdat,
 #  if (addtotal) {
 #    condf$TOTAL <- 1
 #  }
-
+  if (is.null(cdomdat)) {
+    
   ## Merge filtered condition data (condf) to all conditions (condx)
   ###################################################################################
   setkeyv(condx, c(cuniqueid, condid))
@@ -589,7 +592,11 @@ modGBchng <- function(GBpopdat,
 	strunitvars <- c(unitvar, strvar)
   }
 	
-	
+  } else {  ## cdomdat
+    cdomdat <- setDT(cdomdat)
+    cdomdat <- check.matchclass(stratalut, cdomdat, strunitvars)$tab2
+    
+  }
   ###################################################################################
   ### Get titles for output tables
   ###################################################################################

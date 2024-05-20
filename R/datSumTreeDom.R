@@ -232,7 +232,7 @@ datSumTreeDom <- function(tree = NULL,
                           tsumvar = NULL, 
                           addseed = FALSE, 
                           seedonly = FALSE,
-						  woodland = 'Y',
+                          woodland = 'Y',
                           TPA = TRUE, 
                           tfun = sum, 
                           ACI = FALSE, 
@@ -550,12 +550,11 @@ datSumTreeDom <- function(tree = NULL,
     }
   }
 
-
   ## Build query parts for tree table
   ##################################################
-  tfromqry <- paste("FROM", treenm)
+  tfromqry <- paste("\nFROM", treenm)
   if (addseed || seedonly) {
-    sfromqry <- paste("FROM", seednm)
+    sfromqry <- paste("\nFROM", seednm)
   }
   if (woodland %in% c("N", "only") && woodlandref) {
     tfromqry <- paste0(tfromqry, 
@@ -565,27 +564,44 @@ datSumTreeDom <- function(tree = NULL,
   selectvars <- tsumuniqueid
   if (!is.null(tfilter)) {
     if (!seedonly) {
-      message("check filter for trees: ", tfilter)
-      tfilter <- check.logic(treenames, statement=tfilter, stopifinvalid=FALSE)
+      #message("check filter for trees: ", tfilter)
+	  tfiltersql <- RtoSQL(tfilter, x=treenames)
+
 	  if (is.null(twhereqry)) {
-        twhereqry <- paste("WHERE", RtoSQL(tfilter, x=treenames))
+        twhereqry <- paste("\nWHERE", tfiltersql)
 	  } else {
-        twhereqry <- paste(twhereqry, "AND", RtoSQL(tfilter, x=treenames))
+        twhereqry <- paste(twhereqry, "AND", tfiltersql)
       }	  
     }
+    ## Add alias path to SPCD if ref_species is used for woodland
+    if (!is.null(twhereqry) && woodland != "Y") {
+	  if (grepl("SPCD", twhereqry)) {
+	    twhereqry <- sub("SPCD", paste0(treenm, ".SPCD"), twhereqry)
+	  }
+	}
     if (addseed || seedonly) {
-      message("check filter for seeds: ", tfilter)
-      sfilter <- check.logic(seednames, statement=tfilter, stopifinvalid=FALSE)
+      #message("check filter for seeds: ", tfilter)
+      sfilter <- suppressMessages(check.logic(seednames, statement=tfilter, 
+	                       returnpart = TRUE, stopifinvalid=FALSE))
+	  if (!is.null(sfilter)) {
+	    sfilter <- RtoSQL(sfilter)
+	  }
       if (!is.null(sfilter)) {
-        swhereqry <- paste("WHERE", RtoSQL(tfilter))
+        swhereqry <- paste("\nWHERE", sfilter)
       }
     }
+    ## Add alias path to SPCD if ref_species is used for woodland
+    if (!is.null(swhereqry) && woodland != "Y") {
+	  if (grepl("SPCD", swhereqry)) {
+	    swhereqry <- sub("SPCD", paste0(seednm, ".SPCD"), swhereqry)
+	  }
+	}
 	if (woodland %in% c("N", "only")) {
 	  if (is.null(twhereqry)) {
 	    if (woodland == "N") {
-          twhereqry <- paste("WHERE", woodlandnm, "== 'N'")
+          twhereqry <- paste("\nWHERE", woodlandnm, "== 'N'")
 		} else {
-          twhereqry <- paste("WHERE", woodlandnm, "== 'Y'")
+          twhereqry <- paste("\nWHERE", woodlandnm, "== 'Y'")
         }		  
 	  } else {
 	    if (woodland == "N") {
@@ -671,7 +687,6 @@ datSumTreeDom <- function(tree = NULL,
     sselectvars <- unique(c(selectvars, tsumvar, tdomvar, tdomvar2))
   }
 
-
   ## CHECK TPA and tsumvars
   ###########################################################  
   TPA <- pcheck.logical(TPA, varnm="TPA", title="Calculate TPA?", first="NO", 
@@ -742,17 +757,18 @@ datSumTreeDom <- function(tree = NULL,
   #####################################################################
   ## Get tree data
   #####################################################################
-  tree.qry <- paste("SELECT", toString(tselectvars), 
+  tree.qry <- paste("SELECT", toString(paste0(treenm, ".", tselectvars)), 
                    tfromqry)
   if (!is.null(twhereqry)) {
     tree.qry <- paste(tree.qry, twhereqry)
   }
+
   #message(tree.qry)
   treex <- setDT(sqldf::sqldf(tree.qry, dbname=dbname))
   setkeyv(treex, tsumuniqueid)
 
   if (addseed) {
-    seed.qry <- paste("SELECT", toString(sselectvars), 
+    seed.qry <- paste("SELECT", toString(paste0(seednm, ".", sselectvars)), 
                    sfromqry)
     if (!is.null(swhereqry)) {
       seed.qry <- paste(seed.qry, swhereqry)
@@ -1555,20 +1571,26 @@ datSumTreeDom <- function(tree = NULL,
   byvars <- unique(c(tsumuniqueid, tdomvar, tdomvarnm))
 
   if (seedonly) {
-    tdomtreef <- treex[, tfun(.SD, na.rm=TRUE), by=byvars, .SDcols=newname]
-    setnames(tdomtreef, "V1", newname)
+#    tdomtreef <- treex[, tfun(.SD, na.rm=TRUE), by=byvars, .SDcols=newname]
+#    setnames(tdomtreef, "V1", newname)
+#    setkeyv(tdomtreef, byvars)
+    tdomtreef <- treex[, lapply(.SD, tfun, na.rm=TRUE), by=byvars, .SDcols=newname]
     setkeyv(tdomtreef, byvars)
   } else {
-    tdomtreef <- treex[, tfun(.SD, na.rm=TRUE), by=byvars, .SDcols=newname]
-    setnames(tdomtreef, "V1", newname)
+#    tdomtreef <- treex[, tfun(.SD, na.rm=TRUE), by=byvars, .SDcols=newname]
+#    setnames(tdomtreef, "V1", newname)
+#    setkeyv(tdomtreef, byvars)
+    tdomtreef <- treex[, lapply(.SD, tfun, na.rm=TRUE), by=byvars, .SDcols=newname]
     setkeyv(tdomtreef, byvars)
 
     if (addseed) { 
       seedname <- ifelse(TPA, seed_newname, "TREECOUNT_CALC")
-      tdomseedf <- seedx[, tfun(.SD, na.rm=TRUE), by=byvars, .SDcols=seed_newname]
-
-      setnames(tdomseedf, "V1", seedname)
+#      tdomseedf <- seedx[, tfun(.SD, na.rm=TRUE), by=byvars, .SDcols=seed_newname]
+#      setnames(tdomseedf, "V1", seedname)
+#      setkeyv(tdomseedf, byvars)
+      tdomseedf <- seedx[, lapply(.SD, tfun, na.rm=TRUE), by=byvars, .SDcols=seed_newname]
       setkeyv(tdomseedf, byvars)
+	  
       tdomtreef <- merge(tdomtreef, tdomseedf, by=byvars, all.x=TRUE, all.y=TRUE)
       tdomtreef[, (paste0("TREE_", newname)) := get(newname)]
       tdomtreef[, (newname) := rowSums(.SD, na.rm=TRUE), .SDcols=c(newname, seedname)]
@@ -1692,10 +1714,9 @@ datSumTreeDom <- function(tree = NULL,
     tabs <- check.matchclass(condx, tdoms, c(cuniqueid, condid))
     condx <- tabs$tab1
     tdoms <- tabs$tab2
-     
+    
     ## Merge summed data to cond table
     sumtreef <- merge(condx, tdoms, all.x=TRUE, by=c(cuniqueid, condid))
-
     if (NAto0) {
       for (col in tdomscolstot) set(sumtreef, which(is.na(sumtreef[[col]])), col, 0)
       #sumtreef[is.na(sumtreef)] <- 0

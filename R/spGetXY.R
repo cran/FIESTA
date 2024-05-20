@@ -335,9 +335,8 @@ spGetXY <- function(bnd,
 
   ## Check Endyr.filter
   #############################################################################
-  Endyr.filter <- check.logic(bnd, Endyr.filter)
+  Endyr.filter <- check.logic(bnd, Endyr.filter, stopifnull=FALSE)
 
-    
   ## Check intensity1
   #############################################################################
   intensity1 <- pcheck.logical(intensity1, varnm="intensity1", 
@@ -461,9 +460,8 @@ spGetXY <- function(bnd,
                      pjoinid = pjoinid,
                      invtype = invtype,
                      intensity1 = intensity1,
-					 pvars2keep = pvars2keep,
+                     pvars2keep = pvars2keep,
                      issp = TRUE)
-
     if (is.null(xydat)) {
       return(NULL)
     }
@@ -537,7 +535,7 @@ spGetXY <- function(bnd,
   ## Endyr.filter
   #############################################################################
   if (!is.null(Endyr.filter)) {
-    filternames <- check.logic(bnd, Endyr.filter, returnvar=TRUE)
+    filternames <- check.logic(bnd, Endyr.filter, returnvar=TRUE, stopifnull=FALSE)
     if (length(filternames) > 0) {
       spxy <- spExtractPoly(spxy, polyvlst=bndx, polyvarlst=filternames)$spxyext
     } else {

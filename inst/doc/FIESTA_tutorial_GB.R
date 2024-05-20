@@ -110,7 +110,6 @@ stratdat.bhdist$areavar        # Area variable
 
 
 ## ----results = FALSE, message = F---------------------------------------------
-
 GBpopdat <- modGBpop(
   popTabs = list(cond = FIESTA::WYcond,          # FIA plot/condition data
                  tree = FIESTA::WYtree,          # FIA tree data

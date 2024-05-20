@@ -1,13 +1,10 @@
- #' Data - Aggregates numeric tree data to the plot or condition-level.
+#' Data - Aggregates tree and/or seedling data to the plot, condition,
+#' or subplot level.
 #' 
-#' Aggregates numeric tree-level data (e.g., VOLCFNET) to plot or condition,
-#' including options for filtering tree data or extrapolating to plot aseedonlycre by
-#' multiplying by TPA.
-#' 
-#' If variable = NULL, then it will prompt user for input.
-#' 
-#' Dependent external functions: datFilter Dependent internal functions:
-#' addcommas, fileexistsnm, getadjfactor
+#' Aggregates tree data (e.g., VOLCFNET) and/or seedling data (e.g., TPA_UNADJ) 
+#' to plot, condition, or subplot. Includes options for filtering tree data, 
+#' expanding to plot by multiplying by trees per acre (TPA_UNADJ), or adjusting 
+#' for nonresponse at the plot level (getadjplot).
 #' 
 #' For adjcond (bycond=FALSE): \cr If you want to summarize trees-per-acre
 #' information aggregated to plot or condition level, you need to include a TPA
@@ -154,7 +151,7 @@ datSumTree <- function(tree = NULL,
                        tsumvarnmlst = NULL, 
                        addseed = FALSE, 
                        seedonly = FALSE,
-					   woodland = "Y",
+                       woodland = "Y",
                        TPA = TRUE, 
                        tfun = sum, 
                        ACI = FALSE, 
@@ -484,18 +481,19 @@ datSumTree <- function(tree = NULL,
  
   if (!is.null(tfilter) && tfilter != "") {
     if (!seedonly) {
-      tfilter <- check.logic(treenames, statement=tfilter, stopifinvalid=FALSE)
-      tfilter <- RtoSQL(tfilter, x=treenames)
+	  tfiltersql <- RtoSQL(tfilter, x=treenames)
       if (is.null(twhereqry)) {
-        twhereqry <- paste("WHERE", tfilter)
+        twhereqry <- paste("WHERE", tfiltersql)
 	  } else {
-        twhereqry <- paste(twhereqry, "AND", tfilter)
+        twhereqry <- paste(twhereqry, "AND", tfiltersql)
       }	 
     }	  
     if (addseed || seedonly) {
-      sfilter <- check.logic(seednames, statement=tfilter, stopifinvalid=FALSE)
-      sfilter <- RtoSQL(sfilter, x=seednames)
-      if (!is.null(sfilter)) {
+      #message("check filter for seeds: ", tfilter)
+      sfilter <- suppressMessages(check.logic(seednames, statement=tfilter, 
+	                   returnpart = TRUE, stopifinvalid=FALSE))
+	  if (!is.null(sfilter)) {
+	    sfilter <- RtoSQL(sfilter)
         swhereqry <- paste("WHERE", sfilter)
       }
     }
@@ -1017,7 +1015,7 @@ datSumTree <- function(tree = NULL,
     }
     out_conn <- outlst$out_conn
   }
- 
+
   ################################################################################  
   ################################################################################  
   ### DO WORK
@@ -1141,7 +1139,7 @@ datSumTree <- function(tree = NULL,
       seedx[, COUNT := 1]
     }
   }   
- 
+  
   ## ADDS '_TPA' TO VARIABLE NAME, MULTIPLIES BY TPA_UNADJ, AND DIVIDES BY adjfac
   tunitlst <- list()
   for (tvar in tsumvarlst) {
@@ -1153,7 +1151,6 @@ datSumTree <- function(tree = NULL,
         if (fname == "standing-dead") fname <- "dead"
       }
     }
-	
     if (tvar %in% c(tuniqueid, tpavars)) {
       tvar <- "COUNT"
 	  tunits <- "trees"
@@ -1199,7 +1196,7 @@ datSumTree <- function(tree = NULL,
         }
       }
     } 
- 
+
     ## MULTIPLY tvar BY TPA VARIABLE IF DESIRED
     if (TPA) {
       if (tvar %in% mortvars) {
@@ -1250,11 +1247,11 @@ datSumTree <- function(tree = NULL,
       }
       if (addseed && tvar=="COUNT") {
         #seedx[, COUNT := TREECOUNT_CALC]
-        seedx[, (newname) := get(eval(tvarnew)) * TREECOUNT_CALC]
+        seedx[, (newname) := get(eval(tvarnew))]
         seedcountvar=treecountvar <- newname
       }
     }
-
+	
     ## ADJUSTMENT FACTORS
     if (adjtree) {
       ## Create new name for adjusted variable
@@ -1288,7 +1285,7 @@ datSumTree <- function(tree = NULL,
     } 
 	tunitlst[[newname2]] <- tunits
   }
- 
+
   ######################################################################## 
   ## Aggregate tree variables
   ######################################################################## 

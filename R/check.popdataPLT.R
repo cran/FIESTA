@@ -94,7 +94,6 @@ check.popdataPLT <- function(dsn,
   }
   puniqueid <- tabIDs[["plt"]]
   
-  
   ##############################################################################
   ## Check parameters
   ##############################################################################
@@ -183,7 +182,7 @@ check.popdataPLT <- function(dsn,
       if (length(predfac) == 0) predfac <- NULL
     }
   }
-  
+
   ##############################################################################
   ## Database queries
   ##############################################################################
@@ -195,7 +194,7 @@ check.popdataPLT <- function(dsn,
     dbconn <- DBtestSQLite(dsn, dbconnopen=TRUE, showlist=FALSE)
     tablst <- DBI::dbListTables(dbconn)
     ppsanm <- pltassgnqry <- NULL
-    
+
     ## Check name of plt
     if (!is.null(plt)) {
       if (plt == "plot" && "plt" %in% tablst) {
@@ -204,6 +203,9 @@ check.popdataPLT <- function(dsn,
         plt <- "plot"
       }
       pltflds <- DBI::dbListFields(dbconn, plt)
+    } else if (popType == "CHNG" && !is.null(pltu)) {
+      plt <- pltu
+      puniqueid <- "CN"
     }
     
     ## Check name of pltassgn
@@ -232,7 +234,7 @@ check.popdataPLT <- function(dsn,
       #whereqry <- paste0("\nWHERE ", evalidnm, " IN(", toString(evalid), ")")
       whereqry <- paste0("\nWHERE ", evalidnm, " IN(", toString(popevalid), ")")
       pltassgnqry <- paste0("SELECT * FROM ", ppsanm, whereqry)
-      
+
       if (is.null(plt)) {
         palias <- "ppsa"
         pfromqry <- paste(ppsanm, "ppsa")
@@ -323,7 +325,7 @@ check.popdataPLT <- function(dsn,
       }
       #dbqueries$plot <- plotqry
     }
-    
+  
     if (is.character(unitarea) && !is.null(chkdbtab(tablst, unitarea))) {
       unitindb <- TRUE
       unitarea_layer <- chkdbtab(tablst, unitarea)
@@ -338,7 +340,7 @@ check.popdataPLT <- function(dsn,
                                nullcheck=nullcheck, tabqry=unitareaqry,
                                returnsf=FALSE)
     } 
-    
+
     if (strata && is.character(stratalut) && !is.null(chkdbtab(tablst, stratalut))) {
       stratindb <- TRUE
       stratalut_layer <- chkdbtab(tablst, stratalut)
@@ -358,7 +360,7 @@ check.popdataPLT <- function(dsn,
       return(NULL)
     }
   }
-  
+
   ##############################################################################
   ## Import tables
   ##############################################################################
@@ -369,7 +371,6 @@ check.popdataPLT <- function(dsn,
                             tabnm="pltassgn", caption="plot assignments?", 
                             nullcheck=nullcheck, tabqry=pltassgnqry, returnsf=FALSE)
   
-
   ##############################################################################
   ## Check and merge plt, pltassgn, cond
   ##############################################################################
@@ -427,7 +428,7 @@ check.popdataPLT <- function(dsn,
       ## Set key
       setkeyv(pltassgnx, pltassgnid)
     }
-    
+
     ## Merge plot and pltassgn tables
     ############################################################################
     if (!is.null(pltx) && !is.null(pltassgnx)) {
@@ -457,19 +458,21 @@ check.popdataPLT <- function(dsn,
       pltxvars <- names(pltx)[!names(pltx) %in% names(pltassgnx)]
       
       ## Merge pltx and pltassgnx (Note: inner join)
-      pltx <- merge(pltassgnx,
-                    pltx[, unique(c(pjoinid, pltxvars)), with=FALSE], 
-                    by.x=pltassgnid, by.y=pjoinid)
+#      pltx <- merge(pltassgnx,
+#                    pltx[, unique(c(pjoinid, pltxvars)), with=FALSE], 
+#                    by.x=pltassgnid, by.y=pjoinid)
+      pltx <- merge(pltx[, unique(c(pjoinid, pltxvars)), with=FALSE],
+                    pltassgnx,
+                    by.x=pjoinid, by.y=pltassgnid)
+
       #pltx <- merge(pltx, pltassgnx, by.x=pjoinid, by.y=pltassgnid)
-      puniqueid <- pltassgnid
-      
     } else if (is.null(pltx)) {
       pltx <- pltassgnx
       puniqueid <- pltassgnid
       if (is.null(pjoinid)) pjoinid <- pltassgnid
     }
   }
-  
+
   ## Check for duplicate plots
   locvars <- c("STATECD", "UNITCD", "COUNTYCD", "PLOT")
   if (all(locvars %in% names(pltx)) && any(pltx[, duplicated(.SD), .SDcols=locvars]) && (!popType %in% c("GRM", "CHNG"))) {
@@ -637,7 +640,7 @@ check.popdataPLT <- function(dsn,
     message("PLOT_STATUS_CD not in dataset.. assuming all plots are at least partially sampled")
     plotsampcnt <- pltx[, list(NBRPLOT=uniqueN(get(puniqueid)))]
   }
-  
+
   if (ACI) {
     if (any(c("NF_PLOT_STATUS_CD", "PSTATUSNF") %in% pltnmlst)) {
       if ("PSTATUSNF" %in% names(pltx))
@@ -657,14 +660,13 @@ check.popdataPLT <- function(dsn,
       plotsampcnt <- nfplotsampcnt
     }
   }
-  
+ 
   ## Remove plots that have no remeasurement data
   ##############################################################################
   if (popType %in% c("GRM", "CHNG", "LULC") && "REMPER" %in% names(pltx)) {
     ## Remove plots that have no remeasurement data
     #pltx <- pltx[!is.na(pltx$REMPER), ]
   }
-  
   
   ##############################################################################
   ## Check estimation unit and strata
@@ -690,7 +692,7 @@ check.popdataPLT <- function(dsn,
   if (module == "SA" && "AOI" %in% names(unitarea)) {
     vars2keep <- "AOI"
   }
-  
+
   removeunits <- ifelse(unit.action == "remove", TRUE, FALSE)
   unitdat <- check.unitarea(unitarea=unitarea, pltx=pltx,
                             unitvars=c(unitvar, unitvar2), areavar=areavar, areaunits=areaunits,
@@ -699,7 +701,7 @@ check.popdataPLT <- function(dsn,
   unitarea <- unitdat$unitarea
   areavar <- unitdat$areavar
   areaunits <- unitdat$areaunits
-  
+
   if (!unitindb && !is.null(evalid)) {
     ecol <- pcheck.varchar("EVALID", checklst=names(unitarea), stopifinvalid=FALSE)
     if (!is.null(ecol)) {
@@ -710,7 +712,7 @@ check.popdataPLT <- function(dsn,
       }
     }
   }
-  
+
   ##############################################################################
   ## Strata - Generate table of plots by strata,
   ##          including nonsampled plots (P2POINTCNT)
@@ -774,7 +776,7 @@ check.popdataPLT <- function(dsn,
     strvar <- NULL
     pltassgnvars <- unique(c(pltassgnvars, prednames))
   }
-  
+ 
   ##############################################################################
   ## Generate and apply nonsamp.pfilter
   ##############################################################################
@@ -795,12 +797,16 @@ check.popdataPLT <- function(dsn,
       return(NULL)
     }
   }
- 
+
   ##############################################################################
   ## Split tables
   ##############################################################################
   ## Subset columns for pltassgn table
-  pltassgnx <- data.table(pltx[, pltassgnvars, with=FALSE])
+  pltassgnvars2 <- unique(c(puniqueid, pltassgnvars))[unique(c(puniqueid, pltassgnvars)) %in% names(pltx)]
+  pltassgnx <- data.table(pltx[, pltassgnvars2, with=FALSE])
+  if (puniqueid != pltassgnid) {
+    setnames(pltassgnx, puniqueid, pltassgnid)
+  }
   setkeyv(pltassgnx, pltassgnid)
   
   ## Subset columns for pltassgn table
@@ -808,13 +814,13 @@ check.popdataPLT <- function(dsn,
   pvars2keep <- pvars2keep[pvars2keep %in% names(pltx)]
   pltx <- data.table(pltx[, pvars2keep, with=FALSE])
   setkeyv(pltx, puniqueid)
-  
+
   if (is.null(pvars)) {
     pvars <- c(puniqueid, pdoms2keep, pvars2keep)
   } else {
     pvars <- c(pvars, pdoms2keep, pvars2keep)
   }
-  
+ 
   returnlst <- list(pltassgnx=pltassgnx, pltassgnid=pltassgnid, pltx=pltx,
                     pfromqry=pfromqry, whereqry=whereqry, popwhereqry=popwhereqry, 
                     puniqueid=puniqueid, pvars=pvars, pjoinid=pjoinid, popevalid=popevalid,
