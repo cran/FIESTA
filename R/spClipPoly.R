@@ -68,15 +68,12 @@
 #' @keywords data
 #' @examples 
 #' \dontrun{
-#' # Load in USAco data from geodata package
-#' USAco <- geodata::gadm(country="United States", level=2, path=tempdir())
-#' 
 #' # Set up data from FIESTA
 #' WYbhfn <- system.file("extdata", "sp_data/WYbighorn_adminbnd.shp",
 #'                                     package = "FIESTA"))
 #' 
 #' # Clip polygon with WY Bighorn object from FIESTA
-#' WYbhco <- spClipPoly(polyv = USAco,
+#' WYbhco <- spClipPoly(polyv = stunitco,
 #'                      clippolyv = WYbhfn)     
 #' }
 #' @export spClipPoly
@@ -216,7 +213,8 @@ spClipPoly <- function(polyv,
 
   ## Clip poly
   ipoly <- sf::st_intersection(polyvx, sf::st_union(clippolyvx))
-
+  ipoly <- sf::st_cast(sf::st_make_valid(ipoly))
+  
 
   ## Calculate area
   if (areacalc) {

@@ -8,16 +8,17 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
 		stepfolder=NULL, out_fmt="shp", step_dsn=NULL, step.cex=0.8,
 		maxbnd.threshold=0, largebnd.threshold=30, multiSAdoms=TRUE,
 		byeach=FALSE, maxbnd.addtext=TRUE, largebnd.addtext=FALSE, 
-		overwrite=TRUE) {
+		bayes=FALSE, overwrite=TRUE) {
   ## DESCRIPTION:: Automate selection of helperbnd polygons for modeling.
   ## maxbnd - maximum constraint for modeling extent (e.g., Province)
   ## if maxbnd, maxbnd is intersected with smallbnd and dissolved by maxbnd.unique (*maxbnd_select)
   ## if (smallbnd intersects more than 1 maxbnd by greater than the set threshold...
   ## 		if multiSAdoms=TRUE, more than 1 SAdoms is returned as a list.
+  ## if bayes, get largebnd with largest overlap and intersecting helpers outside of largebnd
 
   ## global parameters
   stepcnt <- 1
-  maxbndxlst <-{}
+  maxbndxlst=maxbndx_intdlst <-{}
   int.pct=helperbndx.tmp <- NULL
 
   mbndlst <- list()
@@ -29,6 +30,10 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
     mar <-  graphics::par("mar")
     on.exit(graphics::par(mar=mar))
     par(mar=c(1,1,1,1))
+  }
+  
+  if (bayes) {
+    multiSAdoms <- FALSE
   }
 
   ############################################################################
@@ -42,9 +47,9 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
     ## Note: use tabulateIntersections with fewer smallbnd polygons - faster
 #    if (nrow(smallbndx) < 200) {
       maxbndx_intersect <-
-		suppressWarnings(tabulateIntersections(layer1=smallbndx,
+		     suppressWarnings(tabulateIntersections(layer1=smallbndx,
 		        layer1fld=smallbnd.unique, layer2=maxbndxd, layer2fld=maxbnd.unique))
-      maxbndx_intersect <- maxbndx_intersect[!is.na(maxbndx_intersect$int.pct),
+            maxbndx_intersect <- maxbndx_intersect[!is.na(maxbndx_intersect$int.pct),
             c(maxbnd.unique, smallbnd.unique, "int.pct")]
       maxbndxlst <- unique(maxbndx_intersect[[maxbnd.unique]])
       maxbndxd.int <- maxbndxd[maxbndxd[[maxbnd.unique]] %in% maxbndxlst, ]
@@ -65,8 +70,7 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
       } 
          
       ## get intersection of maxbndx and smallbndx (dissolved as 1 polygon)
-      maxbndx_intersect <-
-	 	suppressWarnings(tabulateIntersections(layer1=smallbndxd,
+      maxbndx_intersect <- suppressWarnings(tabulateIntersections(layer1=smallbndxd,
 	 	        layer1fld="DISSOLVE", layer2=maxbndxd.int, layer2fld=maxbnd.unique))
 
       ## Get the maximum overlap by province for smallbndx (dissolved as 1 polygon)
@@ -74,8 +78,8 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
  
       maxbnd.gtthres <- unique(maxbndx.pct[[maxbnd.unique]][maxbndx.pct$int.pct >= maxbnd.threshold])
       maxbnd.ltthres <- unique(maxbndx.pct[[maxbnd.unique]][maxbndx.pct$int.pct < maxbnd.threshold])
-      maxbndxlst <- unique(maxbndx.pct[[maxbnd.unique]])
-
+      maxbndxlst <- unique(c(maxbnd.gtthres, maxbnd.ltthres))
+      
       ## Remove water from list if it exists
       if (any(maxbndxlst == "Water")) {
         maxbndxlst <- maxbndxlst[maxbndxlst != "Water"]
@@ -86,8 +90,7 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
       maxbndx.intd <- maxbndxd[maxbndxd[[maxbnd.unique]] %in% maxbndxlst,]
 
       ## Now, get intersection of maxbndx and smallbndx, by smallbnd.unique
-      maxbndx_intersect <-
-		suppressWarnings(tabulateIntersections(layer1=smallbndx,
+      maxbndx_intersect <- suppressWarnings(tabulateIntersections(layer1=smallbndx,
 		        layer1fld=smallbnd.unique, layer2=maxbndx.intd, layer2fld=maxbnd.unique))
       maxbndx_intersect <- maxbndx_intersect[!is.na(maxbndx_intersect$int.pct),
             c(maxbnd.unique, smallbnd.unique, "int.pct")]
@@ -96,8 +99,8 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
 
       if (!exists("maxbndx_intersect")) {
         maxbndx_intersect <-
-		suppressWarnings(tabulateIntersections(layer1=smallbndx,
-		        layer1fld=smallbnd.unique, layer2=maxbndxd, layer2fld=maxbnd.unique))
+		        suppressWarnings(tabulateIntersections(layer1=smallbndx,
+		                   layer1fld=smallbnd.unique, layer2=maxbndxd, layer2fld=maxbnd.unique))
         maxbndx_intersect <- maxbndx_intersect[!is.na(maxbndx_intersect$int.pct),
             c(maxbnd.unique, smallbnd.unique, "int.pct")]
       }
@@ -113,13 +116,13 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
       maxbnd.gtthres <- maxbndxlst
       maxbnd.ltthres <- {}
     }
-
+    
     ############################################################
     ## Display and save image for maxbnd_intersect
     ############################################################
     if (showsteps) {
       plot(sf::st_geometry(maxbndx.intd[maxbnd.unique]), main=NULL, border="dark grey",
-		col=sf::sf.colors(nrow(maxbndx.intd), categorical=TRUE, alpha=.2))
+		     col=sf::sf.colors(nrow(maxbndx.intd), categorical=TRUE, alpha=.2))
       if (nrow(smallbndx) < 1000) {
         plot(sf::st_geometry(smallbndx), add=TRUE, border="red")
       }
@@ -131,11 +134,11 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
 
     if (savesteps) {
       out_layer <- paste0("step", stepcnt, "_maxbnd_intersect")
-	  overwrite_dsn <- ifelse(out_fmt == "shp", TRUE, FALSE)
-	  append_layer <- ifelse(out_fmt == "shp", FALSE, TRUE)
+	          overwrite_dsn <- ifelse(out_fmt == "shp", TRUE, FALSE)
+	          append_layer <- ifelse(out_fmt == "shp", FALSE, TRUE)
       spExportSpatial(maxbndx.intd,
-              savedata_opts=list(outfolder = stepfolder, 
-			                   out_dsn = step_dsn,
+                 savedata_opts=list(outfolder = stepfolder, 
+			           out_dsn = step_dsn,
 							   out_fmt = out_fmt, 
 							   out_layer = out_layer, 
 							   append_layer = append_layer,
@@ -160,7 +163,7 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
 
     ## Get the maximum overlap by maxbnd.unique for each smallbnd.unique
     maxbnd_max <- aggregate(maxbndx_intersect$int.pct,
-			list(maxbndx_intersect[[smallbnd.unique]]), max)
+			               list(maxbndx_intersect[[smallbnd.unique]]), max)
     names(maxbnd_max) <- c(smallbnd.unique, "int.pct")
     maxbnd_max <- merge(maxbndx_intersect, maxbnd_max)
     maxbndxlst <- maxbndxlst[maxbndxlst %in% unique(maxbnd_max[[maxbnd.unique]])]
@@ -168,7 +171,17 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
     if (length(maxbnd.gtthres) > 1 || (nrow(maxbnd_max) > 1 && byeach)) {
       message("smallbnd intersects more than 1 maxbnd")
 
+#      if (bayes) {
+#        mbndlst <- maxbnd.gtthres
+#        sbndlst <- list(smallbndx)
+#        maxbndxlst <- maxbnd.gtthres
+#      } else if (multiSAdoms) {
       if (multiSAdoms) {
+        ## Create list of new maxbnd(s)
+        maxbndx_intdlst <- lapply(maxbndxlst, function(mbnd, maxbndx.intd) {
+          maxbndx.intd[maxbndx.intd[[maxbnd.unique]] %in% mbnd, ]
+        }, maxbndx.intd)
+        
         if (byeach) {
           mbndlst <- maxbnd_max[[maxbnd.unique]]
           sbndlst <- lapply(maxbnd_max[[smallbnd.unique]], 
@@ -187,7 +200,7 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
               smallbndx[smallbndx[[smallbnd.unique]] %in% sbnd.att,]
           }, maxbnd_max, smallbndx, smallbnd.unique)
           names(sbndlst) <- mbndlst
-        
+
  
           ## Appends small areas from maxbnds less than threshold to maxbnds greater 
           ## than threshold based on closest centroids
@@ -199,33 +212,33 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
                 maxbndlt.centroid <- suppressWarnings(sf::st_centroid(maxbndltd))
 
                 maxbndx.dist <- closest_poly(maxbndlt.centroid,
-			  ypoly=maxbndx[maxbndx[[maxbnd.unique]] %in% maxbndxlst,],
-			  ypoly.att=maxbnd.unique, returnsf=FALSE)
+			                   ypoly=maxbndx[maxbndx[[maxbnd.unique]] %in% maxbndxlst,],
+			                   ypoly.att=maxbnd.unique, returnsf=FALSE)
                 maxbndltnm <- names(maxbndx.dist)[names(maxbndx.dist) %in% maxbnd.gtthres][1]
 
                 sbndlt.att <- maxbnd_max[maxbnd_max[[maxbnd.unique]] %in% maxbnd.ltthres[j], 
-				smallbnd.unique]
+				                 smallbnd.unique]
                 sbndlst[[maxbndltnm]] <- rbind(sbndlst[[maxbndltnm]], 
-							smallbndx[smallbndx[[smallbnd.unique]] %in% sbndlt.att,])
+							                 smallbndx[smallbndx[[smallbnd.unique]] %in% sbndlt.att,])
               }
             }
           }
         }       
       } else {
         message(paste0("smallbnd overlaps greater than ", maxbnd.threshold,
-			"% threshold in more than 1 ", maxbnd.unique, 
-			"... consider creating more than 1 model"))
+			            "% threshold in more than 1 ", maxbnd.unique, 
+			            "... consider creating more than 1 model"))
 
         if (length(maxbnd.ltthres) > 1) {
           ## Merge maxbnds less than maxbnd.threshold to closest maxbnd
           mltbndlst <- lapply(maxbnd.ltthres,
-			function(lt, maxbndx.intd, maxbnd.unique) {
-            	lt.centroid <- suppressWarnings(
-				sf::st_centroid(maxbndx.intd[maxbndx.intd[[maxbnd.unique]] == lt, ]))
-            		closest.maxbnd <- names(closest_poly(lt.centroid,
-				ypoly=maxbndx.intd[maxbndx.intd[[maxbnd.unique]] != lt, ],
-				ypoly.att=maxbnd.unique, nbr=1, returnsf=FALSE))
-            	return(c(closest.maxbnd, lt)) }, maxbndx.intd, maxbnd.unique)
+			         function(lt, maxbndx.intd, maxbnd.unique) {
+            	          lt.centroid <- suppressWarnings(
+				                sf::st_centroid(maxbndx.intd[maxbndx.intd[[maxbnd.unique]] == lt, ]))
+            		        closest.maxbnd <- names(closest_poly(lt.centroid,
+				                ypoly=maxbndx.intd[maxbndx.intd[[maxbnd.unique]] != lt, ],
+				                ypoly.att=maxbnd.unique, nbr=1, returnsf=FALSE))
+            	         return(c(closest.maxbnd, lt)) }, maxbndx.intd, maxbnd.unique)
           mbndlst <- unique(c(maxbnd.gtthres, unlist(mltbndlst)))
 
           ## Create list of new smallbnd(s)
@@ -237,10 +250,12 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
  #         }, maxbnd_max, smallbndx, smallbnd.unique)
 
           sbndlst <- list(smallbndx)
+          maxbndx_intdlst <- list(maxbndx.intd)
 
         } else {
           mbndlst <- maxbndxlst[1]
           sbndlst <- list(smallbndx)
+          maxbndx_intdlst <- list(maxbndx.intd)
         }
       }
     } else {
@@ -257,16 +272,16 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
     ############################################################
     if (showsteps) {
       plot(sf::st_geometry(maxbndx.intd[maxbnd.unique]), main=NULL, border="dark grey",
-		col=sf::sf.colors(nrow(maxbndx.intd), categorical=TRUE, alpha=.2), reset=TRUE)
+		     col=sf::sf.colors(nrow(maxbndx.intd), categorical=TRUE, alpha=.2), reset=TRUE)
       if (nrow(smallbndx) < 1000) {
         plot(sf::st_geometry(smallbndx), add=TRUE, border="red")
       }
-      if (multiSAdoms) {
+      if (multiSAdoms || bayes) {
         plot(sf::st_geometry(maxbndx.intd[maxbndx.intd[[maxbnd.unique]] %in% maxbndxlst,]),
-		add=TRUE, border="cyan2", lwd=2)
+		      add=TRUE, border="cyan2", lwd=2)
       } else {
         plot(sf::st_geometry(maxbndx.intd[maxbndx.intd[[maxbnd.unique]] %in% maxbnd.gtthres,]),
-		add=TRUE, border="cyan2", lwd=2)
+		      add=TRUE, border="cyan2", lwd=2)
       }
       coords <- sf::st_coordinates(sf::st_centroid(sf::st_geometry(maxbndx.intd)))
       if (maxbnd.addtext) {
@@ -277,8 +292,8 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
     if (savesteps) {
       out_layer <- paste0("step", stepcnt, "_maxbnd_select")
       maxbndx.selectd <- maxbndx.intd[maxbndx.intd[[maxbnd.unique]] %in% maxbnd.gtthres,]
-	  overwrite_dsn <- ifelse(out_fmt == "shp", TRUE, FALSE)
-	  append_layer <- ifelse(out_fmt == "shp", FALSE, TRUE)
+	    overwrite_dsn <- ifelse(out_fmt == "shp", TRUE, FALSE)
+	    append_layer <- ifelse(out_fmt == "shp", FALSE, TRUE)
       spExportSpatial(maxbndx.selectd,
               savedata_opts=list(outfolder=stepfolder, out_dsn=step_dsn,
               out_fmt=out_fmt, out_layer=out_layer, append_layer=append_layer,
@@ -294,10 +309,10 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
         }
         if (multiSAdoms) {
           plot(sf::st_geometry(maxbndx.intd[maxbndx.intd[[maxbnd.unique]] %in% maxbndxlst,]),
-		add=TRUE, border="cyan2", lwd=2)
+		           add=TRUE, border="cyan2", lwd=2)
         } else {
           plot(sf::st_geometry(maxbndx.intd[maxbndx.intd[[maxbnd.unique]] %in% maxbnd.gtthres,]),
-		add=TRUE, border="cyan2", lwd=2)
+		           add=TRUE, border="cyan2", lwd=2)
         }
         coords <- sf::st_coordinates(sf::st_centroid(sf::st_geometry(maxbndx.intd)))
         if (maxbnd.addtext) {
@@ -324,6 +339,7 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
   #################################################################
   helperbndxlst <- list()
   smallbndxlst <- list()
+  largebndxdlst <- list()
   SAbndlst <- list()
   SAdomsnmlst <- vector("character", length(sbndlst))
 
@@ -364,12 +380,11 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
     sbnd.centroid <- suppressWarnings(sf::st_centroid(sbndd))
     largebnd_select <- NULL		## for selected largebnds to include more helperbnds
 
-
     largebndx <- largebndx[, largebnd.unique]
     helperbndx <- helperbndx[, helperbnd.unique]
 
     j <- 1
-    ## Loop thru maxbndlst
+    ## Loop thru maxbndxlst
     while (nbrdom < nbrdom.minx && j <= ifelse(length(maxbndxlst) > 0, length(mbnd), 1)) {
       if (length(mbnd) > 0) {
         message("\nadding ", maxbnd.unique, ": ", mbnd[j])
@@ -377,9 +392,9 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
         ## Subset maxbndx.intd
         maxbndx.tmpd <- maxbndx.intd[maxbndx.intd[[maxbnd.unique]] %in% mbnd[j],]
 
-       ## Remove columns in maxbndx.tmpd with same names as in largebndx.int
+        ## Remove columns in maxbndx.tmpd with same names as in largebndx.int
         maxbndx.tmpd <- maxbndx.tmpd[,
-		names(maxbndx.tmpd)[!names(maxbndx.tmpd) %in% names(largebndx)]]
+		          names(maxbndx.tmpd)[!names(maxbndx.tmpd) %in% names(largebndx)]]
 
         ## Get largebnd polygons within maxbndx and dissolve
         largebndx.int <- suppressWarnings(selectByIntersects(largebndx, maxbndx.tmpd))
@@ -406,8 +421,8 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
       }
       if (savesteps) {
         out_layer <- paste0("step", stepcnt, "_", sbndnm, "_largebnds")
-	    overwrite_dsn <- ifelse(out_fmt == "shp", TRUE, FALSE)
-	    append_layer <- ifelse(out_fmt == "shp", FALSE, TRUE)
+	      overwrite_dsn <- ifelse(out_fmt == "shp", TRUE, FALSE)
+	      append_layer <- ifelse(out_fmt == "shp", FALSE, TRUE)
         spExportSpatial(largebndx.intd,
                 savedata_opts=list(outfolder=stepfolder,
                                    out_dsn=step_dsn,
@@ -450,6 +465,8 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
 
       ## Select largebnd(s) that intersect more than threshold
       largebnd_select <- largebndx.intd[largebndx.intd[[largebnd.unique]] %in% largebnd.gtthres,]
+      largebndxdlst[[mbnd]] <- largebnd_select
+
 
       ############################################################
       ## Display and save image for largebnd_intersect
@@ -467,8 +484,8 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
 
       if (savesteps) {
         out_layer <- paste0("step", stepcnt, "_", sbndnm, "_largebnd_intersect")
-	    overwrite_dsn <- ifelse(out_fmt == "shp", TRUE, FALSE)
-	    append_layer <- ifelse(out_fmt == "shp", FALSE, TRUE)
+	      overwrite_dsn <- ifelse(out_fmt == "shp", TRUE, FALSE)
+	      append_layer <- ifelse(out_fmt == "shp", FALSE, TRUE)
         spExportSpatial(largebndx.intd,
                 savedata_opts=list(outfolder=stepfolder,
                                    out_dsn=step_dsn,
@@ -504,35 +521,27 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
 
       ## For largebnds with no intersecting smallbnd, get largebndx polygons closest
       ## to smallbnd centroid within maxbnd
-      if (length(largebndxlst) > 0) {
+      if (length(largebndxlst) > 1) {
         largebndx.dist <- closest_poly(sbnd.centroid,
-			ypoly=largebndx[largebndx[[largebnd.unique]] %in% largebndxlst,],
-			ypoly.att=largebnd.unique, returnsf=FALSE)
+			     ypoly=largebndx[largebndx[[largebnd.unique]] %in% largebndxlst,],
+			     ypoly.att=largebnd.unique, returnsf=FALSE)
         largebndxlst <- unique(c(largebnd.ltthres, largebnd.lt0, names(largebndx.dist)))
       }
  
       while (!end) {
         ## Get intersecting helper polygons
-        helperbndx.tmp <- suppressWarnings(sf::st_join(helperbndx,
-						sf_dissolve(largebnd_select, largebnd.unique),
-						join=sf::st_intersects, left=FALSE))
+        helperbndx.tmp <- suppressWarnings(selectByIntersects(helperbndx, 
+                              sf_dissolve(largebnd_select, largebnd.unique), .1))
 
-        # get percent overlap of helperbndx.int and y largebndx.int
-        ############################################################
-#        helperbndx.tmp$FID <- seq(1:nrow(helperbndx.tmp))
-#        helperbndx.tmppct <- suppressWarnings(tabulateIntersections(layer1=helperbndx.tmp,
-#			layer1fld="FID", layer2=largebnd_select))
-#        FIDpct <- helperbndx.tmppct$FID[helperbndx.tmppct$int.pct > largebnd.threshold]
-#        helperbndx.tmp <- helperbndx.tmp[helperbndx.tmp$FID %in% FIDpct,]
-
-        helperbndx.tmppct <- tryCatch(suppressWarnings(tabulateIntersections(layer1=helperbndx.tmp,
-			layer1fld=helperbnd.unique, layer2=largebnd_select)),
+        helperbndx.tmppct <- tryCatch(
+            suppressWarnings(tabulateIntersections(layer1=helperbndx.tmp,
+			            layer1fld=helperbnd.unique, layer2=largebnd_select)),
      	 			error=function(e) {
 					message("helperbnd intersection...")
 					stop(e, "\n")})
 
         helperbnd.pct <- helperbndx.tmppct[[helperbnd.unique]][
-			helperbndx.tmppct$int.pct > largebnd.threshold]
+			  helperbndx.tmppct$int.pct > largebnd.threshold]
         helperbndx.tmp <- helperbndx.tmp[helperbndx.tmp[[helperbnd.unique]] %in% helperbnd.pct,]
 
         ## Get number of polygons (i.e., domains)
@@ -562,8 +571,8 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
 
           ## Select largebnd(s) that intersect more than threshold
           largebnd_select <- rbind(largebnd_select,
-			sf_dissolve(largebndx[largebndx[[largebnd.unique]] %in% largebndxlst[k],],
-			largebnd.unique, areacalc=FALSE))
+			         sf_dissolve(largebndx[largebndx[[largebnd.unique]] %in% largebndxlst[k],],
+			         largebnd.unique, areacalc=FALSE))
           end <- FALSE
         } else {
           end <- TRUE
@@ -599,8 +608,8 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
 
       if (savesteps && !is.null(helperbndx.tmp)) {
         out_layer <- paste0("step", stepcnt, "_", sbndnm, "_largebnd_select")
-		overwrite_dsn <- ifelse(out_fmt == "shp", TRUE, FALSE)
-	    append_layer <- ifelse(out_fmt == "shp", FALSE, TRUE)
+		    overwrite_dsn <- ifelse(out_fmt == "shp", TRUE, FALSE)
+	      append_layer <- ifelse(out_fmt == "shp", FALSE, TRUE)
         spExportSpatial(largebnd_select,
               savedata_opts = list(outfolder=stepfolder, 
 			                      out_dsn=step_dsn,
@@ -642,8 +651,8 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
 
       if (savesteps && !is.null(helperbndx.tmp)) {
         out_layer <- paste0("step", stepcnt, "_", sbndnm, "_helperbnd_intersect")
-	    overwrite_dsn <- ifelse(out_fmt == "shp", TRUE, FALSE)
-	    append_layer <- ifelse(out_fmt == "shp", FALSE, TRUE)
+	             overwrite_dsn <- ifelse(out_fmt == "shp", TRUE, FALSE)
+	             append_layer <- ifelse(out_fmt == "shp", FALSE, TRUE)
         spExportSpatial(largebnd_select,
                 savedata_opts=list(outfolder=stepfolder, 
 				                   out_dsn=step_dsn,
@@ -672,37 +681,50 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
       j <- j + 1
     } ## End while j - maxbnd
 
-    if (polyunion) {
+    if (polyunion && !bayes) {
       ## Remove columns in helperbndx.tmp with same names as in smallbnd attributes
       helperbndx.tmp <- helperbndx.tmp[, names(helperbndx.tmp)[!names(helperbndx.tmp) %in%
-			c(smallbnd.unique, "AOI", smallbnd.domain)]]
+		 	              c(smallbnd.unique, "AOI", smallbnd.domain)]]
 
       ## Change name of helperbnd.unique values if the same as smallbnd.unique values
       if (any(helperbndx.tmp[[helperbnd.unique]] %in% smallbndx[[smallbnd.unique]])) {
         helperbndx.tmp[[helperbnd.unique]] <- suppressWarnings(sapply(helperbndx.tmp[[helperbnd.unique]],
-			checknm, sbndlst[[i]][[smallbnd.unique]]))
+			          checknm, sbndlst[[i]][[smallbnd.unique]]))
       }
       ## Union helperbnd and smallbnd polygons
       SAdoms <- suppressWarnings(spUnionPoly(sf::st_make_valid(helperbndx.tmp[, helperbnd.unique]),
-				polyv2=sf::st_make_valid(sbnd)))
+				             polyv2=sf::st_make_valid(sbnd)))
     } else {
-	  if (nrow(helperbndx.tmp) > nrow(sbnd)) {
-	    SAdoms <- helperbndx.tmp
-		SAdoms[SAdoms[[helperbnd.unique]] %in% sbnd[[smallbnd.unique]], "AOI"] <- 1
-	  } else {
+	    if (nrow(helperbndx.tmp) > nrow(sbnd)) {
+	      SAdoms <- helperbndx.tmp
+		    SAdoms[SAdoms[[helperbnd.unique]] %in% sbnd[[smallbnd.unique]], "AOI"] <- 1
+	    } else {
         SAdoms <- sbnd
-	  }
+	    }
     }
-
-    ## Add 0 to non-AOI
-    SAdoms[is.na(SAdoms$AOI), "AOI"] <- 0
-
-
-    ## Add a new column (DOMAIN) with helperbnd.unique where AOI = 0
-    SAdoms$DOMAIN <- SAdoms[[smallbnd.domain]]
-    SAdoms$DOMAIN[SAdoms$AOI == 0] <- SAdoms[[helperbnd.unique]][SAdoms$AOI == 0]
-    SAdoms$DOMAIN[SAdoms$AOI == 0] <- SAdoms[[helperbnd.unique]][SAdoms$AOI == 0]
-
+    
+    ## Add AOI to SAdoms
+    if (bayes) {
+      SAdoms$AOI <- 1
+      if (length(maxbnd.gtthres) > 1) {
+        ## Subset maxbndxd to only maxbnd.unique that intersects with smallbnd
+        maxgtthres2.intd <- maxbndxd[maxbndxd[[maxbnd.unique]] %in% 
+                                      maxbnd.gtthres[!maxbnd.gtthres %in% mbndlst],]
+        helperbndx2.tmp <- suppressWarnings(selectByIntersects(helperbndx, maxgtthres2.intd, 1))
+        helperbndx2.tmp <- suppressWarnings(selectByIntersects(helperbndx2.tmp, sbnd, .1)) 
+        helperbndx2.tmp$AOI <- 1
+        SAdoms <- rbind(SAdoms, helperbndx2.tmp)
+      }
+      setnames(SAdoms, helperbnd.unique, "DOMAIN")
+      
+    } else {
+      ## Add 0 to non-AOI
+      SAdoms[is.na(SAdoms$AOI), "AOI"] <- 0
+    
+      ## Add a new column (DOMAIN) with helperbnd.unique where AOI = 0
+      SAdoms$DOMAIN <- SAdoms[[smallbnd.domain]]
+      SAdoms$DOMAIN[SAdoms$AOI == 0] <- SAdoms[[helperbnd.unique]][SAdoms$AOI == 0]
+    }
 #    plot(sf::st_geometry(SAdoms["DOMAIN"]), main=NULL, border="grey",
 #		col=sf::sf.colors(nbrdom, categorical=TRUE, alpha=.2))
 #          coords <- sf::st_coordinates(sf::st_centroid(sf::st_geometry(SAdoms)))
@@ -714,15 +736,22 @@ helper.select <- function(smallbndx, smallbnd.unique, smallbnd.domain=NULL,
     helperbndxlst[[i]] <- helperbndx.tmp
     sbnd$AOI <- NULL
     smallbndxlst[[i]] <- sbnd
-
+    
   } ## End while i - sbnd
 
   names(SAdomslst) <- SAdomsnmlst
   names(smallbndxlst) <- SAdomsnmlst
-
+  #names(SAdomslst) <- mbndlst
+  #names(smallbndxlst) <- mbndlst
+  names(helperbndxlst) <- SAdomsnmlst
+  names(largebndxdlst) <- SAdomsnmlst
+  if (!is.null(maxbndx_intdlst)) {
+    names(maxbndx_intdlst) <- SAdomsnmlst
+  }
+  
   returnlst <- list(SAdomslst=SAdomslst, helperbndxlst=helperbndxlst,
-				smallbndxlst=smallbndxlst)
-
+				smallbndxlst=smallbndxlst, largebndxlst=largebndxdlst, maxbndxlst=maxbndx_intdlst)
+  
   return(returnlst)
 }
 

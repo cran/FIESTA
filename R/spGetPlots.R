@@ -560,6 +560,10 @@ spGetPlots <- function(bnd = NULL,
         ## Get XY
         ###########################################################################
         message("getting xy data...")
+        
+        if (is.null(pjoinid)) {
+          pjoinid <- puniqueid
+        }
 
         if (!is.null(Endyr.filter)) {
           ## Get XY data inside filter
@@ -631,6 +635,7 @@ spGetPlots <- function(bnd = NULL,
           #pop_plot_stratum_assgn <- rbind(pop_plot_stratum_assgn1, pop_plot_stratum_assgn2)
 
         } else {
+
           xydat <- spGetXY(bnd = bndx, 
                          states = states, 
                          RS = RS, 
@@ -659,7 +664,7 @@ spGetPlots <- function(bnd = NULL,
           stbnd.att <- xydat$stbnd.att
           bndx <- xydat$bndx
           xy.uniqueid <- xydat$xy.uniqueid
-          pjoinid = xydat$pjoinid 
+          #pjoinid = xydat$pjoinid 
           xyjoinid = xydat$xyjoinid 
           evalInfo <- xydat$evalInfo  
           #pop_plot_stratum_assgn <- xydat$pop_plot_stratum_assgn   
@@ -673,7 +678,7 @@ spGetPlots <- function(bnd = NULL,
           message("no xyjoinid defined... using the xy.uniqueid: ", xy.uniqueid)
           xyjoinid <- xy.uniqueid         
         } 
-
+        
         stcds <- pcheck.states(states, statereturn="VALUE")
         if (is.null(spxy) || nrow(spxy) == 0) {
           stop("spxy is null")
@@ -1161,7 +1166,7 @@ spGetPlots <- function(bnd = NULL,
           }
         }
       }
-
+      
       ## If duplicate plots, sort descending based on INVYR or CN and select 1st row
       if (nrow(PLOT) > length(unique(PLOT[[puniqueid]]))) {
         if ("INVYR" %in% names(PLOT)) {
@@ -1241,7 +1246,7 @@ spGetPlots <- function(bnd = NULL,
             indx <- indx[indx %in% names(tab)]
           }
 
-          if (!is.null(tab)) {
+          if (!is.null(tab) && nrow(tab) > 0) {
             assign(paste0("index.unique.", tabnm), NULL)
             if (is.null(tabIDs[[tabnm]]) && i == 1 && length(indx) > 0) {
               assign(paste0("index.unique.", tabnm), indx)

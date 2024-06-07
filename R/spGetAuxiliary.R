@@ -401,10 +401,12 @@ spGetAuxiliary <- function(xyplt = NULL,
   if (!is.null(rastlst.contfn)) {
     if (length(rastlst.contfn) == 1) {
       if (rastlst.contfn == "stop") {
-        stop()
+        stop("invalid rastlst.contfn: \n",
+             toString(sapply(rastlst.cont, normalizePath)))
       }
     }
   }
+
   if (!is.null(rastlst.contfn)) {
     band.cont <- sapply(rastlst.contfn, function(x) rasterInfo(x)$nbands)
     nlayers.cont <- sum(band.cont)
@@ -457,7 +459,7 @@ spGetAuxiliary <- function(xyplt = NULL,
       }
     }
   }
- 
+
   ## Check categorical rasters
   ###################################################################
   rastlst.catfn <- tryCatch(
@@ -471,7 +473,8 @@ spGetAuxiliary <- function(xyplt = NULL,
   if (!is.null(rastlst.catfn)) {
     if (length(rastlst.catfn) == 1) {
       if (rastlst.catfn == "stop") {
-        stop()
+        stop("invalid rastlst.catfn: \n",
+             toString(sapply(rastlst.cat, normalizePath)))
       }
     }
     band.cat <- sapply(rastlst.catfn, function(x) rasterInfo(x)$nbands)
@@ -621,7 +624,6 @@ spGetAuxiliary <- function(xyplt = NULL,
     unitvar <- "UNITVAR"
     polyvarlst <- c("UNITVAR", vars2keep)
   }
-
 
   #############################################################################
   ## 2) Set up outputs - unitzonal, prednames, inputdf, zonalnames
