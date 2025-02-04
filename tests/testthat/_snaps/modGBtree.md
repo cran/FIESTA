@@ -22,7 +22,8 @@
       16 Sugarberry / hackberry / elm / green ash    1020021.8                    100
       17                                    Aspen  256138904.4                  20.59
       18                               Nonstocked   14487669.1                  33.12
-      19                                    Total 4319194632.3                   4.83
+      19                                    Other           --                     --
+      20                                    Total 4319194632.3                   4.83
 
 ---
 
@@ -48,7 +49,8 @@
       16 Sugarberry / hackberry / elm / green ash     4455857.7
       17                                    Aspen   420518373.4
       18                               Nonstocked    53104873.9
-      19                                    Total 13516579068.4
+      19                                    Other            --
+      20                                    Total 13516579068.4
          Percent Sampling Error
       1                   42.43
       2                   86.68
@@ -68,31 +70,6 @@
       16                    100
       17                  27.81
       18                  42.69
-      19                    4.7
-
----
-
-    Code
-      modGBtree_BA_est
-    Output
-                                      Forest type    Estimate Percent Sampling Error
-      1                    Rocky Mountain juniper  31091988.8                  20.84
-      2                          Juniper woodland  44551680.3                  27.95
-      3                 Pinyon / juniper woodland   1392341.4                    100
-      4                               Douglas-fir  69947672.6                  17.32
-      5                            Ponderosa pine  70356423.2                   14.2
-      6                          Engelmann spruce  58730163.7                  23.77
-      7          Engelmann spruce / subalpine fir 164160289.4                  11.55
-      8                             Subalpine fir  86116217.3                  15.59
-      9                               Blue spruce   2138790.9                 101.99
-      10                           Lodgepole pine 223510197.5                   9.45
-      11                              Limber pine   5301324.5                  41.19
-      12                           Whitebark pine  22334274.9                   26.5
-      13                                  Bur oak   4111665.6                  53.45
-      14                 Elm / ash / black locust      134940                 107.34
-      15                               Cottonwood   9086477.2                  54.45
-      16 Sugarberry / hackberry / elm / green ash    421419.2                    100
-      17                                    Aspen  32132910.2                  22.25
-      18                               Nonstocked   3886012.5                  29.31
-      19                                    Total   829404789                   3.78
+      19                     --
+      20                    4.7
 

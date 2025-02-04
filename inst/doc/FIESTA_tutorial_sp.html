@@ -12,7 +12,7 @@
 
 
 
-<title>FIESTA - Spatial Tools</title>
+<title>Spatial Tools</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -49,7 +49,7 @@ overflow: visible;
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -336,7 +336,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<h1 class="title toc-ignore">FIESTA - Spatial Tools</h1>
+<h1 class="title toc-ignore">Spatial Tools</h1>
 
 
 
@@ -571,27 +571,27 @@ global environment:</p>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>WYbhfn <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>,</span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>                      <span class="st">&quot;sp_data/WYbighorn_adminbnd.shp&quot;</span>,</span>
 <span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>                      <span class="at">package =</span> <span class="st">&quot;FIESTA&quot;</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>WYbhdistfn <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>,</span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>                          <span class="st">&quot;sp_data/WYbighorn_districtbnd.shp&quot;</span>,</span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>                          <span class="at">package =</span> <span class="st">&quot;FIESTA&quot;</span>)</span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>WYbhdist.att <span class="ot">&lt;-</span> <span class="st">&quot;DISTRICTNA&quot;</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>WYbhdistfn <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>                          <span class="st">&quot;sp_data/WYbighorn_districtbnd.shp&quot;</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>                          <span class="at">package =</span> <span class="st">&quot;FIESTA&quot;</span>)</span>
 <span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>fornffn <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>,</span>
-<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>                       <span class="st">&quot;sp_data/WYbighorn_forest_nonforest_250m.tif&quot;</span>,</span>
-<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>                       <span class="at">package =</span> <span class="st">&quot;FIESTA&quot;</span>)</span>
-<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>demfn <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>,</span>
-<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>                     <span class="st">&quot;sp_data/WYbighorn_dem_250m.img&quot;</span>,</span>
-<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>                     <span class="at">package =</span> <span class="st">&quot;FIESTA&quot;</span>)</span>
-<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a></span>
-<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a></span>
-<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="co"># Other spatial layers used for examples, extracted using the geodata package, gadm function.</span></span>
-<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co"># County-level boundaries for USA and subset for Wyoming (Note: must have internet connection)</span></span>
-<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>USAco <span class="ot">&lt;-</span> geodata<span class="sc">::</span><span class="fu">gadm</span>(<span class="at">country =</span> <span class="st">&quot;USA&quot;</span>, <span class="at">level =</span> <span class="dv">2</span>, <span class="at">path=</span><span class="fu">tempdir</span>())    </span>
-<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>WYco <span class="ot">&lt;-</span> USAco[USAco<span class="sc">$</span>NAME_1 <span class="sc">==</span> <span class="st">&quot;Wyoming&quot;</span>,]</span></code></pre></div>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>WYbhdist.att <span class="ot">&lt;-</span> <span class="st">&quot;DISTRICTNA&quot;</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>fornffn <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>,</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>                       <span class="st">&quot;sp_data/WYbighorn_forest_nonforest_250m.tif&quot;</span>,</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>                       <span class="at">package =</span> <span class="st">&quot;FIESTA&quot;</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>demfn <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>,</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>                     <span class="st">&quot;sp_data/WYbighorn_dem_250m.img&quot;</span>,</span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>                     <span class="at">package =</span> <span class="st">&quot;FIESTA&quot;</span>)</span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="co"># County-level boundaries for USA and subset for Wyoming</span></span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>WYco <span class="ot">&lt;-</span> stunitco[stunitco<span class="sc">$</span>STATENM <span class="sc">==</span> <span class="st">&quot;Wyoming&quot;</span>,]</span></code></pre></div>
 <p>Finally, you’ll need to set up an “outfolder”. This is just a file
 path to a folder where you’d like <code>FIESTA</code> to send your data
-output. For this vignette, we have saved our outfolder file path as the
-<code>outfolder</code> object.</p>
+output. For this vignette, we have set our outfolder file path as a
+temporary directory. .</p>
 </div>
 </div>
 <div id="examples" class="section level2">
@@ -606,11 +606,11 @@ functions in the <code>sp</code> portion of <code>FIESTA</code>.</p>
 <summary>
 View Example
 </summary>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="do">## Import external data shapefiles</span></span>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Import external data shapefiles</span></span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>WYbh <span class="ot">&lt;-</span> <span class="fu">spImportSpatial</span>(WYbhfn)</span>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>WYbhdist <span class="ot">&lt;-</span> <span class="fu">spImportSpatial</span>(WYbhdistfn)</span>
 <span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="do">## Display boundary</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co"># Display boundary</span></span>
 <span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(WYbhdist), <span class="at">border=</span><span class="st">&quot;blue&quot;</span>)</span>
 <span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(WYbh), <span class="at">add=</span><span class="cn">TRUE</span>)</span></code></pre></div>
 </details>
@@ -623,12 +623,11 @@ object.</p>
 <summary>
 View Example
 </summary>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="do">## Export Spatial Polygons layer to a shapefile</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">spExportSpatial</span>(WYbh, </span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>                <span class="at">savedata_opts =</span> <span class="fu">list</span>(<span class="at">out_dsn =</span> <span class="st">&quot;WYbh.shp&quot;</span>, </span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>                                     <span class="at">outfolder =</span> outfolder, </span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>                                     <span class="at">overwrite_dsn =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>                )</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Export Spatial Polygons layer to a shapefile</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">spExportSpatial</span>(<span class="at">sfobj =</span> WYbh, </span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>                <span class="at">savedata_opts =</span> <span class="fu">savedata_options</span>(<span class="at">out_dsn =</span> <span class="st">&quot;WYbh.shp&quot;</span>, </span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>                                                 <span class="at">outfolder =</span> outfolder, </span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>                                                 <span class="at">overwrite_dsn =</span> <span class="cn">TRUE</span>))</span></code></pre></div>
 </details>
 </div>
 <div id="spmakespatialpoints" class="section level3">
@@ -646,15 +645,10 @@ View Example
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>                               <span class="at">xy.uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>                               <span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
 <span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>                               <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>, </span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>                               <span class="at">xy.crs =</span> <span class="dv">4269</span></span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>                               )</span></code></pre></div>
-<p>To view our output we can run the following code.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="do">## Display output</span></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(WYbhdist))</span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(WYspplt), <span class="at">add=</span><span class="cn">TRUE</span>)</span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="do">## </span><span class="al">NOTE</span><span class="do">: To display multiple layers, all layers must be in the same coordinate system.</span></span>
-<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="fu">lapply</span>(<span class="fu">list</span>(WYbh, WYbhdist, WYspplt), sf<span class="sc">::</span>st_crs)</span></code></pre></div>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>                               <span class="at">xy.crs =</span> <span class="dv">4269</span>)</span></code></pre></div>
+<p>We can look at the results to verify that WYspplt is now an
+<code>sf</code> points object with the desired projection:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>WYspplt[ ,<span class="fu">c</span>(<span class="st">&quot;CN&quot;</span>, <span class="st">&quot;geometry&quot;</span>)]</span></code></pre></div>
 <p>And finally we export the spatial points to an outfolder.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>WYspplt <span class="ot">&lt;-</span> <span class="fu">spMakeSpatialPoints</span>(<span class="at">xyplt =</span> WYplt,</span>
 <span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>                               <span class="at">xy.uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
@@ -662,31 +656,28 @@ View Example
 <span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>                               <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>,</span>
 <span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>                               <span class="at">xy.crs =</span> <span class="dv">4269</span>,</span>
 <span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>                               <span class="at">exportsp =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>                               <span class="at">savedata_opts =</span> <span class="fu">list</span>(</span>
-<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>                                    <span class="at">out_dsn =</span> <span class="st">&quot;spplt&quot;</span>,</span>
-<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>                                    <span class="at">out_fmt =</span> <span class="st">&quot;shp&quot;</span>,</span>
-<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>                                    <span class="at">outfolder =</span> outfolder,</span>
-<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>                                    <span class="at">out_layer =</span> <span class="st">&quot;WYplots&quot;</span>,</span>
-<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>                                    <span class="at">overwrite_layer =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>                               )</span></code></pre></div>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>                               <span class="at">savedata_opts =</span> <span class="fu">savedata_options</span>(<span class="at">out_dsn =</span> <span class="st">&quot;spplt&quot;</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>                                                                <span class="at">out_fmt =</span> <span class="st">&quot;shp&quot;</span>,</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>                                                                <span class="at">outfolder =</span> outfolder,</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>                                                                <span class="at">out_layer =</span> <span class="st">&quot;WYplots&quot;</span>,</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>                                                                <span class="at">overwrite_layer =</span> <span class="cn">TRUE</span>))</span></code></pre></div>
 </details>
 </div>
 <div id="spreprojectvector" class="section level3">
 <h3><a name="spReprojectVector"></a><code>spReprojectVector()</code></h3>
-<p>The <code>spReprojectVector</code> function reprojects a spatial
+<p>The <code>spReprojectVector</code> function re-projects a spatial
 vector layer. Note: The layer must have a defined coordinate reference
-system (test using <code>sf::st_crs</code>).</p>
+system.</p>
 <details>
 <summary>
 View Example
 </summary>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>sf<span class="sc">::</span><span class="fu">st_crs</span>(WYspplt)</span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>prj <span class="ot">&lt;-</span> <span class="st">&quot;+proj=utm +zone=12 +ellps=GRS80 +datum=NAD83 +units=m +no_defs&quot;</span></span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>WYspplt.utm12 <span class="ot">&lt;-</span> <span class="fu">spReprojectVector</span>(<span class="at">layer =</span> WYspplt, </span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>                                   <span class="at">crs.new =</span> prj)</span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>        </span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="do">## Check results</span></span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>sf<span class="sc">::</span><span class="fu">st_crs</span>(WYspplt.utm12)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>prj <span class="ot">&lt;-</span> <span class="st">&quot;+proj=utm +zone=12 +ellps=GRS80 +datum=NAD83 +units=m +no_defs&quot;</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>WYspplt.utm12 <span class="ot">&lt;-</span> <span class="fu">spReprojectVector</span>(<span class="at">layer =</span> WYspplt, </span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>                                   <span class="at">crs.new =</span> prj)</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>        </span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co"># Check results</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>sf<span class="sc">::</span><span class="fu">st_crs</span>(WYspplt.utm12)</span></code></pre></div>
 </details>
 </div>
 <div id="spclippoint" class="section level3">
@@ -698,35 +689,32 @@ boundary.</p>
 <summary>
 View Example
 </summary>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="do">## Get points within Bighorn National Forest boundary (project on the fly)</span></span>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Get points within Bighorn National Forest boundary (project on the fly)</span></span>
 <span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>WYbhptslst <span class="ot">&lt;-</span> <span class="fu">spClipPoint</span>(<span class="at">xyplt =</span> WYplt, </span>
 <span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>                          <span class="at">uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
 <span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>                          <span class="at">clippolyv =</span> WYbh, </span>
-<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>                          <span class="at">spMakeSpatial_opts=</span><span class="fu">list</span>(<span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
-<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>                                                  <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>,</span>
-<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>                                                  <span class="at">xy.crs =</span> <span class="dv">4269</span>)</span>
-<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>                          )</span>
-<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a></span>
-<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>WYbhptslst <span class="ot">&lt;-</span> <span class="fu">spClipPoint</span>(<span class="at">xyplt =</span> WYplt, </span>
-<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>                          <span class="at">uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
-<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>                          <span class="at">clippolyv =</span> WYbh, </span>
-<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a>                          <span class="at">savedata =</span> <span class="cn">TRUE</span>, </span>
-<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a>                          <span class="at">exportsp =</span> <span class="cn">TRUE</span>, </span>
-<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>                          <span class="at">spMakeSpatial_opts=</span><span class="fu">list</span>(<span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
-<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a>                                                  <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>,</span>
-<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a>                                                  <span class="at">xy.crs =</span> <span class="dv">4269</span>), </span>
-<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a>                          <span class="at">savedata_opts =</span> <span class="fu">list</span>(<span class="at">outfolder=</span>outfolder, </span>
-<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a>                                               <span class="at">out_layer =</span> <span class="st">&quot;WYbh&quot;</span>)</span>
-<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a>                          )</span>
-<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a></span>
-<span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a><span class="fu">names</span>(WYbhptslst)</span>
-<span id="cb9-24"><a href="#cb9-24" tabindex="-1"></a>WYbhspplt <span class="ot">&lt;-</span> WYbhptslst<span class="sc">$</span>clip_xyplt</span>
-<span id="cb9-25"><a href="#cb9-25" tabindex="-1"></a>WYbhprj <span class="ot">&lt;-</span> WYbhptslst<span class="sc">$</span>clip_polyv</span></code></pre></div>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>                          <span class="at">spMakeSpatial_opts =</span> <span class="fu">list</span>(<span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>                                                    <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>                                                    <span class="at">xy.crs =</span> <span class="dv">4269</span>))</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>WYbhptslst <span class="ot">&lt;-</span> <span class="fu">spClipPoint</span>(<span class="at">xyplt =</span> WYplt, </span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>                          <span class="at">uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>                          <span class="at">clippolyv =</span> WYbh, </span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>                          <span class="at">savedata =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a>                          <span class="at">exportsp =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a>                          <span class="at">spMakeSpatial_opts =</span> <span class="fu">list</span>(<span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>                                                    <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>,</span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a>                                                    <span class="at">xy.crs =</span> <span class="dv">4269</span>), </span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a>                          <span class="at">savedata_opts =</span> <span class="fu">list</span>(<span class="at">outfolder =</span> outfolder, </span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a>                                               <span class="at">out_layer =</span> <span class="st">&quot;WYbh&quot;</span>))</span>
+<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a></span>
+<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a><span class="fu">names</span>(WYbhptslst)</span>
+<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a>WYbhspplt <span class="ot">&lt;-</span> WYbhptslst<span class="sc">$</span>clip_xyplt</span>
+<span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a>WYbhprj <span class="ot">&lt;-</span> WYbhptslst<span class="sc">$</span>clip_polyv</span></code></pre></div>
 <p>Next we check and display the output:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>WYbhspplt</span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(WYbhprj), <span class="at">border=</span><span class="st">&quot;red&quot;</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span>
-<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(WYbhspplt), <span class="at">add=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(WYbhprj), <span class="at">border=</span><span class="st">&quot;red&quot;</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(WYbhspplt), <span class="at">add=</span><span class="cn">TRUE</span>)</span></code></pre></div>
 <p>Note: If the projection of spplt is not the same as the points layer,
 the points layer will be reprojected to the same projection as
 <code>clippolyv</code> (See notes in help file for more info).</p>
@@ -737,10 +725,11 @@ with the <code>spClipPoint</code> function:</p>
 <span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>                               <span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
 <span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>                               <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>, </span>
 <span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>                               <span class="at">xy.crs =</span> <span class="dv">4269</span>)</span>
-<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>WYbhptslst <span class="ot">&lt;-</span> <span class="fu">spClipPoint</span>(<span class="at">xyplt =</span> WYspplt, </span>
-<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>                          <span class="at">uniqueid =</span> <span class="st">&quot;CN&quot;</span>,</span>
-<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>                          <span class="at">clippolyv =</span> WYbh)</span></code></pre></div>
-<p>We can also subset other tales with clipped points.</p>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>WYbhptslst <span class="ot">&lt;-</span> <span class="fu">spClipPoint</span>(<span class="at">xyplt =</span> WYspplt, </span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>                          <span class="at">uniqueid =</span> <span class="st">&quot;CN&quot;</span>,</span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>                          <span class="at">clippolyv =</span> WYbh)</span></code></pre></div>
+<p>We can also subset other tables with clipped points.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>WYbhptslst <span class="ot">&lt;-</span> <span class="fu">spClipPoint</span>(<span class="at">xyplt =</span> WYspplt, </span>
 <span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>                          <span class="at">uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
 <span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>                          <span class="at">clippolyv =</span> WYbh, </span>
@@ -750,10 +739,9 @@ with the <code>spClipPoint</code> function:</p>
 <p>Next, we can export clipped points.</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="do">## Export clipped points</span></span>
 <span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="fu">spExportSpatial</span>(WYbhspplt, </span>
-<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>                <span class="at">savedata_opts =</span> <span class="fu">list</span>(<span class="at">out_layer =</span> <span class="st">&quot;WYbhpts&quot;</span>, </span>
-<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>                                     <span class="at">outfolder =</span> outfolder, </span>
-<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>                                     <span class="at">overwrite_layer =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a>                )</span></code></pre></div>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>                <span class="at">savedata_opts =</span> <span class="fu">savedata_options</span>(<span class="at">out_layer =</span> <span class="st">&quot;WYbhpts&quot;</span>, </span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>                                                 <span class="at">outfolder =</span> outfolder, </span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>                                                 <span class="at">overwrite_layer =</span> <span class="cn">TRUE</span>))</span></code></pre></div>
 <p>Finally, we can get points within Bighorn National Forest boundary
 (project on the fly) and save to an outfolder.</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>WYbhptslst <span class="ot">&lt;-</span> <span class="fu">spClipPoint</span>(<span class="at">xyplt =</span> WYplt, </span>
@@ -761,15 +749,14 @@ with the <code>spClipPoint</code> function:</p>
 <span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>                          <span class="at">clippolyv =</span> WYbh, </span>
 <span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>                          <span class="at">othertabnms =</span> <span class="fu">c</span>(<span class="st">&quot;WYcond&quot;</span>, <span class="st">&quot;WYtree&quot;</span>), </span>
 <span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>                          <span class="at">exportsp =</span> <span class="cn">TRUE</span>, </span>
-<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>                          <span class="at">spMakeSpatial_opts=</span><span class="fu">list</span>(<span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
-<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>                                        <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>, </span>
-<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>                                        <span class="at">xy.crs =</span> <span class="dv">4269</span>), </span>
-<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a>                          <span class="at">savedata_opts =</span> <span class="fu">list</span>(</span>
-<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a>                                        <span class="at">outfolder =</span> outfolder, </span>
-<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a>                                        <span class="at">overwrite_layer =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a>                                        <span class="at">outfn.pre =</span> <span class="st">&quot;clip&quot;</span>)</span>
-<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a>                          )</span>
-<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a><span class="fu">names</span>(WYbhptslst)</span></code></pre></div>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>                          <span class="at">spMakeSpatial_opts =</span> <span class="fu">list</span>(<span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>                                                    <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>, </span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>                                                    <span class="at">xy.crs =</span> <span class="dv">4269</span>), </span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a>                          <span class="at">savedata_opts =</span> <span class="fu">list</span>(<span class="at">outfolder =</span> outfolder, </span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a>                                               <span class="at">overwrite_layer =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a>                                               <span class="at">outfn.pre =</span> <span class="st">&quot;clip&quot;</span>))</span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a></span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a><span class="fu">names</span>(WYbhptslst)</span></code></pre></div>
 </details>
 </div>
 <div id="spclippoly" class="section level3">
@@ -780,18 +767,17 @@ layer with another polygon vector layer.
 <summary>
 View Example
 </summary>
-<p>We first subsect the WYco <code>SpatialPolygons</code> layer with
+<p>We first subset the WYco <code>SpatialPolygons</code> layer with
 <code>WYbighorn</code>. Note: you must download USAco from the
 <code>geodata</code> package and subset to Wyoming. See the “Set Up”
 section above.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>WYbhco <span class="ot">&lt;-</span> <span class="fu">spClipPoly</span>(<span class="at">polyv =</span> WYco,</span>
-<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>                             <span class="at">clippolyv =</span> WYbh)</span></code></pre></div>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>                     <span class="at">clippolyv =</span> WYbh)</span></code></pre></div>
 <p>We can now check and display <code>WYbighorn_co</code> with
 labels.</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">head</span>(WYbhco)</span>
-<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(WYbhco[<span class="st">&#39;NAME_2&#39;</span>]), <span class="at">col =</span> sf<span class="sc">::</span><span class="fu">sf.colors</span>(<span class="fu">nrow</span>(WYbhco)))</span>
-<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>coords <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_coordinates</span>(sf<span class="sc">::</span><span class="fu">st_centroid</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(WYbhco)))</span>
-<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="fu">text</span>(coords[,<span class="st">&quot;X&quot;</span>], coords[,<span class="st">&quot;Y&quot;</span>], WYbhco[[<span class="st">&quot;NAME_2&quot;</span>]])</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(WYbhco[<span class="st">&#39;COUNTYCD&#39;</span>]), <span class="at">col =</span> sf<span class="sc">::</span><span class="fu">sf.colors</span>(<span class="fu">nrow</span>(WYbhco)))</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>coords <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_coordinates</span>(sf<span class="sc">::</span><span class="fu">st_centroid</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(WYbhco)))</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="fu">text</span>(coords[,<span class="st">&quot;X&quot;</span>], coords[,<span class="st">&quot;Y&quot;</span>], WYbhco[[<span class="st">&quot;COUNTYCD&quot;</span>]])</span></code></pre></div>
 </details>
 </div>
 <div id="spcliprast" class="section level3">
@@ -804,26 +790,24 @@ View Example
 </summary>
 <p>First, we subset the strata layer with the Medicine Wheel district
 boundary</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>WYbhdist</span>
-<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>WYbhMW <span class="ot">&lt;-</span> WYbhdist[WYbhdist<span class="sc">$</span>DISTRICTNA <span class="sc">==</span> <span class="st">&quot;Medicine Wheel Ranger District&quot;</span>,]</span>
-<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a></span>
-<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(WYbhdist))</span>
-<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(WYbhMW), <span class="at">border=</span><span class="st">&quot;red&quot;</span>, <span class="at">add=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>WYbhMW <span class="ot">&lt;-</span> WYbhdist[WYbhdist<span class="sc">$</span>DISTRICTNA <span class="sc">==</span> <span class="st">&quot;Medicine Wheel Ranger District&quot;</span>,]</span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(WYbhdist))</span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(WYbhMW), <span class="at">border=</span><span class="st">&quot;red&quot;</span>, <span class="at">add=</span><span class="cn">TRUE</span>)</span></code></pre></div>
 <p>Next, we can clip the raster. Note: If the projection of
 <code>polyv</code> is not the same as <code>rast</code>,
 <code>polyv</code> will by reprojected to the same projection as
 <code>rast</code> before clipping (See note in the help file for more
 details).</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>WYbhMW.fornf <span class="ot">&lt;-</span> <span class="fu">spClipRast</span>(fornffn, </span>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>WYbhMW.fornf <span class="ot">&lt;-</span> <span class="fu">spClipRast</span>(<span class="at">rast =</span> fornffn, </span>
 <span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>                           <span class="at">clippolyv =</span> WYbhMW, </span>
 <span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>                           <span class="at">outfolder =</span> outfolder)</span></code></pre></div>
 <p>Finally, we display the results:</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>WYbhMWprj <span class="ot">&lt;-</span> FIESTAutils<span class="sc">::</span><span class="fu">crsCompare</span>(WYbhMW, </span>
 <span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>                        FIESTAutils<span class="sc">::</span><span class="fu">rasterInfo</span>(WYbhMW.fornf)<span class="sc">$</span>crs)<span class="sc">$</span>x</span>
-<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a>terra<span class="sc">::</span><span class="fu">plot</span>(terra<span class="sc">::</span><span class="fu">rast</span>(WYbhMW.fornf))</span>
-<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(WYbhMWprj), </span>
-<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a>     <span class="at">border =</span> <span class="st">&quot;red&quot;</span>, </span>
-<span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a>     <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a>terra<span class="sc">::</span><span class="fu">plot</span>(terra<span class="sc">::</span><span class="fu">rast</span>(WYbhMW.fornf))</span>
+<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(WYbhMWprj), <span class="at">border =</span> <span class="st">&quot;red&quot;</span>, <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 </details>
 </div>
 <div id="spextractpoly" class="section level3">
@@ -844,13 +828,11 @@ evaluation points (See the note in help file for more details).</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>extpolylst <span class="ot">&lt;-</span> <span class="fu">spExtractPoly</span>(WYspplt, </span>
 <span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a>                            <span class="at">xy.uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
 <span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a>                            <span class="at">polyvlst =</span> WYbhdist)</span>
-<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a>WYspplt_bh <span class="ot">&lt;-</span> extpolylst<span class="sc">$</span>spxyext</span>
-<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a></span>
-<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a><span class="fu">dim</span>(WYspplt)</span>
-<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a><span class="fu">dim</span>(WYspplt_bh)</span>
-<span id="cb20-8"><a href="#cb20-8" tabindex="-1"></a></span>
-<span id="cb20-9"><a href="#cb20-9" tabindex="-1"></a><span class="fu">head</span>(WYspplt_bh)</span>
-<span id="cb20-10"><a href="#cb20-10" tabindex="-1"></a><span class="fu">plot</span>(WYspplt_bh[<span class="st">&quot;DISTRICTNA&quot;</span>], <span class="at">pch =</span> <span class="dv">8</span>)</span></code></pre></div>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a>WYspplt_bh <span class="ot">&lt;-</span> extpolylst<span class="sc">$</span>spxyext</span>
+<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a><span class="fu">head</span>(WYspplt_bh)</span>
+<span id="cb20-8"><a href="#cb20-8" tabindex="-1"></a><span class="fu">plot</span>(WYspplt_bh[<span class="st">&quot;DISTRICTNA&quot;</span>], <span class="at">pch =</span> <span class="dv">8</span>)</span></code></pre></div>
 <p>Next we can extract a subset of polygon attributes from
 <code>WYbighorn</code> to <code>WYpts</code>, not keeping
 <code>NULL</code> values.</p>
@@ -859,19 +841,17 @@ evaluation points (See the note in help file for more details).</p>
 <span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a>                            <span class="at">polyvlst =</span> WYbh, </span>
 <span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a>                            <span class="at">polyvarlst =</span> <span class="fu">c</span>(<span class="st">&quot;FORESTNUMB&quot;</span>, <span class="st">&quot;FORESTNAME&quot;</span>), </span>
 <span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a>                            <span class="at">keepNA =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb21-6"><a href="#cb21-6" tabindex="-1"></a>WYspplt_bh2 <span class="ot">&lt;-</span> extpolylst<span class="sc">$</span>spxyext</span>
-<span id="cb21-7"><a href="#cb21-7" tabindex="-1"></a></span>
-<span id="cb21-8"><a href="#cb21-8" tabindex="-1"></a><span class="fu">dim</span>(WYspplt)</span>
-<span id="cb21-9"><a href="#cb21-9" tabindex="-1"></a><span class="fu">dim</span>(WYspplt_bh2)</span>
-<span id="cb21-10"><a href="#cb21-10" tabindex="-1"></a></span>
-<span id="cb21-11"><a href="#cb21-11" tabindex="-1"></a><span class="fu">head</span>(WYspplt_bh2)</span></code></pre></div>
+<span id="cb21-6"><a href="#cb21-6" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" tabindex="-1"></a>WYspplt_bh2 <span class="ot">&lt;-</span> extpolylst<span class="sc">$</span>spxyext</span>
+<span id="cb21-8"><a href="#cb21-8" tabindex="-1"></a></span>
+<span id="cb21-9"><a href="#cb21-9" tabindex="-1"></a><span class="fu">head</span>(WYspplt_bh2)</span></code></pre></div>
 </details>
 </div>
 <div id="spextractrast" class="section level3">
 <h3><a name="spExtractRast"></a><code>spExtractRast()</code></h3>
-<p>The <code>spExtractRast</code> function subsets a
-<code>SpatialPolygons</code> layer with another
-<code>SpatialPolygons</code> layer.</p>
+<p>The <code>spExtractRast</code> function extracts values from one or
+more raster layers and appends to a SpatialPoints layer or data
+frame.</p>
 <details>
 <summary>
 View Example
@@ -882,12 +862,11 @@ View Example
 <span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>                            <span class="at">rastlst =</span> <span class="fu">c</span>(fornffn, demfn), </span>
 <span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a>                            <span class="at">xy.uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
 <span id="cb22-4"><a href="#cb22-4" tabindex="-1"></a>                            <span class="at">keepNA =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb22-5"><a href="#cb22-5" tabindex="-1"></a>WYspplt_dem <span class="ot">&lt;-</span> extrastlst<span class="sc">$</span>sppltext</span>
-<span id="cb22-6"><a href="#cb22-6" tabindex="-1"></a></span>
-<span id="cb22-7"><a href="#cb22-7" tabindex="-1"></a><span class="fu">dim</span>(WYspplt)</span>
-<span id="cb22-8"><a href="#cb22-8" tabindex="-1"></a><span class="fu">dim</span>(WYspplt_dem)</span>
-<span id="cb22-9"><a href="#cb22-9" tabindex="-1"></a></span>
-<span id="cb22-10"><a href="#cb22-10" tabindex="-1"></a><span class="fu">head</span>(WYspplt_dem)</span></code></pre></div>
+<span id="cb22-5"><a href="#cb22-5" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" tabindex="-1"></a>WYspplt_dem <span class="ot">&lt;-</span> extrastlst<span class="sc">$</span>sppltext</span></code></pre></div>
+<p>We can verify that the values from the raster layers were indeed
+added to our SpatialPoints layer.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="fu">head</span>(WYspplt_dem[ , <span class="fu">c</span>(<span class="st">&quot;WYbighorn_forest_nonforest_250m&quot;</span>, <span class="st">&quot;WYbighorn_dem_250m&quot;</span>)])</span></code></pre></div>
 </details>
 </div>
 <div id="spgetauxiliary" class="section level3">
@@ -920,69 +899,68 @@ public coordinates (<code>xvar = &quot;LON_PUBLIC&quot;</code>,
 <code>yvar = &quot;LAT_PUBLIC&quot;</code>). Note: the public coordinate
 projection information is: <code>prj = &quot;longlat&quot;</code>,
 <code>datum = &quot;NAD83&quot;</code>.</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a>WYspplt <span class="ot">&lt;-</span> <span class="fu">spMakeSpatialPoints</span>(<span class="at">xyplt =</span> WYplt, </span>
-<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>                               <span class="at">xy.uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
-<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a>                               <span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
-<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a>                               <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>, </span>
-<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a>                               <span class="at">xy.crs =</span> <span class="dv">4269</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a>WYspplt <span class="ot">&lt;-</span> <span class="fu">spMakeSpatialPoints</span>(<span class="at">xyplt =</span> WYplt, </span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a>                               <span class="at">xy.uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
+<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a>                               <span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
+<span id="cb24-4"><a href="#cb24-4" tabindex="-1"></a>                               <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>, </span>
+<span id="cb24-5"><a href="#cb24-5" tabindex="-1"></a>                               <span class="at">xy.crs =</span> <span class="dv">4269</span>)</span></code></pre></div>
 <p>Next, we derive new layers from <code>dem</code>.</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
-<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a>dem <span class="ot">&lt;-</span> <span class="fu">rast</span>(demfn)</span>
-<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a>slpfn <span class="ot">&lt;-</span> <span class="fu">paste0</span>(outfolder, <span class="st">&quot;/WYbh_slp.img&quot;</span>)</span>
-<span id="cb24-4"><a href="#cb24-4" tabindex="-1"></a>slp <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">terrain</span>(dem,</span>
-<span id="cb24-5"><a href="#cb24-5" tabindex="-1"></a>                      <span class="at">v =</span> <span class="st">&quot;slope&quot;</span>,</span>
-<span id="cb24-6"><a href="#cb24-6" tabindex="-1"></a>                      <span class="at">unit =</span> <span class="st">&quot;degrees&quot;</span>,</span>
-<span id="cb24-7"><a href="#cb24-7" tabindex="-1"></a>                      <span class="at">filename =</span> slpfn, </span>
-<span id="cb24-8"><a href="#cb24-8" tabindex="-1"></a>                      <span class="at">overwrite =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb24-9"><a href="#cb24-9" tabindex="-1"></a>                      <span class="at">NAflag =</span> <span class="sc">-</span><span class="fl">99999.0</span>)</span>
-<span id="cb24-10"><a href="#cb24-10" tabindex="-1"></a>aspfn <span class="ot">&lt;-</span> <span class="fu">paste0</span>(outfolder, <span class="st">&quot;/WYbh_asp.img&quot;</span>)</span>
-<span id="cb24-11"><a href="#cb24-11" tabindex="-1"></a>asp <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">terrain</span>(dem,</span>
-<span id="cb24-12"><a href="#cb24-12" tabindex="-1"></a>                      <span class="at">v =</span> <span class="st">&quot;aspect&quot;</span>,</span>
-<span id="cb24-13"><a href="#cb24-13" tabindex="-1"></a>                      <span class="at">unit =</span> <span class="st">&quot;degrees&quot;</span>, </span>
-<span id="cb24-14"><a href="#cb24-14" tabindex="-1"></a>                      <span class="at">filename =</span> aspfn,</span>
-<span id="cb24-15"><a href="#cb24-15" tabindex="-1"></a>                      <span class="at">overwrite =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb24-16"><a href="#cb24-16" tabindex="-1"></a>                      <span class="at">NAflag =</span> <span class="sc">-</span><span class="fl">99999.0</span>)</span></code></pre></div>
-<p>Finally, we extract estimation unit and zonal raster statistics
-(i.e., mean).</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a>rastlst.cont <span class="ot">&lt;-</span> <span class="fu">c</span>(demfn, slp, asp)</span>
-<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a>rastlst.cont.name <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;dem&quot;</span>, <span class="st">&quot;slp&quot;</span>, <span class="st">&quot;asp&quot;</span>)</span>
-<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a>rastlst.cat <span class="ot">&lt;-</span> fornffn</span>
-<span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a>rastlst.cat.name <span class="ot">&lt;-</span> <span class="st">&quot;fornf&quot;</span></span>
-<span id="cb25-5"><a href="#cb25-5" tabindex="-1"></a></span>
-<span id="cb25-6"><a href="#cb25-6" tabindex="-1"></a>modeldat <span class="ot">&lt;-</span> <span class="fu">spGetAuxiliary</span>(<span class="at">xyplt =</span> WYspplt, </span>
-<span id="cb25-7"><a href="#cb25-7" tabindex="-1"></a>                           <span class="at">uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
-<span id="cb25-8"><a href="#cb25-8" tabindex="-1"></a>                           <span class="at">unit_layer =</span> WYbhfn, </span>
-<span id="cb25-9"><a href="#cb25-9" tabindex="-1"></a>                           <span class="at">unitvar =</span> <span class="cn">NULL</span>, </span>
-<span id="cb25-10"><a href="#cb25-10" tabindex="-1"></a>                           <span class="at">rastlst.cont =</span> rastlst.cont, </span>
-<span id="cb25-11"><a href="#cb25-11" tabindex="-1"></a>                           <span class="at">rastlst.cont.name =</span> rastlst.cont.name, </span>
-<span id="cb25-12"><a href="#cb25-12" tabindex="-1"></a>                           <span class="at">rastlst.cat =</span> rastlst.cat, </span>
-<span id="cb25-13"><a href="#cb25-13" tabindex="-1"></a>                           <span class="at">rastlst.cat.name =</span> rastlst.cat.name, </span>
-<span id="cb25-14"><a href="#cb25-14" tabindex="-1"></a>                           <span class="at">rastlst.cont.stat =</span> <span class="st">&quot;mean&quot;</span>, </span>
-<span id="cb25-15"><a href="#cb25-15" tabindex="-1"></a>                           <span class="at">asptransform =</span> <span class="cn">TRUE</span>, </span>
-<span id="cb25-16"><a href="#cb25-16" tabindex="-1"></a>                           <span class="at">rast.asp =</span> asp, </span>
-<span id="cb25-17"><a href="#cb25-17" tabindex="-1"></a>                           <span class="at">keepNA =</span> <span class="cn">FALSE</span>, </span>
-<span id="cb25-18"><a href="#cb25-18" tabindex="-1"></a>                           <span class="at">showext =</span> <span class="cn">FALSE</span>, </span>
-<span id="cb25-19"><a href="#cb25-19" tabindex="-1"></a>                           <span class="at">savedata =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb25-20"><a href="#cb25-20" tabindex="-1"></a><span class="fu">names</span>(modeldat)</span>
-<span id="cb25-21"><a href="#cb25-21" tabindex="-1"></a></span>
-<span id="cb25-22"><a href="#cb25-22" tabindex="-1"></a>pltassgn <span class="ot">&lt;-</span> modeldat<span class="sc">$</span>pltassgn</span>
-<span id="cb25-23"><a href="#cb25-23" tabindex="-1"></a>unitzonal <span class="ot">&lt;-</span> modeldat<span class="sc">$</span>unitzonal</span>
-<span id="cb25-24"><a href="#cb25-24" tabindex="-1"></a>unitvar <span class="ot">&lt;-</span> modeldat<span class="sc">$</span>dunitvar</span>
-<span id="cb25-25"><a href="#cb25-25" tabindex="-1"></a>inputdf <span class="ot">&lt;-</span> modeldat<span class="sc">$</span>inputdf</span>
-<span id="cb25-26"><a href="#cb25-26" tabindex="-1"></a>unitarea <span class="ot">&lt;-</span> modeldat<span class="sc">$</span>unitarea</span>
-<span id="cb25-27"><a href="#cb25-27" tabindex="-1"></a>areavar <span class="ot">&lt;-</span> modeldat<span class="sc">$</span>areavar</span>
-<span id="cb25-28"><a href="#cb25-28" tabindex="-1"></a>inputdf <span class="ot">&lt;-</span> modeldat<span class="sc">$</span>inputdf</span>
-<span id="cb25-29"><a href="#cb25-29" tabindex="-1"></a>prednames <span class="ot">&lt;-</span> modeldat<span class="sc">$</span>prednames</span>
-<span id="cb25-30"><a href="#cb25-30" tabindex="-1"></a>zonalnames <span class="ot">&lt;-</span> modeldat<span class="sc">$</span>zonalnames</span>
-<span id="cb25-31"><a href="#cb25-31" tabindex="-1"></a></span>
-<span id="cb25-32"><a href="#cb25-32" tabindex="-1"></a>unitvar</span>
-<span id="cb25-33"><a href="#cb25-33" tabindex="-1"></a>areavar</span>
-<span id="cb25-34"><a href="#cb25-34" tabindex="-1"></a>unitzonal</span>
-<span id="cb25-35"><a href="#cb25-35" tabindex="-1"></a>unitarea</span>
-<span id="cb25-36"><a href="#cb25-36" tabindex="-1"></a><span class="fu">head</span>(pltassgn)</span>
-<span id="cb25-37"><a href="#cb25-37" tabindex="-1"></a></span>
-<span id="cb25-38"><a href="#cb25-38" tabindex="-1"></a>prednames</span>
-<span id="cb25-39"><a href="#cb25-39" tabindex="-1"></a>zonalnames</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
+<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a>dem <span class="ot">&lt;-</span> <span class="fu">rast</span>(demfn)</span>
+<span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a>slpfn <span class="ot">&lt;-</span> <span class="fu">paste0</span>(outfolder, <span class="st">&quot;/WYbh_slp.img&quot;</span>)</span>
+<span id="cb25-5"><a href="#cb25-5" tabindex="-1"></a>slp <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">terrain</span>(dem,</span>
+<span id="cb25-6"><a href="#cb25-6" tabindex="-1"></a>                      <span class="at">v =</span> <span class="st">&quot;slope&quot;</span>,</span>
+<span id="cb25-7"><a href="#cb25-7" tabindex="-1"></a>                      <span class="at">unit =</span> <span class="st">&quot;degrees&quot;</span>,</span>
+<span id="cb25-8"><a href="#cb25-8" tabindex="-1"></a>                      <span class="at">filename =</span> slpfn, </span>
+<span id="cb25-9"><a href="#cb25-9" tabindex="-1"></a>                      <span class="at">overwrite =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb25-10"><a href="#cb25-10" tabindex="-1"></a>                      <span class="at">NAflag =</span> <span class="sc">-</span><span class="fl">99999.0</span>)</span>
+<span id="cb25-11"><a href="#cb25-11" tabindex="-1"></a></span>
+<span id="cb25-12"><a href="#cb25-12" tabindex="-1"></a>aspfn <span class="ot">&lt;-</span> <span class="fu">paste0</span>(outfolder, <span class="st">&quot;/WYbh_asp.img&quot;</span>)</span>
+<span id="cb25-13"><a href="#cb25-13" tabindex="-1"></a>asp <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">terrain</span>(dem,</span>
+<span id="cb25-14"><a href="#cb25-14" tabindex="-1"></a>                      <span class="at">v =</span> <span class="st">&quot;aspect&quot;</span>,</span>
+<span id="cb25-15"><a href="#cb25-15" tabindex="-1"></a>                      <span class="at">unit =</span> <span class="st">&quot;degrees&quot;</span>, </span>
+<span id="cb25-16"><a href="#cb25-16" tabindex="-1"></a>                      <span class="at">filename =</span> aspfn,</span>
+<span id="cb25-17"><a href="#cb25-17" tabindex="-1"></a>                      <span class="at">overwrite =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb25-18"><a href="#cb25-18" tabindex="-1"></a>                      <span class="at">NAflag =</span> <span class="sc">-</span><span class="fl">99999.0</span>)</span></code></pre></div>
+<p>Finally, we call <code>spGetAuxiliary</code> with out points object,
+boundary layer, and raster files.</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a>rastlst.cont <span class="ot">&lt;-</span> <span class="fu">c</span>(demfn, slp, asp)</span>
+<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a>rastlst.cont.name <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;dem&quot;</span>, <span class="st">&quot;slp&quot;</span>, <span class="st">&quot;asp&quot;</span>)</span>
+<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a>rastlst.cat <span class="ot">&lt;-</span> fornffn</span>
+<span id="cb26-4"><a href="#cb26-4" tabindex="-1"></a>rastlst.cat.name <span class="ot">&lt;-</span> <span class="st">&quot;fornf&quot;</span></span>
+<span id="cb26-5"><a href="#cb26-5" tabindex="-1"></a></span>
+<span id="cb26-6"><a href="#cb26-6" tabindex="-1"></a>modeldat <span class="ot">&lt;-</span> <span class="fu">spGetAuxiliary</span>(<span class="at">xyplt =</span> WYspplt, </span>
+<span id="cb26-7"><a href="#cb26-7" tabindex="-1"></a>                           <span class="at">uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
+<span id="cb26-8"><a href="#cb26-8" tabindex="-1"></a>                           <span class="at">unit_layer =</span> WYbhfn, </span>
+<span id="cb26-9"><a href="#cb26-9" tabindex="-1"></a>                           <span class="at">unitvar =</span> <span class="cn">NULL</span>, </span>
+<span id="cb26-10"><a href="#cb26-10" tabindex="-1"></a>                           <span class="at">rastlst.cont =</span> rastlst.cont, </span>
+<span id="cb26-11"><a href="#cb26-11" tabindex="-1"></a>                           <span class="at">rastlst.cont.name =</span> rastlst.cont.name, </span>
+<span id="cb26-12"><a href="#cb26-12" tabindex="-1"></a>                           <span class="at">rastlst.cat =</span> rastlst.cat, </span>
+<span id="cb26-13"><a href="#cb26-13" tabindex="-1"></a>                           <span class="at">rastlst.cat.name =</span> rastlst.cat.name, </span>
+<span id="cb26-14"><a href="#cb26-14" tabindex="-1"></a>                           <span class="at">rastlst.cont.stat =</span> <span class="st">&quot;mean&quot;</span>, </span>
+<span id="cb26-15"><a href="#cb26-15" tabindex="-1"></a>                           <span class="at">asptransform =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb26-16"><a href="#cb26-16" tabindex="-1"></a>                           <span class="at">rast.asp =</span> asp, </span>
+<span id="cb26-17"><a href="#cb26-17" tabindex="-1"></a>                           <span class="at">keepNA =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb26-18"><a href="#cb26-18" tabindex="-1"></a>                           <span class="at">showext =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb26-19"><a href="#cb26-19" tabindex="-1"></a>                           <span class="at">savedata =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<p>We start by getting a sense for all that <code>spGetAuxiliary</code>
+outputs by looking at the names of the <code>modeldat</code> object:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="fu">names</span>(modeldat)</span></code></pre></div>
+<p>The <code>pltassgn</code> object returned by this function contains
+all of the necessary plot identifiers as well as the extracted values
+from each of the auxiliary rasters.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="fu">head</span>(modeldat<span class="sc">$</span>pltassgn)</span></code></pre></div>
+<p><code>unitzonal</code> contains zonal statistics for each domain in
+the input layer. In this case we are treating the entire layer as a
+single domain so we just get one row of output.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="fu">head</span>(modeldat<span class="sc">$</span>unitzonal)</span></code></pre></div>
+<p><code>unitarea</code> contains area values by domain in the input
+layer.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="fu">head</span>(modeldat<span class="sc">$</span>unitarea)</span></code></pre></div>
+<p>Finally, we can look at the resulting predictor names
+(prednames).</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a>prednames <span class="ot">&lt;-</span> modeldat<span class="sc">$</span>prednames</span></code></pre></div>
 </details>
 </div>
 <div id="spgetxy" class="section level3">
@@ -995,28 +973,29 @@ View Example
 </summary>
 <p>We can extract public coordinates within WY Bighorn NF boundary,
 returning spatial (spxy) and nonspatial plot identifiers (pltids).</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a>WYbhxy <span class="ot">&lt;-</span> <span class="fu">spGetXY</span>(<span class="at">bnd =</span> WYbhfn,</span>
-<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a>                  <span class="at">xy_datsource =</span> <span class="st">&quot;datamart&quot;</span>,</span>
-<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a>                  <span class="at">eval =</span> <span class="st">&quot;FIA&quot;</span>,</span>
-<span id="cb26-4"><a href="#cb26-4" tabindex="-1"></a>                  <span class="at">eval_opts =</span> <span class="fu">eval_options</span>(<span class="at">Cur =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb26-5"><a href="#cb26-5" tabindex="-1"></a>                  <span class="at">returnxy =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb26-6"><a href="#cb26-6" tabindex="-1"></a><span class="fu">names</span>(WYbhxy)</span>
-<span id="cb26-7"><a href="#cb26-7" tabindex="-1"></a></span>
-<span id="cb26-8"><a href="#cb26-8" tabindex="-1"></a>pltids <span class="ot">&lt;-</span> WYbhxy<span class="sc">$</span>pltids</span>
-<span id="cb26-9"><a href="#cb26-9" tabindex="-1"></a><span class="fu">head</span>(pltids)</span>
-<span id="cb26-10"><a href="#cb26-10" tabindex="-1"></a></span>
-<span id="cb26-11"><a href="#cb26-11" tabindex="-1"></a>spxy <span class="ot">&lt;-</span> WYbhxy<span class="sc">$</span>spxy</span>
-<span id="cb26-12"><a href="#cb26-12" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(spxy))</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a>WYbhxy <span class="ot">&lt;-</span> <span class="fu">spGetXY</span>(<span class="at">bnd =</span> WYbhfn,</span>
+<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a>                  <span class="at">xy_datsource =</span> <span class="st">&quot;datamart&quot;</span>,</span>
+<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a>                  <span class="at">eval =</span> <span class="st">&quot;FIA&quot;</span>,</span>
+<span id="cb32-4"><a href="#cb32-4" tabindex="-1"></a>                  <span class="at">eval_opts =</span> <span class="fu">eval_options</span>(<span class="at">Cur =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb32-5"><a href="#cb32-5" tabindex="-1"></a>                  <span class="at">returnxy =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb32-6"><a href="#cb32-6" tabindex="-1"></a><span class="fu">names</span>(WYbhxy)</span>
+<span id="cb32-7"><a href="#cb32-7" tabindex="-1"></a></span>
+<span id="cb32-8"><a href="#cb32-8" tabindex="-1"></a>pltids <span class="ot">&lt;-</span> WYbhxy<span class="sc">$</span>pltids</span>
+<span id="cb32-9"><a href="#cb32-9" tabindex="-1"></a><span class="fu">head</span>(pltids)</span>
+<span id="cb32-10"><a href="#cb32-10" tabindex="-1"></a></span>
+<span id="cb32-11"><a href="#cb32-11" tabindex="-1"></a>spxy <span class="ot">&lt;-</span> WYbhxy<span class="sc">$</span>spxy</span>
+<span id="cb32-12"><a href="#cb32-12" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(WYbhprj))</span>
+<span id="cb32-13"><a href="#cb32-13" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(spxy), <span class="at">add=</span><span class="cn">TRUE</span>)</span></code></pre></div>
 <p>Or, returning only nonspatial plot identifiers (pltids).</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a>WYbhxyids <span class="ot">&lt;-</span> <span class="fu">spGetXY</span>(<span class="at">bnd =</span> WYbhfn,</span>
-<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a>                     <span class="at">xy_datsource =</span> <span class="st">&quot;datamart&quot;</span>,</span>
-<span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a>                     <span class="at">eval =</span> <span class="st">&quot;FIA&quot;</span>,</span>
-<span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a>                     <span class="at">eval_opts =</span> <span class="fu">eval_options</span>(<span class="at">Cur =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb27-5"><a href="#cb27-5" tabindex="-1"></a>                     <span class="at">returnxy =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb27-6"><a href="#cb27-6" tabindex="-1"></a><span class="fu">names</span>(WYbhxyids)</span>
-<span id="cb27-7"><a href="#cb27-7" tabindex="-1"></a></span>
-<span id="cb27-8"><a href="#cb27-8" tabindex="-1"></a>pltids <span class="ot">&lt;-</span> WYbhxyids<span class="sc">$</span>pltids</span>
-<span id="cb27-9"><a href="#cb27-9" tabindex="-1"></a><span class="fu">head</span>(pltids)</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a>WYbhxyids <span class="ot">&lt;-</span> <span class="fu">spGetXY</span>(<span class="at">bnd =</span> WYbhfn,</span>
+<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a>                     <span class="at">xy_datsource =</span> <span class="st">&quot;datamart&quot;</span>,</span>
+<span id="cb33-3"><a href="#cb33-3" tabindex="-1"></a>                     <span class="at">eval =</span> <span class="st">&quot;FIA&quot;</span>,</span>
+<span id="cb33-4"><a href="#cb33-4" tabindex="-1"></a>                     <span class="at">eval_opts =</span> <span class="fu">eval_options</span>(<span class="at">Cur =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb33-5"><a href="#cb33-5" tabindex="-1"></a>                     <span class="at">returnxy =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb33-6"><a href="#cb33-6" tabindex="-1"></a><span class="fu">names</span>(WYbhxyids)</span>
+<span id="cb33-7"><a href="#cb33-7" tabindex="-1"></a></span>
+<span id="cb33-8"><a href="#cb33-8" tabindex="-1"></a>pltids <span class="ot">&lt;-</span> WYbhxyids<span class="sc">$</span>pltids</span>
+<span id="cb33-9"><a href="#cb33-9" tabindex="-1"></a><span class="fu">head</span>(pltids)</span></code></pre></div>
 </details>
 </div>
 <div id="spgetplots" class="section level3">
@@ -1027,14 +1006,17 @@ given boundary.</p>
 <summary>
 View Example
 </summary>
-<p>We can extract public coordinates within WY Bighorn NF boundary.</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a>WYbhdat <span class="ot">&lt;-</span> <span class="fu">spGetPlots</span>(<span class="at">bnd =</span> WYbhfn, </span>
-<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a>                      <span class="at">states =</span> <span class="st">&quot;Wyoming&quot;</span>,</span>
-<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a>                      <span class="at">datsource =</span> <span class="st">&quot;datamart&quot;</span>, </span>
-<span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a>                      <span class="at">eval =</span> <span class="st">&quot;FIA&quot;</span>,</span>
-<span id="cb28-5"><a href="#cb28-5" tabindex="-1"></a>                      <span class="at">eval_opts =</span> <span class="fu">eval_options</span>(<span class="at">Cur =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb28-6"><a href="#cb28-6" tabindex="-1"></a>                      <span class="at">istree =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb28-7"><a href="#cb28-7" tabindex="-1"></a><span class="fu">names</span>(WYbhdat)</span></code></pre></div>
+<p>We can extract plots using the public coordinates within WY Bighorn
+NF boundary. In this example we utilize the FIA datamart to pull all of
+the necessary tables in and draw plots from the most recent FIA
+evaluation.</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a>WYbhdat <span class="ot">&lt;-</span> <span class="fu">spGetPlots</span>(<span class="at">bnd =</span> WYbhfn, </span>
+<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a>                      <span class="at">states =</span> <span class="st">&quot;Wyoming&quot;</span>,</span>
+<span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a>                      <span class="at">datsource =</span> <span class="st">&quot;datamart&quot;</span>, </span>
+<span id="cb34-4"><a href="#cb34-4" tabindex="-1"></a>                      <span class="at">eval =</span> <span class="st">&quot;FIA&quot;</span>,</span>
+<span id="cb34-5"><a href="#cb34-5" tabindex="-1"></a>                      <span class="at">eval_opts =</span> <span class="fu">eval_options</span>(<span class="at">Cur =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb34-6"><a href="#cb34-6" tabindex="-1"></a>                      <span class="at">istree =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb34-7"><a href="#cb34-7" tabindex="-1"></a><span class="fu">names</span>(WYbhdat)</span></code></pre></div>
 </details>
 </div>
 <div id="spgetestunit" class="section level3">
@@ -1047,53 +1029,26 @@ View Example
 </summary>
 <p>First, we create a <code>SpatialPoints</code> object from
 <code>WYplt</code></p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a>WYspplt <span class="ot">&lt;-</span> <span class="fu">spMakeSpatialPoints</span>(<span class="at">xyplt =</span> WYplt, </span>
-<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a>                               <span class="at">xy.uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
-<span id="cb29-3"><a href="#cb29-3" tabindex="-1"></a>                               <span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
-<span id="cb29-4"><a href="#cb29-4" tabindex="-1"></a>                               <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>, </span>
-<span id="cb29-5"><a href="#cb29-5" tabindex="-1"></a>                               <span class="at">xy.crs =</span> <span class="dv">4269</span>)</span>
-<span id="cb29-6"><a href="#cb29-6" tabindex="-1"></a>xyplt <span class="ot">&lt;-</span> WYspplt</span></code></pre></div>
-<div id="by-bighorn-national-forest" class="section level4">
-<h4>By Bighorn National Forest</h4>
-<p>We now get estimation unit acres for Bighorn National Forest.</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a>unitdat.bh <span class="ot">&lt;-</span> <span class="fu">spGetEstUnit</span>(<span class="at">xyplt =</span> WYplt, </span>
-<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a>                           <span class="at">uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
-<span id="cb30-3"><a href="#cb30-3" tabindex="-1"></a>                           <span class="at">unit_layer =</span> WYbhfn, </span>
-<span id="cb30-4"><a href="#cb30-4" tabindex="-1"></a>                           <span class="at">spMakeSpatial_opts=</span><span class="fu">list</span>(<span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
-<span id="cb30-5"><a href="#cb30-5" tabindex="-1"></a>                                                   <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>, </span>
-<span id="cb30-6"><a href="#cb30-6" tabindex="-1"></a>                                                   <span class="at">xy.crs =</span> <span class="dv">4269</span>)</span>
-<span id="cb30-7"><a href="#cb30-7" tabindex="-1"></a>                           )</span>
-<span id="cb30-8"><a href="#cb30-8" tabindex="-1"></a></span>
-<span id="cb30-9"><a href="#cb30-9" tabindex="-1"></a><span class="fu">names</span>(unitdat.bh)</span>
-<span id="cb30-10"><a href="#cb30-10" tabindex="-1"></a>unitarea.bh <span class="ot">&lt;-</span> unitdat.bh<span class="sc">$</span>unitarea</span>
-<span id="cb30-11"><a href="#cb30-11" tabindex="-1"></a>unitvar.bh <span class="ot">&lt;-</span> unitdat.bh<span class="sc">$</span>unitvar</span>
-<span id="cb30-12"><a href="#cb30-12" tabindex="-1"></a>areavar.bh <span class="ot">&lt;-</span> unitdat.bh<span class="sc">$</span>areavar</span>
-<span id="cb30-13"><a href="#cb30-13" tabindex="-1"></a></span>
-<span id="cb30-14"><a href="#cb30-14" tabindex="-1"></a>unitarea.bh</span>
-<span id="cb30-15"><a href="#cb30-15" tabindex="-1"></a>unitvar.bh</span>
-<span id="cb30-16"><a href="#cb30-16" tabindex="-1"></a>areavar.bh</span></code></pre></div>
-</div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a>WYspplt <span class="ot">&lt;-</span> <span class="fu">spMakeSpatialPoints</span>(<span class="at">xyplt =</span> WYplt, </span>
+<span id="cb35-2"><a href="#cb35-2" tabindex="-1"></a>                               <span class="at">xy.uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
+<span id="cb35-3"><a href="#cb35-3" tabindex="-1"></a>                               <span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
+<span id="cb35-4"><a href="#cb35-4" tabindex="-1"></a>                               <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>, </span>
+<span id="cb35-5"><a href="#cb35-5" tabindex="-1"></a>                               <span class="at">xy.crs =</span> <span class="dv">4269</span>)</span>
+<span id="cb35-6"><a href="#cb35-6" tabindex="-1"></a>xyplt <span class="ot">&lt;-</span> WYspplt</span></code></pre></div>
 <div id="by-bighorn-national-forest-district" class="section level4">
 <h4>By Bighorn National Forest District</h4>
-<p>We now get estimation unit acres and strata information for Bighorn
-National Forest.</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a>unitdat.bhdist <span class="ot">&lt;-</span> <span class="fu">spGetEstUnit</span>(<span class="at">xyplt =</span> WYplt, </span>
-<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a>                               <span class="at">uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
-<span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a>                               <span class="at">unit_layer =</span> WYbhdistfn, </span>
-<span id="cb31-4"><a href="#cb31-4" tabindex="-1"></a>                               <span class="at">unitvar =</span> <span class="st">&quot;DISTRICTNA&quot;</span>, </span>
-<span id="cb31-5"><a href="#cb31-5" tabindex="-1"></a>                               <span class="at">spMakeSpatial_opts=</span><span class="fu">list</span>(<span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
-<span id="cb31-6"><a href="#cb31-6" tabindex="-1"></a>                                                       <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>, </span>
-<span id="cb31-7"><a href="#cb31-7" tabindex="-1"></a>                                                       <span class="at">xy.crs =</span> <span class="dv">4269</span>)</span>
-<span id="cb31-8"><a href="#cb31-8" tabindex="-1"></a>                               )</span>
-<span id="cb31-9"><a href="#cb31-9" tabindex="-1"></a></span>
-<span id="cb31-10"><a href="#cb31-10" tabindex="-1"></a><span class="fu">names</span>(unitdat.bhdist)</span>
-<span id="cb31-11"><a href="#cb31-11" tabindex="-1"></a>unitarea.bhdist <span class="ot">&lt;-</span> unitdat.bhdist<span class="sc">$</span>unitarea</span>
-<span id="cb31-12"><a href="#cb31-12" tabindex="-1"></a>unitvar.bhdist <span class="ot">&lt;-</span> unitdat.bhdist<span class="sc">$</span>unitvar</span>
-<span id="cb31-13"><a href="#cb31-13" tabindex="-1"></a>areavar.bhdist <span class="ot">&lt;-</span> unitdat.bhdist<span class="sc">$</span>areavar</span>
-<span id="cb31-14"><a href="#cb31-14" tabindex="-1"></a></span>
-<span id="cb31-15"><a href="#cb31-15" tabindex="-1"></a>unitarea.bhdist</span>
-<span id="cb31-16"><a href="#cb31-16" tabindex="-1"></a>unitvar.bhdist</span>
-<span id="cb31-17"><a href="#cb31-17" tabindex="-1"></a>areavar.bhdist</span></code></pre></div>
+<p>We now get acres and strata information for Bighorn National Forest
+using the districts as our estimation units.</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a>unitdat.bhdist <span class="ot">&lt;-</span> <span class="fu">spGetEstUnit</span>(<span class="at">xyplt =</span> WYplt, </span>
+<span id="cb36-2"><a href="#cb36-2" tabindex="-1"></a>                               <span class="at">uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
+<span id="cb36-3"><a href="#cb36-3" tabindex="-1"></a>                               <span class="at">unit_layer =</span> WYbhdistfn, </span>
+<span id="cb36-4"><a href="#cb36-4" tabindex="-1"></a>                               <span class="at">unitvar =</span> <span class="st">&quot;DISTRICTNA&quot;</span>, </span>
+<span id="cb36-5"><a href="#cb36-5" tabindex="-1"></a>                               <span class="at">spMakeSpatial_opts =</span> <span class="fu">list</span>(<span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
+<span id="cb36-6"><a href="#cb36-6" tabindex="-1"></a>                                                         <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>, </span>
+<span id="cb36-7"><a href="#cb36-7" tabindex="-1"></a>                                                         <span class="at">xy.crs =</span> <span class="dv">4269</span>))</span>
+<span id="cb36-8"><a href="#cb36-8" tabindex="-1"></a></span>
+<span id="cb36-9"><a href="#cb36-9" tabindex="-1"></a><span class="fu">head</span>(unitdat.bhdist<span class="sc">$</span>unitarea)</span>
+<span id="cb36-10"><a href="#cb36-10" tabindex="-1"></a><span class="fu">head</span>(unitdat.bhdist<span class="sc">$</span>pltassgn[ ,<span class="fu">c</span>(<span class="st">&quot;CN&quot;</span>, <span class="st">&quot;DISTRICTNA&quot;</span>)])</span></code></pre></div>
 </details>
 </div>
 </div>
@@ -1111,20 +1066,20 @@ public coordinates (<code>xvar = &quot;LON_PUBLIC&quot;</code>,
 <code>yvar = &quot;LAT_PUBLIC&quot;</code>). Note: The public coordinate
 projection information is: <code>prj = &quot;longlat&quot;</code>,
 <code>datum = &quot;NAD83&quot;</code>.</p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a>WYspplt <span class="ot">&lt;-</span> <span class="fu">spMakeSpatialPoints</span>(<span class="at">xyplt =</span> WYplt, </span>
-<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a>                               <span class="at">xy.uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
-<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a>                               <span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
-<span id="cb32-4"><a href="#cb32-4" tabindex="-1"></a>                               <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>, </span>
-<span id="cb32-5"><a href="#cb32-5" tabindex="-1"></a>                               <span class="at">xy.crs =</span> <span class="dv">4269</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a>WYspplt <span class="ot">&lt;-</span> <span class="fu">spMakeSpatialPoints</span>(<span class="at">xyplt =</span> WYplt, </span>
+<span id="cb37-2"><a href="#cb37-2" tabindex="-1"></a>                               <span class="at">xy.uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
+<span id="cb37-3"><a href="#cb37-3" tabindex="-1"></a>                               <span class="at">xvar =</span> <span class="st">&quot;LON_PUBLIC&quot;</span>, </span>
+<span id="cb37-4"><a href="#cb37-4" tabindex="-1"></a>                               <span class="at">yvar =</span> <span class="st">&quot;LAT_PUBLIC&quot;</span>, </span>
+<span id="cb37-5"><a href="#cb37-5" tabindex="-1"></a>                               <span class="at">xy.crs =</span> <span class="dv">4269</span>)</span></code></pre></div>
 <p>Next, we extract polygon attributes from <code>WYbighorn</code> to
 <code>WYpts</code>, keeping <code>NULL</code> values.</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a>stratlst <span class="ot">&lt;-</span> <span class="fu">spGetStrata</span>(WYspplt, </span>
-<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a>                        <span class="at">uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
-<span id="cb33-3"><a href="#cb33-3" tabindex="-1"></a>                        <span class="at">unit_layer =</span> WYbhfn, </span>
-<span id="cb33-4"><a href="#cb33-4" tabindex="-1"></a>                        <span class="at">strattype =</span> <span class="st">&quot;RASTER&quot;</span>, </span>
-<span id="cb33-5"><a href="#cb33-5" tabindex="-1"></a>                        <span class="at">strat_layer =</span> fornffn) </span>
-<span id="cb33-6"><a href="#cb33-6" tabindex="-1"></a><span class="fu">names</span>(stratlst) </span>
-<span id="cb33-7"><a href="#cb33-7" tabindex="-1"></a>stratlst<span class="sc">$</span>stratalut</span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" tabindex="-1"></a>stratlst <span class="ot">&lt;-</span> <span class="fu">spGetStrata</span>(WYspplt, </span>
+<span id="cb38-2"><a href="#cb38-2" tabindex="-1"></a>                        <span class="at">uniqueid =</span> <span class="st">&quot;CN&quot;</span>, </span>
+<span id="cb38-3"><a href="#cb38-3" tabindex="-1"></a>                        <span class="at">unit_layer =</span> WYbhfn, </span>
+<span id="cb38-4"><a href="#cb38-4" tabindex="-1"></a>                        <span class="at">strattype =</span> <span class="st">&quot;RASTER&quot;</span>, </span>
+<span id="cb38-5"><a href="#cb38-5" tabindex="-1"></a>                        <span class="at">strat_layer =</span> fornffn) </span>
+<span id="cb38-6"><a href="#cb38-6" tabindex="-1"></a><span class="fu">names</span>(stratlst) </span>
+<span id="cb38-7"><a href="#cb38-7" tabindex="-1"></a>stratlst<span class="sc">$</span>stratalut</span></code></pre></div>
 </details>
 </div>
 <div id="spunionpoly" class="section level3">
@@ -1139,14 +1094,14 @@ View Example
 <p>First, we import spatial data with <code>spImportSpatial</code>, and
 then extract polygon attributes from <code>WYbighorn</code> to
 <code>WYpts</code>, keeping <code>NULL</code> values.</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a>WYbh <span class="ot">&lt;-</span> <span class="fu">spImportSpatial</span>(WYbhfn)</span>
-<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a></span>
-<span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a>polyUnion <span class="ot">&lt;-</span> <span class="fu">spUnionPoly</span>(<span class="at">polyv1 =</span> USAco[USAco<span class="sc">$</span>NAME_1 <span class="sc">==</span> <span class="st">&quot;Wyoming&quot;</span>,], </span>
-<span id="cb34-4"><a href="#cb34-4" tabindex="-1"></a>                         <span class="at">polyv2 =</span> WYbh, </span>
-<span id="cb34-5"><a href="#cb34-5" tabindex="-1"></a>                         <span class="at">areacalc =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb34-6"><a href="#cb34-6" tabindex="-1"></a></span>
-<span id="cb34-7"><a href="#cb34-7" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(polyUnion))</span>
-<span id="cb34-8"><a href="#cb34-8" tabindex="-1"></a><span class="fu">head</span>(polyUnion)</span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a>WYbh <span class="ot">&lt;-</span> <span class="fu">spImportSpatial</span>(WYbhfn)</span>
+<span id="cb39-2"><a href="#cb39-2" tabindex="-1"></a></span>
+<span id="cb39-3"><a href="#cb39-3" tabindex="-1"></a>polyUnion <span class="ot">&lt;-</span> <span class="fu">spUnionPoly</span>(<span class="at">polyv1 =</span> stunitco[stunitco<span class="sc">$</span>STATENM <span class="sc">==</span> <span class="st">&quot;Wyoming&quot;</span>, ], </span>
+<span id="cb39-4"><a href="#cb39-4" tabindex="-1"></a>                         <span class="at">polyv2 =</span> WYbh, </span>
+<span id="cb39-5"><a href="#cb39-5" tabindex="-1"></a>                         <span class="at">areacalc =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb39-6"><a href="#cb39-6" tabindex="-1"></a></span>
+<span id="cb39-7"><a href="#cb39-7" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(polyUnion))</span>
+<span id="cb39-8"><a href="#cb39-8" tabindex="-1"></a><span class="fu">head</span>(polyUnion)</span></code></pre></div>
 </details>
 </div>
 <div id="spzonalrast" class="section level3">
@@ -1160,21 +1115,16 @@ View Example
 <p>First, we import spatial data with <code>spImportSpatial</code>, and
 then extract polygon attributes from <code>WYbighorn</code> to
 <code>WYpts</code>, keeping <code>NULL</code> values.</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a>WYbhdist <span class="ot">&lt;-</span> <span class="fu">spImportSpatial</span>(WYbhdistfn)</span>
-<span id="cb35-2"><a href="#cb35-2" tabindex="-1"></a></span>
-<span id="cb35-3"><a href="#cb35-3" tabindex="-1"></a>zonallst <span class="ot">&lt;-</span> <span class="fu">spZonalRast</span>(<span class="at">polyv =</span> WYbhdist, </span>
-<span id="cb35-4"><a href="#cb35-4" tabindex="-1"></a>                        <span class="at">polyv.att =</span> <span class="st">&quot;DISTRICTNA&quot;</span>, </span>
-<span id="cb35-5"><a href="#cb35-5" tabindex="-1"></a>                        <span class="at">rastfn =</span> demfn, </span>
-<span id="cb35-6"><a href="#cb35-6" tabindex="-1"></a>                        <span class="at">zonalstat =</span> <span class="fu">c</span>(<span class="st">&quot;mean&quot;</span>, <span class="st">&quot;sum&quot;</span>)) </span>
-<span id="cb35-7"><a href="#cb35-7" tabindex="-1"></a><span class="fu">names</span>(zonallst) </span>
-<span id="cb35-8"><a href="#cb35-8" tabindex="-1"></a></span>
-<span id="cb35-9"><a href="#cb35-9" tabindex="-1"></a>zonalext <span class="ot">&lt;-</span> zonallst<span class="sc">$</span>zonalext</span>
-<span id="cb35-10"><a href="#cb35-10" tabindex="-1"></a>outname <span class="ot">&lt;-</span> zonallst<span class="sc">$</span>outname</span>
-<span id="cb35-11"><a href="#cb35-11" tabindex="-1"></a>rasterfile <span class="ot">&lt;-</span> zonallst<span class="sc">$</span>rasterfile</span>
-<span id="cb35-12"><a href="#cb35-12" tabindex="-1"></a></span>
-<span id="cb35-13"><a href="#cb35-13" tabindex="-1"></a><span class="fu">head</span>(zonalext)</span>
-<span id="cb35-14"><a href="#cb35-14" tabindex="-1"></a>outname</span>
-<span id="cb35-15"><a href="#cb35-15" tabindex="-1"></a>rasterfile</span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" tabindex="-1"></a>WYbhdist <span class="ot">&lt;-</span> <span class="fu">spImportSpatial</span>(WYbhdistfn)</span>
+<span id="cb40-2"><a href="#cb40-2" tabindex="-1"></a></span>
+<span id="cb40-3"><a href="#cb40-3" tabindex="-1"></a>zonallst <span class="ot">&lt;-</span> <span class="fu">spZonalRast</span>(<span class="at">polyv =</span> WYbhdist, </span>
+<span id="cb40-4"><a href="#cb40-4" tabindex="-1"></a>                        <span class="at">polyv.att =</span> <span class="st">&quot;DISTRICTNA&quot;</span>, </span>
+<span id="cb40-5"><a href="#cb40-5" tabindex="-1"></a>                        <span class="at">rastfn =</span> demfn, </span>
+<span id="cb40-6"><a href="#cb40-6" tabindex="-1"></a>                        <span class="at">zonalstat =</span> <span class="fu">c</span>(<span class="st">&quot;mean&quot;</span>, <span class="st">&quot;sum&quot;</span>)) </span>
+<span id="cb40-7"><a href="#cb40-7" tabindex="-1"></a><span class="fu">names</span>(zonallst) </span>
+<span id="cb40-8"><a href="#cb40-8" tabindex="-1"></a></span>
+<span id="cb40-9"><a href="#cb40-9" tabindex="-1"></a>zonalext <span class="ot">&lt;-</span> zonallst<span class="sc">$</span>zonalext</span>
+<span id="cb40-10"><a href="#cb40-10" tabindex="-1"></a><span class="fu">head</span>(zonalext)</span></code></pre></div>
 </details>
 </div>
 </div>

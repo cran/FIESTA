@@ -269,10 +269,9 @@ treesumdat1 <- datSumTree(
                 tree = WYtree, 
                 plt = WYplt, 
                 tsumvarlst = c("BA", "VOLCFNET"),
-                TPA = FALSE, 
                 tfilter = "STATUSCD == 1", 
                 bycond = FALSE, 
-                tround = 2
+                datSum_opts = list(TPA = FALSE, tround = 2)
                 )
 
 names(treesumdat1)
@@ -285,10 +284,9 @@ treesumdat2 <- datSumTree(
                   tree = WYtree, 
                   plt = WYplt, 
                   tsumvarlst = c("BA", "VOLCFNET"),
-                  TPA = TRUE, 
                   tfilter = "STATUSCD == 1", 
                   bycond = FALSE, 
-                  tround = 2
+                  datSum_opts = list(TPA = TRUE, tround = 2)
                   )
 
 names(treesumdat2)
@@ -307,15 +305,14 @@ treesum1[treesum1$CN == 40404758010690,]
 treesum2[treesum2$CN == 40404758010690,]
 
 ## -----------------------------------------------------------------------------
+
 treesumdat3 <- datSumTree(
                   tree = WYtree, 
                   plt = WYplt, 
-                  tsumvarlst = c("DIA", "HT"),
-                  TPA = FALSE, 
-                  tfun = mean, 
+                  tderive = list(MEAN_DIA = 'AVG(DIA)', MEAN_HT = 'AVG(HT)'),
                   tfilter = "STATUSCD == 1", 
                   bycond = FALSE, 
-                  tround = 2
+                  datSum_opts = list(TPA = FALSE, tround = 2)
                   )
 
 names(treesumdat3)
@@ -327,17 +324,16 @@ testplt
 mean(testplt[testplt$STATUSCD == 1, "DIA"], na.rm=TRUE)
 mean(testplt[testplt$STATUSCD == 1, "HT"], na.rm=TRUE)
 
-treesum3[treesum3$CN == 40404758010690,]
+treesum3[treesum3$PLT_CN == 40404758010690,]
 
 ## -----------------------------------------------------------------------------
 treesumdat4a <- datSumTree(
                   tree = WYtree, 
                   plt = WYplt, 
                   tsumvarlst = "TPA_UNADJ",
-                  TPA = TRUE, 
                   tfilter = "STATUSCD == 1", 
                   bycond = FALSE, 
-                  tround = 2
+                  datSum_opts = list(TPA = TRUE, tround = 2)
                   )
 
 names(treesumdat4a)
@@ -349,6 +345,7 @@ treesumdat4b <- datSumTree(
                   tree = WYtree, 
                   plt = WYplt, 
                   cond = WYcond, 
+                  tderive = list(MEAN_DIA = 'AVG(DIA)'),
                   tsumvarlst = "VOLCFNET",
                   tfilter = "STATUSCD == 1", 
                   bycond = FALSE, 
@@ -383,11 +380,10 @@ treesumdat5a <- datSumTree(
                   plt = WYplt, 
                   seed = WYseed, 
                   tsumvarlst = "TPA_UNADJ",
-                  TPA = TRUE, 
-                  addseed = TRUE, 
+                  seedlings = "Y", 
                   tfilter = "STATUSCD == 1", 
                   bycond = FALSE, 
-                  tround = 2
+                  datSum_opts = list(TPA = TRUE, tround = 2)
                   )
 
 names(treesumdat5a)
@@ -404,12 +400,11 @@ treesumdat5b <- datSumTree(
                   cond = WYcond, 
                   seed = WYseed, 
                   tsumvarlst = "TPA_UNADJ",
-                  TPA = TRUE, 
-                  addseed = TRUE, 
+                  seedlings = "Y", 
                   tfilter = "STATUSCD == 1", 
                   bycond = FALSE, 
-                  tround = 2,
-                  getadjplot  =TRUE
+                  getadjplot  =TRUE,
+                  datSum_opts = list(TPA = TRUE, tround = 2)
                   )
 
 names(treesumdat5b)
@@ -425,15 +420,13 @@ treedomBA <- datSumTreeDom(
                 tree = WYtree, 
                 cond = WYcond, 
                 plt = WYplt, 
-                puniqueid = "CN", 
                 bycond = FALSE, 
                 tsumvar = "BA", 
-                TPA = TRUE, 
                 tdomtot = TRUE, 
                 tdomtotnm = "BA_LIVE", 
                 tdomprefix = "BA_LIVE", 
-                tround = 2, 
-                tfilter = "STATUSCD==1"
+                tfilter = "STATUSCD==1",
+                datSum_opts = list(TPA = TRUE, tround = 2)
                 )
 
 names(treedomBA)
@@ -455,14 +448,12 @@ treedomCNT <- datSumTreeDom(
                 tree = WYtree, 
                 cond = WYcond, 
                 plt = WYplt, 
-                puniqueid = "CN", 
                 bycond = FALSE, 
-                tsumvar = "PLT_CN", 
-                TPA = TRUE, 
+                tsumvar = "TPA_UNADJ", 
                 tdomtot = TRUE, 
                 tdomprefix = "CNT", 
-                tround = 0, 
-                tfilter = "STATUSCD==1"
+                tfilter = "STATUSCD==1",
+                datSum_opts = list(TPA = TRUE, tround = 0)
                 )
 
 names(treedomCNT)
@@ -478,13 +469,11 @@ treedomCNTs <- datSumTreeDom(
                 cond = WYcond, 
                 plt = WYplt, 
                 seed = WYseed, 
-                puniqueid = "CN", 
                 bycond = FALSE, 
-                tsumvar = "PLT_CN", 
-                TPA = TRUE, 
+                tsumvar = "TPA_UNADJ", 
                 tdomtot = TRUE, 
                 tdomprefix = "CNT", 
-                tround = 0
+                datSum_opts = list(TPA = TRUE, tround = 0)
                 )
 
 names(treedomCNTs)
@@ -501,15 +490,13 @@ treedomCNTs <- datSumTreeDom(
                 cond = WYcond, 
                 plt = WYplt, 
                 seed = WYseed, 
-                puniqueid = "CN", 
                 bycond  =FALSE, 
-                tsumvar = "PLT_CN", 
-                TPA = TRUE, 
+                tsumvar = "TPA_UNADJ", 
                 tdomtot = TRUE, 
                 tdomprefix = "CNT", 
-                tround = 0, 
                 tfilter = "STATUSCD==1", 
-                addseed = TRUE
+                seedlings = "Y",
+                datSum_opts = list(TPA = TRUE, tround = 0)
                 )
 
 names(treedomCNTs)
@@ -531,16 +518,15 @@ treedomCNTs <- datSumTreeDom(
                   cond = WYcond, 
                   plt = WYplt, 
                   seed = WYseed, 
-                  puniqueid ="CN", 
                   bycond = FALSE, 
                   tsumvar = "PLT_CN", 
-                  TPA = TRUE, 
                   tdomtot = TRUE, 
                   tdomprefix = "CNT", 
                   savedata = FALSE, 
                   tfilter = "STATUSCD==1", 
-                  addseed = TRUE, 
-                  presence = TRUE
+                  seedlings = "Y", 
+                  presence = TRUE,
+                  datSum_opts = list(TPA = TRUE)
                   )
 
 names(treedomCNTs)
@@ -548,16 +534,27 @@ tdomdat.pres <- treedomCNTs$tdomdat.pres
 
 head(tdomdat.pres)
 
+
 ## -----------------------------------------------------------------------------
-treedomCNTs <- datSumTreeDom(tree=WYtree, cond=WYcond, plt=WYplt, seed=WYseed, 
-	    puniqueid="CN", bycond=FALSE, tsumvar="PLT_CN", TPA=TRUE, tdomtot=TRUE,
-	    tdomprefix="CNT", savedata=FALSE, tround=0, tfilter="STATUSCD==1",
-		  addseed=TRUE, presence=TRUE, proportion=TRUE)
+treedomCNTs <- datSumTreeDom(tree = WYtree, 
+                             cond = WYcond, 
+                             plt = WYplt, 
+                             seed = WYseed, 
+	                           bycond = FALSE, 
+                             tsumvar = "TPA_UNADJ", 
+                             tdomtot = TRUE,
+	                           tdomprefix = "CNT", 
+                             savedata = FALSE, 
+                             tfilter = "STATUSCD==1",
+		                         seedlings = "Y", 
+		                         proportion = TRUE,
+		                         datSum_opts = list(tround = 0))
 names(treedomCNTs)
 tdomdat.pres <- treedomCNTs$tdomdat.pres
 tdomdat.prop <- treedomCNTs$tdomdat.prop
 
 head(tdomdat.pres)
+
 
 ## -----------------------------------------------------------------------------
 treedomCNTs <- datSumTreeDom(
@@ -565,25 +562,21 @@ treedomCNTs <- datSumTreeDom(
                 cond = WYcond, 
                 plt = WYplt, 
                 seed = WYseed, 
-                puniqueid = "CN", 
                 bycond = FALSE, 
                 tsumvar = "PLT_CN", 
-                TPA = TRUE, 
                 tdomtot = TRUE, 
                 tdomprefix = "CNT", 
-                tround = 0, 
                 tfilter = "STATUSCD==1",
-                addseed = TRUE, 
+                seedlings = "Y", 
                 presence = TRUE, 
                 proportion = TRUE, 
-                cover = TRUE, 
-                tdombarplot = TRUE
+                tdombarplot = TRUE,
+                datSum_opts = list(TPA = TRUE, tround = 0)
                 )
 
 names(treedomCNTs)
 tdomdat.pres <- treedomCNTs$tdomdat.pres
 tdomdat.prop <- treedomCNTs$tdomdat.prop
-tdomdat.cov <- treedomCNTs$tdomdat.cov
 
 cn=40404742010690
 tdomdat.tree[tdomdat.tree$CN == cn,]
@@ -591,7 +584,7 @@ tdomdat.seed[tdomdat.seed$CN == cn,]
 tdomdat.treeseed[tdomdat.treeseed$CN == cn,]
 tdomdat.pres[tdomdat.pres$CN == cn,]
 tdomdat.prop[tdomdat.prop$CN == cn,]
-tdomdat.cov[tdomdat.cov$CN == cn,]
+
 
 ## -----------------------------------------------------------------------------
 treedomCNTs <- datSumTreeDom(
@@ -599,18 +592,16 @@ treedomCNTs <- datSumTreeDom(
                 cond = WYcond, 
                 plt = WYplt, 
                 seed = WYseed, 
-                puniqueid = "CN", 
                 bycond = FALSE, 
                 tsumvar = "PLT_CN", 
-                TPA = TRUE, 
                 tdomtot = TRUE, 
                 tdomprefix = "CNT", 
-                tround = 0, 
                 tfilter = "STATUSCD==1", 
-                addseed = TRUE, 
+                seedlings = "Y", 
                 presence = TRUE, 
                 proportion = TRUE, 
-                tdombarplot = TRUE
+                tdombarplot = TRUE,
+                datSum_opts = list(TPA = TRUE, tround = 0)
                 )
 
 names(treedomCNTs)
@@ -624,14 +615,12 @@ treedomBA <- datSumTreeDom(
                 tree = WYtree, 
                 cond = WYcond, 
                 plt = WYplt, 
-                puniqueid = "CN", 
                 bycond = FALSE, 
                 tsumvar = "BA", 
-                TPA = TRUE, 
                 tdomprefix = "BA", 
                 tdomvarlst = 113, 
-                tround = 2, 
-                tfilter = "STATUSCD==1"
+                tfilter = "STATUSCD==1",
+                datSum_opts = list(tround = 2)
                 )
 
 names(treedomBA)
@@ -658,18 +647,16 @@ treedomDIACNTs <- datSumTreeDom(
                     tree = WYtree2, 
                     cond = WYcond, 
                     plt = WYplt, 
-                    puniqueid = "CN", 
                     bycond = FALSE, 
                     tsumvar = "PLT_CN", 
-                    TPA = TRUE, 
                     tdomtot = TRUE, 
                     tdomprefix = "CNT", 
-                    tround = 2, 
                     tfilter = "STATUSCD==1 & DIA > 30", 
                     presence = TRUE, 
                     proportion = TRUE, 
                     tdomvar2 = "DIACL2IN", 
-                    tdombarplot = TRUE
+                    tdombarplot = TRUE,
+                    datSum_opts = list(TPA = TRUE, tround = 2)
                     )
 
 names(treedomDIACNTs)

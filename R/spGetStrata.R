@@ -67,7 +67,6 @@
 #' of options. Only used when savedata = TRUE.  
 #' @param vars2keep String vector. Attributes in SAdoms, other than domvar to
 #' include in dunitlut output and extract to pltassgn points.
-#' @param gui Logical. If gui, user is prompted for parameters.
 #'
 #' @return \item{pltassgn}{ Data frame. Input xyplt data with extracted
 #' estimation unit and strata values appended. } \item{unitarea}{ Data frame.
@@ -171,17 +170,13 @@ spGetStrata <- function(xyplt,
                         exportNA = FALSE, 
                         spMakeSpatial_opts = NULL,
                         savedata_opts = NULL, 
-                        vars2keep = NULL, 
-                        gui = FALSE){
+                        vars2keep = NULL){
 
   ## IF NO ARGUMENTS SPECIFIED, ASSUME GUI=TRUE
-  gui <- ifelse(nargs() == 0, TRUE, FALSE)
+  #gui <- ifelse(nargs() == 0, TRUE, FALSE)
+  gui <- FALSE
 
   if (gui) {uniqueid=stratclip=unitarea <- NULL}
-
-  ## Set global variables
-  value=count=strwt=polyv.lut=NAlst <- NULL
-  unittype <- "POLY"
 
   ## Adds to file filters to Cran R Filters table.
   if (.Platform$OS.type=="windows") {
@@ -190,6 +185,9 @@ spGetStrata <- function(xyplt,
     Filters=rbind(Filters,tif=c("Raster tif files (*.tif)", "*.tif"))
     Filters=rbind(Filters,csv=c("Comma-delimited files (*.csv)", "*.csv")) }
 
+  ## Set global variables
+  value=count=strwt=polyv.lut=NAlst <- NULL
+  unittype <- "POLY"
   
   ##################################################################
   ## CHECK PARAMETER NAMES
@@ -358,11 +356,13 @@ spGetStrata <- function(xyplt,
   ##################################################################
   ## DO WORK
   ##################################################################
-  unitarea=stratalut <- NULL
+  unitarea=stratalut=PLOT_STATUS_CD <- NULL
 
   ## Check unit_layer
-  unitlayerx <- pcheck.spatial(layer=unit_layer, dsn=unit_dsn, gui=gui, 
-	caption="Estimation unit layer?")
+  unitlayerx <- pcheck.spatial(layer = unit_layer, 
+                               dsn = unit_dsn, gui=gui, 
+                               polyfix = TRUE,
+	                             caption = "Estimation unit layer?")
   nounit <- ifelse (is.null(unitlayerx), TRUE, FALSE)
 
   ## unit.filter
@@ -402,6 +402,7 @@ spGetStrata <- function(xyplt,
     } else {
       strvar <- "value"
     }
+    
     ##################################################################
     ## if strattype == "RASTER"
     ##################################################################
@@ -409,7 +410,9 @@ spGetStrata <- function(xyplt,
     stratlayerfn <- tryCatch(
             getrastlst(strat_layer, 
                        rastfolder = strat_dsn, 
-                       stopifLonLat = TRUE),
+                       stopifLonLat = TRUE, 
+                       stopifnull = TRUE,
+                       stopifinvalid = TRUE),
                     error=function(e) {
                       message(e, "\n")
                       return("stop") })
@@ -467,7 +470,7 @@ spGetStrata <- function(xyplt,
       ## Note: removing all NA values
       polyvarlst <- unique(c(unitvar2, unitvar, vars2keep))
       polyvarlstchk <- polyvarlst[!polyvarlst %in% names(sppltx)]
-      
+
       if (length(polyvarlstchk) == length(polyvarlst)) { 
         extpoly <- tryCatch(
             spExtractPoly(sppltx, 
@@ -482,7 +485,7 @@ spGetStrata <- function(xyplt,
         sppltx <- extpoly$spxyext
         unitNA <- extpoly$NAlst[[1]]
         outname <- extpoly$outname
-      
+
         ## Check if the name of unitvar and/or unitvar changed (duplicated)
         if (!is.null(unitvar2)) {
           if (outname[1] != unitvar2) {
@@ -508,15 +511,36 @@ spGetStrata <- function(xyplt,
       } 
       
       ## If unitvar2 is not null, make one variable for zonal and area calculations
+      unitvarclass <- "character"
       if (!is.null(unitvar2)) {
+        unitvar2class <- "character"
         unitvar_old <- unitvar
-        unitlayerprj$UNITVAR <- paste0(unitlayerprj[[unitvar2]], "#", unitlayerprj[[unitvar]]) 
+        if (is.numeric(unitlayerprj[[unitvar]])) {
+          unitvarclass <- "numeric"
+          digits <- max(nchar(unitlayerprj[[unitvar]]))
+          unitlayerprj$UNITVAR <- paste0(unitlayerprj[[unitvar2]], "#", 
+              formatC(unitlayerprj[[unitvar]], width=digits, digits=digits, flag=0))
+        } else {
+          unitlayerprj$UNITVAR <- paste0(unitlayerprj[[unitvar2]], "#", unitlayerprj[[unitvar]])
+        }
+        if (is.numeric(unitlayerprj[[unitvar2]])) {
+          unitvar2class <- "numeric"
+        }
         unitvar <- "UNITVAR"		
       }
 
       ## Get pixel counts by estimation unit
-      stratalut <- setDT(zonalFreq(src=unitlayerprj, attribute=unitvar, 
-			      rasterfile=stratlayerfn, band=1, na.rm=TRUE, ignoreValue=rast.NODATA))
+      message("getting zonal pixel counts...")
+      stratalut <- tryCatch(
+        zonalFreq(src=unitlayerprj, attribute=unitvar, 
+			      rasterfile=stratlayerfn, band=1, na.rm=TRUE, ignoreValue=rast.NODATA),
+      error=function(e) {
+        message(e, "\n")
+        return(NULL)})
+      if (is.null(stratalut) || nrow(stratalut) == 0) {
+        stop("error in zonalFreq...")
+      }
+      stratalut <- setDT(stratalut)
       setnames(stratalut, c("zoneid", "value", "zoneprop"), c(unitvar, strvar, "strwt"))
       strataNA <- stratalut[is.na(get(strvar)), ]
       stratalut <- stratalut[!is.na(get(strvar)), ]
@@ -539,6 +563,7 @@ spGetStrata <- function(xyplt,
     }
 
     ## Extract values of raster layer to points
+    message("gettting pixel values...")
     extrast <- spExtractRast(sppltx, 
 	                           rastlst = stratlayerfn,
 							               var.name = strvar, 
@@ -548,12 +573,16 @@ spGetStrata <- function(xyplt,
 							               rast.NODATA = rast.NODATA,
 							               ncores = ncores, 
 							               savedata_opts=savedata_opts)
-    sppltx <- extrast$spplt
-    pltdat <- extrast$sppltext
+
+    #sppltx <- extrast$spplt
+    sppltx <- extrast$sppltext
     rastfnlst <- extrast$rastfnlst
     outname <- extrast$outnames
     NAlst <- extrast$NAlst[[1]]
-
+   
+    if (any(duplicated(sppltx[[uniqueid]]))) {
+      sppltx <- unique(sppltx)
+    }
     if (!is.null(NAlst)) {
       message("NA values shown in red... ")
       plot(sf::st_geometry(sppltx), pch=16, cex=.5)
@@ -585,10 +614,16 @@ spGetStrata <- function(xyplt,
     setnames(sppltx, strclvar, strvar2)
     strvar <- strvar2
   } else {
+    strvar <- findnm(strvar, names(sppltx), returnNULL = TRUE)
+    if (is.null(strvar)) {
+      stop("no data returned for: ", stratlayerfn)
+    }
     strvar2 <- checknm("STRATUMCD", names(sppltx))
-    setnames(stratalut, strvar, strvar2)
-    setnames(sppltx, strvar, strvar2)
-    strvar <- strvar2
+    if (!is.null(strvar2)) {
+      setnames(stratalut, strvar, strvar2)
+      setnames(sppltx, strvar, strvar2)
+      strvar <- strvar2
+    }
   } 
 
   if (!is.null(vars2keep)) {
@@ -618,8 +653,36 @@ spGetStrata <- function(xyplt,
 	  stratalut <- data.frame(unname( t(data.frame( strsplit(sub("\\|","/",stratalut$UNITVAR), "#") )) ), stratalut)
 	  setnames(stratalut, c("X1", "X2"), c(unitvar2, unitvar))
 	  stratalut$UNITVAR <- NULL
+	  
+	  ## set classs of unitvar
+	  if (!is.numeric(unitarea[[unitvar]]) && unitvarclass == "numeric") {
+	    unitarea[[unitvar]] <- as.numeric(unitarea[[unitvar]])
+	  }
+	  if (!is.numeric(stratalut[[unitvar]]) && unitvarclass == "numeric") {
+	    stratalut[[unitvar]] <- as.numeric(stratalut[[unitvar]])
+	  }
+	  ## set classs of unitvar2
+	  if (!is.numeric(unitarea[[unitvar2]]) && unitvar2class == "numeric") {
+	    unitarea[[unitvar2]] <- as.numeric(unitarea[[unitvar2]])
+	  }
+	  if (!is.numeric(stratalut[[unitvar2]]) && unitvar2class == "numeric") {
+	    stratalut[[unitvar2]] <- as.numeric(stratalut[[unitvar2]])
+	  }
   }	   
   spxy <- sppltx[, sppltx.names]
+  
+  
+  ## Append P1POINTCNT based on pltassgn
+  strunitvars <- c(unitvar2, unitvar, strvar)
+  setkeyv(setDT(pltassgn), strunitvars)
+  setkeyv(setDT(stratalut), strunitvars)
+  P1POINTCNT <- setDT(pltassgn)[, list(P1POINTCNT=.N), by=strunitvars]
+  stratalut <- stratalut[P1POINTCNT]
+  if ("PLOT_STATUS_CD" %in% names(pltassgn)) {
+    P1POINTCNTFOR <- pltassgn[PLOT_STATUS_CD == 1, list(P1POINTCNTFOR=.N), by=strunitvars]
+    stratalut <- stratalut[P1POINTCNTFOR]
+  }
+  
   
   if (savedata) {
     
@@ -645,12 +708,15 @@ spGetStrata <- function(xyplt,
                   savedata_opts = outlst)
   }
   
-  returnlst <- list(bnd=unitlayerx, pltassgn=setDF(pltassgn), 
-		  pltassgnid=uniqueid, unitarea=setDF(unitarea), 
-		  unitvar=unitvar, unitvar2=unitvar2, areavar=areavar, 
-		  areaunits=areaunits,
-		  stratalut=setDF(stratalut), strvar=strvar, 
-		  getwt=FALSE, strwtvar="strwt")
+  
+  returnlst <- list(bnd = unitlayerx, 
+                    pltassgn = data.frame(pltassgn, check.names = FALSE), 
+		                pltassgnid = uniqueid, 
+		                unitarea = data.frame(unitarea, check.names = FALSE), 
+		                unitvar = unitvar, unitvar2 = unitvar2, 
+		                areavar = areavar, areaunits = areaunits,
+		                stratalut = data.frame(stratalut, check.names = FALSE), 
+		                strvar = strvar, getwt = FALSE, strwtvar = "strwt")
 
   ## Returnxy
   if (returnxy) {

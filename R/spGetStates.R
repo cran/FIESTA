@@ -43,7 +43,7 @@ spGetStates <- function(bnd_layer,
                         stbnd.att = "COUNTYFIPS", 
                         RS = NULL, 
                         states = NULL, 
-                        overlap = 1, 
+                        overlap = 0.5, 
                         clipbnd = FALSE,
                         showsteps = FALSE, 
                         savebnd = FALSE, 
@@ -54,6 +54,9 @@ spGetStates <- function(bnd_layer,
   ## Get states that intersect a boundary. If RS != NULL, boundary is
   ## clipped to RS states.
   ##############################################################################
+  
+  ## Set global variables
+  PLOT_STATUS_CD <- NULL
 
   ##################################################################
   ## CHECK PARAMETER NAMES

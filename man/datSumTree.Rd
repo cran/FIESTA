@@ -2,8 +2,7 @@
 % Please edit documentation in R/datSumTree.R
 \name{datSumTree}
 \alias{datSumTree}
-\title{Data - Aggregates tree and/or seedling data to the plot, condition,
-or subplot level.}
+\title{Data - Aggregates numeric tree data to the plot or condition-level.}
 \usage{
 datSumTree(
   tree = NULL,
@@ -13,38 +12,27 @@ datSumTree(
   subp_cond = NULL,
   subplot = NULL,
   datsource = "obj",
-  data_dsn = NULL,
-  tuniqueid = "PLT_CN",
-  cuniqueid = "PLT_CN",
-  puniqueid = "CN",
+  dbconn = NULL,
+  dsn = NULL,
   bycond = FALSE,
-  condid = "CONDID",
   bysubp = FALSE,
-  subpuniqueid = "PLT_CN",
-  subpid = "SUBP",
+  bydomainlst = NULL,
   tsumvarlst = NULL,
   tsumvarnmlst = NULL,
-  addseed = FALSE,
-  seedonly = FALSE,
+  seedlings = "N",
   woodland = "Y",
-  TPA = TRUE,
-  tfun = sum,
-  ACI = FALSE,
   tfilter = NULL,
-  lbs2tons = TRUE,
-  metric = FALSE,
+  domclassify = NULL,
+  tderive = NULL,
   getadjplot = FALSE,
-  adjtree = FALSE,
-  adjvar = "tadjfac",
-  adjTPA = 1,
-  NAto0 = FALSE,
-  tround = 5,
-  returnDT = TRUE,
+  pltidsWITHqry = NULL,
+  pltidsid = NULL,
+  pcwhereqry = NULL,
   savedata = FALSE,
-  savedata_opts = NULL,
-  dbconn = NULL,
-  dbconnopen = FALSE,
-  gui = FALSE
+  tabIDs = tableIDs(),
+  datSum_opts = datSum_options(),
+  database_opts = NULL,
+  savedata_opts = NULL
 )
 }
 \arguments{
@@ -53,7 +41,7 @@ datSumTree(
 \item{seed}{Dataframe or comma-delimited file (*.csv). The seedling table.}
 
 \item{cond}{Dataframe or comma-delimited file (*.csv). Condition-level table
-to join the aggregated Ftree data to, if bycond=TRUE. This table also may be
+to join the aggregated tree data to, if bycond=TRUE. This table also may be
 used for condition proportion or strata variables used if adjcond or
 adjstrata = TRUE (See details below).  This table is optional.}
 
@@ -72,127 +60,96 @@ included the aggregated tree data are joined to subplot before returning.}
 
 \item{datsource}{String. Source of data ('obj', 'csv', 'sqlite', 'gdb').}
 
-\item{data_dsn}{String. If datsource='sqlite', the name of SQLite database
+\item{dbconn}{Open database connection.}
+
+\item{dsn}{String. If datsource='sqlite', the name of SQLite database
 (*.sqlite).}
-
-\item{tuniqueid}{String. Unique identifier of plt in tree table.}
-
-\item{cuniqueid}{String. Unique identifier of plt in cond table if cond is
-NOT NULL.}
-
-\item{puniqueid}{String. Unique identifier of plt table if plt is NOT NULL.}
 
 \item{bycond}{Logical. If TRUE, the data are aggregated to the condition
 level (by: cuniqueid, condid). If FALSE, the data are aggregated to the plot
 level (by: puniqueid). If bysubp = TRUE and bycond = TRUE, data are 
-aggregated by subpuniqueid, subpid, condid.}
-
-\item{condid}{String. Unique identifier for conditions.}
+aggregated by subplotid, subpid, condid.}
 
 \item{bysubp}{Logical. If TRUE, data are aggregated to the subplot level.}
 
-\item{subpuniqueid}{String. Unique identifier of plot in subplot and 
-subp_cond table.}
-
-\item{subpid}{String. Unique identifier of each subplot.}
+\item{bydomainlst}{String (vector). Categorical domain variables for 
+summing tree data by (e.g., SPCD). Variables must be in tree table or 
+plt/cond table if tables are provided.}
 
 \item{tsumvarlst}{String (vector). Tree-level variable(s) to aggregate
-(e.g., "TPA_UNADJ", "BA"). Use "TPA_UNADJ" (tfun=sum) for summed tree
+(e.g., "TPA_UNADJ", "BA"). Use "TPA_UNADJ" for summed tree
 count.}
 
 \item{tsumvarnmlst}{String (vector). Name of the tree-level variable(s) to
 aggregate (e.g., "TPALIVE", "BALIVE"). This list must have the same number
 of variables as tsumvarlst and be in respective order. If NULL, the default
-names will be tsumvar'_tfun' (e.g., "TPA_UNADJ_SUM", "BA_SUM").}
+names will be tsumvar_SUM (e.g., "TPA_UNADJ_SUM", "BA_SUM").}
 
-\item{addseed}{Logical. If TRUE, add seedling counts to tree counts. Note:
-tdomvar must be 'SPCD' or 'SPGRPCD'.}
+\item{seedlings}{String. ('Y', 'N', 'only') If seedlings = 'Y', add
+seedlings to summary ('TPA_UNADJ' %in% tsumvarlst). If seedlings = 'N',
+do not add seedlings. If seedlings = 'only', only include seedlings.}
 
-\item{seedonly}{Logical. If TRUE, seedling counts only. Note: tdomvar
-must be 'SPCD' or 'SPGRPCD'.}
-
-\item{woodland}{String. If woodland = 'Y', include woodland tree species
-where measured. If woodland = 'N', only include timber species. See 
-FIESTA::ref_species$WOODLAND ='Y/N'. If woodland = 'only', only include
-woodland species.}
-
-\item{TPA}{Logical. If TRUE, tsumvarlst variable(s) are multiplied by the
-respective trees-per-acre variable (see details) to get per-acre
-measurements.}
-
-\item{tfun}{Function. The name of the function to use to aggregate the data
-(e.g., sum, mean, max).}
-
-\item{ACI}{Logical. If TRUE, if ACI (All Condition Inventory) plots exist,
-any trees on these plots will be included in summary. If FALSE, you must
-include condition table.}
+\item{woodland}{String. ('Y', 'N', 'only') If woodland = 'Y', include
+woodland tree species where measured. If woodland = 'N', only include 
+timber species. See FIESTA::ref_species$WOODLAND ='Y/N'. If woodland = 'only', 
+only include woodland species. If NULL, use whatever is in table.}
 
 \item{tfilter}{String. Filter to subset the tree data before aggregating
 (e.g., "STATUSCD == 1"). This must be in R syntax. If tfilter=NULL, user is
 prompted.  Use tfilter="NONE" if no filters.}
 
-\item{lbs2tons}{Logical. If TRUE, converts biomass or carbon variables from
-pounds to tons (1 pound = 0.0005 short tons).}
+\item{domclassify}{List. List for classifying domain variables in bydomainlst
+(e.g., DIA = c(10,20,30)).}
 
-\item{metric}{Logical. If TRUE, converts response to metric units based on
-FIESTA::ref_conversion, if any variable in tsumvarlst is in
-FIESTAutils::ref_units.  Note: if TPA, TPA is converted to trees per hectare
-(TPH: 1/ tpavar * 0.4046860).}
+\item{tderive}{List. List of derivative from tree table to add to output data
+(e.g., list(MEAN_DIA = 'AVG(DIA)', SDI = 'POWER(DIA / 10, 1.605)', 
+QMD = 'SQRT(SUM(POWER(DIA,2) * 0.005454 * TPA_UNADJ) / (SUM(TPA_UNADJ)*0.005454))'))}
 
-\item{getadjplot}{Logical. If TRUE, adjustments are calculated for
-nonsampled conditions on plot.}
+\item{getadjplot}{Logical. If TRUE, and adj='plot', adjfactors are 
+calculated for nonsampled conditions at plot-level.}
 
-\item{adjtree}{Logical. If TRUE, trees are individually adjusted by
-adjustment factors.  Adjustment factors must be included in tree table (see
-adjvar).}
+\item{pltidsWITHqry}{SQL query. A query identifying plots to sum (e.g., 
+'WITH pltids AS (SELECT cn AS PLT_CN FROM plot WHERE statecd=49 and INVYR=2018)')}
 
-\item{adjvar}{String. If adjtree=TRUE, the name of the variable to use for
-multiplying by adjustment (e.g., tadjfac).}
+\item{pltidsid}{Sting. Name of unique identifier in pltidsWITHqry.}
 
-\item{adjTPA}{Numeric. A tree-per-acre adjustment. Use for DESIGNCD=1
-(annual inventory), if using less than 4 subplots. If using only 1 sublot
-for estimate, adjTPA=4. The default is 1.}
-
-\item{NAto0}{Logical. If TRUE, convert NA values to 0.}
-
-\item{tround}{Number. The number of digits to round to. If NULL, default=5.}
-
-\item{returnDT}{Logical. If TRUE, returns data.table object(s). If FALSE,
-returns data.frame object(s).}
+\item{pcwhereqry}{String. Plot/Condition filter if plot and/or cond table is 
+included.}
 
 \item{savedata}{Logical. If TRUE, saves data to outfolder.}
 
-\item{savedata_opts}{List. See help(savedata_options()) for a list
-of options. Only used when savedata = TRUE. If out_layer = NULL,
-default = 'treesum'.}
+\item{tabIDs}{List of unique IDs corresponding to the tables. See
+See help(tableIDs) for a list of options.}
 
-\item{dbconn}{Open database connection.}
+\item{datSum_opts}{List. Options for summarizing tree data, such as TPA,
+rounding, and adjusting TPA. See help(datSum_options()) for a list of 
+options.}
 
-\item{dbconnopen}{Logical. If TRUE, keep database connection open.}
+\item{database_opts}{List. Options for database, such as schema and 
+password. See help(database_options()) for a list of options.}
 
-\item{gui}{Logical. If gui, user is prompted for parameters.}
+\item{savedata_opts}{List. See help(savedata_options()) for a list}
 }
 \value{
-A list of the following items: 
-\item{treedat}{ Data frame. Plot or condition-level table with aggregated 
-tree attributes. } 
-\item{sumvars}{ String vector. Name(s) of the output aggregated tree 
-attributes. }
-\item{tunitlst}{ String list. Units of output, when available. }
-\item{tfilter}{ String list. Filter used. }
-\item{meta}{ Data frame. Associated metadata, when available. }
+A list of the following items: \item{treedat}{ Data frame. Plot or
+condition-level table with aggregated tree attributes. } \item{sumvars}{
+String vector. Name(s) of the output aggregated tree attributes. }
 
 If savedata=TRUE\cr - treedat will be saved to the outfolder. \cr - a text
 file of input parameters is saved to outfolder
 ('outfn'_parameters_'date'.txt).
 }
 \description{
-Aggregates tree data (e.g., VOLCFNET) and/or seedling data (e.g., TPA_UNADJ) 
-to plot, condition, or subplot. Includes options for filtering tree data, 
-expanding to plot by multiplying by trees per acre (TPA_UNADJ), or adjusting 
-for nonresponse at the plot level (getadjplot).
+Aggregates numeric tree-level data (e.g., VOLCFNET) to plot or condition,
+including options for filtering tree data or extrapolating to plot aseedonlycre by
+multiplying by TPA.
 }
 \details{
+If variable = NULL, then it will prompt user for input.
+
+Dependent external functions: datFilter Dependent internal functions:
+addcommas, fileexistsnm, getadjfactor
+
 For adjcond (bycond=FALSE): \cr If you want to summarize trees-per-acre
 information aggregated to plot or condition level, you need to include a TPA
 variable in tree table. \cr For tsumvars = GROWCFGS, GROWBFSL, GROWCFAL,
@@ -211,7 +168,7 @@ table and NULL values will be output as 0.
 }
 \examples{
 \donttest{
-# Aggregate LIVE_CANOPY_CVR_PCT to plot, weighted by CONDPROP_UNADJ
+# Aggregate LIVE_CANOPY_CVR_PCT to plot
 treesum <- datSumTree(tree = FIESTA::WYtree,
                       tsumvarlst = "TPA_UNADJ")$treedat
 

@@ -33,7 +33,6 @@ library(FIESTA)
 outfolder <- tempdir()
 
 ## -----------------------------------------------------------------------------
-
 # File names for external spatial data
 WYbhfn <- system.file("extdata", "sp_data/WYbighorn_adminbnd.shp", package="FIESTA")
 WYbhdistfn <- system.file("extdata", "sp_data/WYbighorn_districtbnd.shp", package="FIESTA")
@@ -44,7 +43,9 @@ demfn <- system.file("extdata", "sp_data/WYbighorn_dem_250m.img", package="FIEST
 
 # Derive new predictor layers from dem
 library(terra)
+
 dem <- rast(demfn)
+
 slpfn <- paste0(outfolder, "/WYbh_slp.img")
 slp <- terra::terrain(dem,
                       v = "slope",
@@ -52,6 +53,7 @@ slp <- terra::terrain(dem,
                       filename = slpfn, 
                       overwrite = TRUE, 
                       NAflag = -99999.0)
+
 aspfn <- paste0(outfolder, "/WYbh_asp.img")
 asp <- terra::terrain(dem,
                       v = "aspect",
@@ -68,19 +70,20 @@ smallbnd.domain <- "DISTRICTNA"
 SApltdat <- spGetPlots(bnd = WYbhdistfn,
                        xy_datsource = "obj",
                        xy = WYplt,
-                       xy_opts = list(xy.uniqueid = "CN", xvar = "LON_PUBLIC", 
-                                    yvar = "LAT_PUBLIC", xy.crs = 4269),
+                       xy_opts = xy_options(xy.uniqueid = "CN",
+                                            xvar = "LON_PUBLIC", 
+                                            yvar = "LAT_PUBLIC",
+                                            xy.crs = 4269),
                        datsource = "obj",
-                       istree = TRUE,
-                       isseed = TRUE,
-                       dbTabs = list(plot_layer = WYplt, cond_layer = WYcond,
-                                   tree_layer = WYtree, seed_layer = WYseed),
+                       dbTabs = dbTables(plot_layer = WYplt,
+                                         cond_layer = WYcond,
+                                         tree_layer = WYtree, 
+                                         seed_layer = WYseed),
                        eval = "custom",
-                       eval_opts = list(invyrs = 2011:2013),
+                       eval_opts = eval_options(invyrs = 2011:2013),
                        showsteps = TRUE,
                        returnxy = TRUE,
                        savedata_opts = savedata_options(outfolder = outfolder))
-
 
 ## -----------------------------------------------------------------------------
 str(SApltdat, max.level = 1)
@@ -94,25 +97,21 @@ rastlst.cat.name <- "fornf"
 unit_layer <- WYbhdistfn
 unitvar <- "DISTRICTNA"
 
-auxdat <- spGetAuxiliary(
-  xyplt = SApltdat$spxy,
-  uniqueid = "PLT_CN",
-  unit_layer = unit_layer,
-  unitvar = "DISTRICTNA",
-  rastlst.cont = rastlst.cont,
-  rastlst.cont.name = rastlst.cont.name,
-  rastlst.cont.stat = "mean",
-  rastlst.cont.NODATA = 0,
-  rastlst.cat = rastlst.cat,
-  rastlst.cat.name = rastlst.cat.name,
-  asptransform = TRUE,
-  rast.asp = aspfn,
-  keepNA = FALSE,
-  showext = FALSE,
-  savedata = FALSE
-)
-names(auxdat)
-
+auxdat <- spGetAuxiliary(xyplt = SApltdat$spxy,
+                         uniqueid = "PLT_CN",
+                         unit_layer = unit_layer,
+                         unitvar = "DISTRICTNA",
+                         rastlst.cont = rastlst.cont,
+                         rastlst.cont.name = rastlst.cont.name,
+                         rastlst.cont.stat = "mean",
+                         rastlst.cont.NODATA = 0,
+                         rastlst.cat = rastlst.cat,
+                         rastlst.cat.name = rastlst.cat.name,
+                         asptransform = TRUE,
+                         rast.asp = aspfn,
+                         keepNA = FALSE,
+                         showext = FALSE,
+                         savedata = FALSE)
 
 ## -----------------------------------------------------------------------------
 str(auxdat, max.level = 1)
@@ -130,31 +129,24 @@ str(SApopdat, max.level = 1)
 all_preds <- c("slp", "dem", "asp_cos", "asp_sin", "fornf")
 
 ## -----------------------------------------------------------------------------
-
-area1 <- modSAarea(
-  SApopdatlst = SApopdat,        # pop - population calculations for WY, post-stratification
-  prednames = all_preds,         # est - character vector of predictors to be used in the model
-  SApackage = "JoSAE",           # est - character string of the R package to do the estimation
-  SAmethod = "unit"              # est - method of small area estimation. Either "unit" or "area"
-  )
-
+area1 <- modSAarea(SApopdatlst = SApopdat,        # pop - population calculations for WY, post-stratification
+                   prednames = all_preds,         # est - character vector of predictors to be used in the model
+                   SApackage = "JoSAE",           # est - character string of the R package to do the estimation
+                   SAmethod = "unit",             # est - method of small area estimation. Either "unit" or "area"
+                   multest = FALSE)               # est - whether to also run all other available small area estimators
 
 ## -----------------------------------------------------------------------------
-str(area1, max.level = 1)
 area1$est
-area1$raw$SAmethod
 
 ## -----------------------------------------------------------------------------
 str(area1$raw, max.level = 1)
 
 ## -----------------------------------------------------------------------------
-area2 <- modSAarea(
-  SApopdatlst = SApopdat,   # pop - population calculations for WY, post-stratification
-  prednames = "slp",        # est - character vector of predictors to be used in the model
-  SApackage = "JoSAE",      # est - character string of the R package to do the estimation
-  SAmethod = "area",        # est - method of small area estimation. Either "unit" or "area"
-  multest = TRUE
-  )
+area2 <- modSAarea(SApopdatlst = SApopdat,   # pop - population calculations for WY, post-stratification
+                   prednames = "dem",        # est - character vector of predictors to be used in the model
+                   SApackage = "JoSAE",      # est - character string of the R package to do the estimation
+                   SAmethod = "area",        # est - method of small area estimation. Either "unit" or "area"
+                   multest = TRUE)           # est - whether to also run all other available small area estimators
 
 ## -----------------------------------------------------------------------------
 area2$est
@@ -171,6 +163,7 @@ area3 <- modSAarea(
   multest = TRUE
   )
 
+
 ## -----------------------------------------------------------------------------
 area3$est
 area3$raw$SAmethod
@@ -182,8 +175,10 @@ area4 <- modSAarea(
   prednames = all_preds,      # est - character vector of predictors to be used in the model
   SApackage = "hbsae",        # est - character string of the R package to do the estimation
   SAmethod = "unit",          # est - method of small area estimation. Either "unit" or "area"
+  na.fill = "DIR",
   prior = function(x) 1       # est - prior on ratio of between and within area variation
   )
+
 
 ## -----------------------------------------------------------------------------
 area3$est
@@ -207,7 +202,7 @@ area5$raw$predselect.unit
 
 ## -----------------------------------------------------------------------------
 estvar <- "VOLCFNET"
-live_trees <- "STATUSCD == 1"
+live_trees <- "STATUSCD = 1"
 
 ## -----------------------------------------------------------------------------
 tree1 <- modSAtree(
@@ -248,7 +243,7 @@ tree3 <- modSAtree(
     SApackage = "JoSAE",         # est - character string of the R package to do the estimation
     SAmethod = "unit",           # est - method of small area estimation. Either "unit" or "area"  
     landarea = "FOREST",         # est - forest land filter
-    estvar = "BA",               # est - net cubic-foot volume
+    estvar = "DRYBIO_AG",               # est - net cubic-foot volume
     estvar.filter = live_trees,  # est - live trees only
     returntitle = TRUE
     )
@@ -266,48 +261,11 @@ tree4 <- modSAtree(
     SApackage = "sae",         # est - character string of the R package to do the estimation
     SAmethod = "area",           # est - method of small area estimation. Either "unit" or "area"  
     landarea = "FOREST",         # est - forest land filter
-    estvar = "BA",               # est - net cubic-foot volume
+    estvar = "DRYBIO_AG",               # est - net cubic-foot volume
     estvar.filter = live_trees,  # est - live trees only
     returntitle = TRUE
     )
 
 ## -----------------------------------------------------------------------------
 tree4$est
-
-## -----------------------------------------------------------------------------
-tree5 <- modSAtree(
-    SApopdatlst = SApopdat,      # pop - population calculations for WY, post-stratification
-    prednames = all_preds,       # est - character vector of predictors to be used in the model
-    SApackage = "JoSAE",         # est - character string of the R package to do the estimation
-    SAmethod = "unit",           # est - method of small area estimation. Either "unit" or "area"  
-    landarea = "FOREST",         # est - forest land filter
-    estvar = "BA",               # est - net cubic-foot volume
-    estvar.filter = live_trees,  # est - live trees only
-    savedata = TRUE,
-    savedata_opts = savedata_options(
-      outfolder = outfolder
-    )
-    )
-
-## -----------------------------------------------------------------------------
-tree6 <- modSAtree(
-    SApopdatlst = SApopdat,      # pop - population calculations for WY, post-stratification
-    prednames = all_preds,       # est - character vector of predictors to be used in the model
-    SApackage = "hbsae",         # est - character string of the R package to do the estimation
-    SAmethod = "unit",           # est - method of small area estimation. Either "unit" or "area"  
-    landarea = "FOREST",         # est - forest land filter
-    estvar = "BA",               # est - net cubic-foot volume
-    estvar.filter = live_trees,  # est - live trees only
-    savedata = TRUE,
-    savedata_opts = savedata_options(
-      outfolder = outfolder,
-      outfn.pre = "HB_unit"
-    )
-    )
-
-## -----------------------------------------------------------------------------
-list.files(outfolder, pattern = "HB")
-
-## -----------------------------------------------------------------------------
-tree6$est
 

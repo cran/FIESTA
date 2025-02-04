@@ -23,6 +23,25 @@ FIESTAutils::spMakeSpatial_options
 FIESTAutils::datExportData
 
 #' @export
+FIESTAutils::popFilters
+
+#' @export
+FIESTAutils::popTables
+
+#' @export
+FIESTAutils::popTableIDs
+
+#' @export
+FIESTAutils::tableIDs
+
+#' @export
+FIESTAutils::database_options
+
+#' @export
+FIESTAutils::datSum_options
+
+
+#' @export
 FIESTAutils::DBcreateSQLite
 
 #' @export

@@ -68,6 +68,7 @@
 #' @param POP_PLOT_STRATUM_ASSGN Data frame. The name of the 
 #' POP_PLOT_STRATUM_ASSGN data frame object if it is already downloaded 
 #' and stored in environment. 
+#' @param dbconn Open database connection.
 #' @param dbconnopen Logical. If TRUE, the dbconn connection is not closed. 
 #' @param evalInfo List. List object output from DBgetEvalid or DBgetXY 
 #' FIESTA functions. 
@@ -106,7 +107,7 @@
 #' @export DBgetXY
 DBgetXY <- function (states = NULL, 
                      RS = NULL, 
-                     xy_datsource, 
+                     xy_datsource = NULL, 
                      xy_dsn = NULL, 
                      xy = "PLOT", 
                      xy_opts = xy_options(),
@@ -128,7 +129,8 @@ DBgetXY <- function (states = NULL,
                      PLOT = NULL,
                      POP_PLOT_STRATUM_ASSGN = NULL,
                      SURVEY = NULL,
-                     dbconnopen = FALSE,
+                     dbconn = NULL,
+                     dbconnopen = TRUE,
                      evalInfo = NULL
                      ) {
 
@@ -143,8 +145,8 @@ DBgetXY <- function (states = NULL,
   
   ## Set global variables
   parameters <- FALSE
-  SCHEMA.=invyrtab=evalEndyr=plotnm=ppsanm=ppsanm=pltflds=ppsaflds=pvars=
-  dbconn=XYdf <- NULL
+  SCHEMA.=invyrtab=evalEndyr=plotnm=ppsanm=ppsanm=pltflds=
+    ppsaflds=pvars=XYdf=invyrtab.qry <- NULL
 
 
   ##################################################################
@@ -159,81 +161,47 @@ DBgetXY <- function (states = NULL,
   } 
  
   ## Check parameter lists
-  pcheck.params(input.params, savedata_opts=savedata_opts, eval_opts=eval_opts,
-				xy_opts=xy_opts)
+  pcheck.params(input.params, 
+                savedata_opts = savedata_opts, 
+                eval_opts = eval_opts,
+				        xy_opts = xy_opts)
 
+  
+  ## Check parameter option lists
+  optslst <- pcheck.opts(optionlst = list(
+                         savedata_opts = savedata_opts,
+                         eval_opts = eval_opts, 
+                         xy_opts = xy_opts))
+  savedata_opts <- optslst$savedata_opts  
+  eval_opts <- optslst$eval_opts
+  xy_opts <- optslst$xy_opts  
 
-  ## Set eval_options defaults
-  eval_defaults_list <- formals(eval_options)[-length(formals(eval_options))] 
-  for (i in 1:length(eval_defaults_list)) {
-    assign(names(eval_defaults_list)[[i]], eval_defaults_list[[i]])
-  } 
- 
-  ## Set user-supplied eval_opts values
-  if (length(eval_opts) > 0) {
-    for (i in 1:length(eval_opts)) {
-      if (names(eval_opts)[[i]] %in% names(eval_defaults_list)) {
-        assign(names(eval_opts)[[i]], eval_opts[[i]])
-      } else {
-        stop(paste("Invalid parameter: ", names(eval_opts)[[i]]))
-      }
-    }
-  } else {
-    message("no evaluation timeframe specified...")
-    message("see eval and eval_opts parameters (e.g., eval='custom', eval_opts=eval_options(Cur=TRUE))\n")
-    stop()
+  for (i in 1:length(eval_opts)) {
+    assign(names(eval_opts)[[i]], eval_opts[[i]])
   }
-
-  ## Set xy_options defaults
-  xy_defaults_list <- formals(xy_options)[-length(formals(xy_options))]
-  for (i in 1:length(xy_defaults_list)) {
-    assign(names(xy_defaults_list)[[i]], xy_defaults_list[[i]])
+  for (i in 1:length(xy_opts)) {
+    assign(names(xy_opts)[[i]], xy_opts[[i]])
   }
-  ## Set user-supplied xy_opts values
-  if (length(xy_opts) > 0) {
-    for (i in 1:length(xy_opts)) {
-      if (names(xy_opts)[[i]] %in% names(xy_defaults_list)) {
-        assign(names(xy_opts)[[i]], xy_opts[[i]])
-      } else {
-        stop(paste("Invalid parameter: ", names(xy_opts)[[i]]))
-      }
-    }
-  } 
-
-  ## Set dbTables defaults
+  for (i in 1:length(savedata_opts)) {
+    assign(names(savedata_opts)[[i]], savedata_opts[[i]])
+  }
+  
+  ## Set user-supplied dbTabs options
   dbTables_defaults_list <- formals(dbTables)[-length(formals(dbTables))]
-  for (i in 1:length(dbTables_defaults_list)) {
-    assign(names(dbTables_defaults_list)[[i]], dbTables_defaults_list[[i]])
-  }
-  ## Set user-supplied dbTables values
+  dbTabs2 <- dbTables_defaults_list
   if (length(dbTabs) > 0) {
     for (i in 1:length(dbTabs)) {
       if (names(dbTabs)[[i]] %in% names(dbTables_defaults_list)) {
-        assign(names(dbTabs)[[i]], dbTabs[[i]])
-      } else {
-        stop(paste("Invalid parameter: ", names(dbTabs)[[i]]))
+        if (!is.null(dbTabs[[i]])) {
+          dbTabs2[[names(dbTabs)[[i]]]] <- dbTabs[[i]]
+        }
       }
     }
   }
-
-  ## Set savedata defaults
-  savedata_defaults_list <- formals(savedata_options)[-length(formals(savedata_options))]
-  for (i in 1:length(savedata_defaults_list)) {
-    assign(names(savedata_defaults_list)[[i]], savedata_defaults_list[[i]])
-  } 
-  ## Set user-supplied savedata values
-  if (length(savedata_opts) > 0) {
-    if (!savedata) {
-      message("savedata=FALSE with savedata parameters... no data are saved")
-    }
-    for (i in 1:length(savedata_opts)) {
-      if (names(savedata_opts)[[i]] %in% names(savedata_defaults_list)) {
-        assign(names(savedata_opts)[[i]], savedata_opts[[i]])
-      } else {
-        stop(paste("Invalid parameter: ", names(savedata_opts)[[i]]))
-      }
-    }
+  for (i in 1:length(dbTabs2)) {
+    assign(names(dbTabs2)[[i]], dbTabs2[[i]])
   }
+  
 
   ########################################################################
   ### GET PARAMETER INPUTS 
@@ -265,71 +233,85 @@ DBgetXY <- function (states = NULL,
   ###########################################################################
   ## Check XY database 
   ###########################################################################
-  xy_datsourcelst <- c("datamart", "sqlite", "csv", "obj")
-  xy_datsource <- pcheck.varchar(var2check=xy_datsource, varnm="xy_datsource", 
-		gui=gui, checklst=xy_datsourcelst, caption="XY data source?")
-
-  if (xy_datsource == "sqlite" && !is.null(xy_dsn)) {
-    xyconn <- DBtestSQLite(xy_dsn, dbconnopen=TRUE, showlist=FALSE)
-    xytablst <- DBI::dbListTables(xyconn)
-    if (length(xytablst) == 0) {
-      stop("no data in ", xy_datsource)
-    }
-	  xyindb=plotindb=ppsaindb <- FALSE
-  }
-
-  ## Check xy database
-  ####################################################################
-  if (all(list(class(xy), class(plot_layer)) == "character") && 
-		(is.null(datsource) || xy_datsource == datsource)) {
-    xyisplot <- ifelse (identical(tolower(xy), tolower(plot_layer)), TRUE, FALSE)
-  } else if (!identical(xy_datsource, datsource)) {
-    xyisplot <- FALSE
-  } else if (xy_datsource == "datamart" && datsource == "datamart") {
+  xyindb=plotindb=ppsaindb <- FALSE
+  if (!is.null(dbconn) && DBI::dbIsValid(dbconn)) {
+    xyconn <- dbconn
     xyisplot <- TRUE
+    xy_datsource=datsource <- "sqlite"
+    xytablst <- DBI::dbListTables(xyconn)
   } else {
-    xyisplot <- ifelse (identical(xy, plot_layer), TRUE, FALSE)
-  }
+    xy_datsourcelst <- c("datamart", "sqlite", "csv", "obj")
+    xy_datsource <- pcheck.varchar(var2check = xy_datsource, 
+                                   varnm = "xy_datsource", gui=gui, 
+                                   checklst = xy_datsourcelst, 
+                                   caption="XY data source?")
 
-  ###########################################################################
-  ## Check plot database (if xyisplot = FALSE)
-  ###########################################################################
-  if (xyisplot) {
-    datsource <- xy_datsource
-    data_dsn <- xy_dsn
-  } else {
-    if (is.null(datsource)) {
+    if (xy_datsource == "sqlite" && !is.null(xy_dsn)) {
+      xyconn <- DBtestSQLite(xy_dsn, dbconnopen=TRUE, showlist=FALSE)
+      xytablst <- DBI::dbListTables(xyconn)
+      if (length(xytablst) == 0) {
+        stop("no data in ", xy_datsource)
+      }
+    }
+    if (is.null(xy_datsource) && !is.null(datsource)) {
+      xy_datsource <- datsource
+    }
+    
+    ## Check xy database
+    ####################################################################
+    if (all(list(class(xy), class(plot_layer)) == "character") && 
+		  (is.null(datsource) || xy_datsource == datsource)) {
+      xyisplot <- ifelse (identical(tolower(xy), tolower(plot_layer)), TRUE, FALSE)
+    } else if (!identical(xy_datsource, datsource)) {
+      xyisplot <- FALSE
+    } else if (xy_datsource == "datamart" && datsource == "datamart") {
+      xyisplot <- TRUE
+    } else {
+      xyisplot <- ifelse (identical(xy, plot_layer), TRUE, FALSE)
+    }
+
+
+    ###########################################################################
+    ## Check plot database (if xyisplot = FALSE)
+    ###########################################################################
+    if (xyisplot) {
       datsource <- xy_datsource
       data_dsn <- xy_dsn
-    } else if (!identical(xy_datsource, datsource) || !identical(xy_dsn, data_dsn)) {
-      ## Check database connection - data_dsn
-      ########################################################
-      datsourcelst <- c("datamart", "sqlite", "csv", "obj", "shp")
-      datsource <- pcheck.varchar(var2check=datsource, varnm="datsource", 
-		       gui=gui, checklst=datsourcelst, caption="Plot data source?",
-           stopifnull=TRUE, stopifinvalid=TRUE)
     } else {
-      datsource <- xy_datsource
-      data_dsn <- xy_dsn
+      if (is.null(datsource)) {
+        datsource <- xy_datsource
+        data_dsn <- xy_dsn
+      } else if (!identical(xy_datsource, datsource) || !identical(xy_dsn, data_dsn)) {
+        ## Check database connection - data_dsn
+        ########################################################
+        datsourcelst <- c("datamart", "sqlite", "csv", "obj", "shp")
+        datsource <- pcheck.varchar(var2check = datsource, 
+                                    varnm = "datsource", gui=gui, 
+                                    checklst = datsourcelst, 
+                                    caption = "Plot data source?",
+                                    stopifnull = TRUE, stopifinvalid = TRUE)
+      } else {
+        datsource <- xy_datsource
+        data_dsn <- xy_dsn
+      }
     }
-  }
 
-  if (datsource == "sqlite" && !is.null(data_dsn)) {
-    if (!is.null(xy_dsn) && data_dsn == xy_dsn) {
-      dbconn <- DBtestSQLite(data_dsn, dbconnopen=TRUE, showlist=FALSE)
-    } else {
-      dbconn <- DBtestSQLite(data_dsn, dbconnopen=TRUE, showlist=FALSE)
+    if (datsource == "sqlite" && !is.null(data_dsn)) {
+      if (!is.null(xy_dsn) && data_dsn == xy_dsn) {
+        dbconn <- DBtestSQLite(data_dsn, dbconnopen=TRUE, showlist=FALSE)
+      } else {
+        dbconn <- DBtestSQLite(data_dsn, dbconnopen=TRUE, showlist=FALSE)
+      }
+      dbtablst <- DBI::dbListTables(dbconn)
+      if (length(dbtablst) == 0) {
+        message("no data in ", datsource)
+	      return(NULL)
+      }
     }
-    dbtablst <- DBI::dbListTables(dbconn)
-    if (length(dbtablst) == 0) {
-      message("no data in ", datsource)
-	  return(NULL)
+    if (datsource == "sqlite" && is.null(data_dsn)) {
+      message("datsource=", datsource, " but data_dsn=NULL... returning NULL")
+	    return(NULL)
     }
-  }
-  
-  if (datsource == "sqlite" && is.null(data_dsn)) {
-    message("datsource=", datsource, " but data_dsn=NULL... returning NULL")
-	  return(NULL)
   }
 
   ## Check eval
@@ -353,7 +335,7 @@ DBgetXY <- function (states = NULL,
   ## Check exportsp
   ####################################################################
   exportsp <- pcheck.logical(exportsp, varnm="exportsp", 
-		title="Export spatial?", first="YES", gui=gui)
+		              title="Export spatial?", first="YES", gui=gui)
   if (exportsp) {
     issp <- TRUE
   }
@@ -495,7 +477,6 @@ DBgetXY <- function (states = NULL,
   POP_PLOT_STRATUM_ASSGN <- evalInfo$POP_PLOT_STRATUM_ASSGN
   PLOT <- evalInfo$PLOT
   plotnm <- evalInfo$plotnm
-  
 
   ####################################################################
   ## Check custom Evaluation data
@@ -649,14 +630,16 @@ DBgetXY <- function (states = NULL,
   ## Check XYdf variables
   ####################################################################
   xyvars <- unique(c(XYvarlst, pvars2keep))
-  if (!all(xyvars %in% xyflds)) {
-    xypmiss <- xyvars[!xyvars %in% xyflds]
+  
+  xyvarschk <- unlist(sapply(xyvars, findnm, xyflds, returnNULL = TRUE))
+  if (length(xyvarschk) < length(xyvars)) {
+    xypmiss <- xyvars[!xyvars %in% names(xyvarschk)]
     if (length(xypmiss) > 0) {
       pvars2keep <- xypmiss
     } else {
       pvars2keep <- NULL
     }
-    xyvars <- xyvars[!xyvars %in% xypmiss]
+    xyvars <- xyvarschk
   } else {
     pvars2keep <- NULL
   }
@@ -711,6 +694,8 @@ DBgetXY <- function (states = NULL,
       if (is.null(pjoinid)) {
         if (xyjoinid == "PLT_CN" && "CN" %in% pltflds) {
           pjoinid <- "CN"
+        } else if (xyjoinid == "plt_cn" && "cn" %in% pltflds) {
+          pjoinid <- "cn"
         } else {
           stop("pjoinid is invalid")
         }
@@ -718,18 +703,28 @@ DBgetXY <- function (states = NULL,
     }
 
     if (!is.null(pvars2keep)) {
-      pmiss <- pvars2keep[!pvars2keep %in% xyflds]
-      if (any(pmiss %in% XYvarlst)) {
-        xymiss <- pmiss[pmiss %in% XYvarlst]
-        if (length(xymiss) > 0) {
-          if (all(c("LON", "LAT") %in% xymiss) && all(c("LON_PUBLIC", "LAT_PUBLIC") %in% xyflds)) {
-            xyvars <- c(xyvars[!xyvars %in% c("LON", "LAT")], "LON_PUBLIC", "LAT_PUBLIC")
-            xymiss <- xymiss[!xymiss %in% c("LON", "LAT")]
-            xvar <- "LON_PUBLIC"
-            yvar <- "LAT_PUBLIC"
-          }
+      pvars2keepchk <- unlist(sapply(pvars2keep, findnm, xyflds, returnNULL = TRUE))
+      if (length(pvars2keepchk) < length(pvars2keep)) {
+        pmiss <- pvars2keep[!pvars2keep %in% names(pvars2keepchk)]
+        pmisschk <- unlist(sapply(pmiss, findnm, XYvarlst, returnNULL = TRUE))
+        if (!is.null(pmisschk)) {
+          xymiss <- pmisschk
+          
           if (length(xymiss) > 0) {
-            stop("missing essential variables: ", toString(xymiss))
+            if (all(c("LON", "LAT") %in% xymiss) && all(c("LON_PUBLIC", "LAT_PUBLIC") %in% xyflds)) {
+              xyvars <- c(xyvars[!xyvars %in% c("LON", "LAT")], "LON_PUBLIC", "LAT_PUBLIC")
+              xymiss <- xymiss[!xymiss %in% c("LON", "LAT")]
+              xvar <- "LON_PUBLIC"
+              yvar <- "LAT_PUBLIC"
+            } else if (all(c("LON", "LAT") %in% xymiss) && all(c("lon_public", "lat_public") %in% xyflds)) {
+              xyvars <- c(xyvars[!xyvars %in% c("lon", "lat")], "lon_public", "lat_public")
+              xymiss <- xymiss[!xymiss %in% c("LON", "LAT")]
+              xvar <- "lon_public"
+              yvar <- "lat_public"
+            }
+            if (length(xymiss) > 0) {
+              stop("missing essential variables: ", toString(xymiss))
+            }
           }
         } else {
           message("missing plot variables: ", toString(pmiss))
@@ -822,12 +817,13 @@ DBgetXY <- function (states = NULL,
           pltflds <- DBI::dbListFields(dbconn, plotnm)     
 	  
 	        ## Check for indices
-          if (evalCur || measCur) {  	  
-            chk <- checkidx(dbconn, plotnm, c("STATECD", "UNITCD", "COUNTYCD", "PLOT"))
+          if (evalCur || measCur) { 
+            pltindx <- sapply(c("STATECD", "UNITCD", "COUNTYCD", "PLOT"), findnm, pltflds, returnNULL = TRUE)
+            chk <- checkidx(dbconn, plotnm, pltindx)
             if (is.null(chk)) {
               message("to speed query... add an index to the plot table")
               message("createidx(dbconn, '", plotnm, 
-                 "', c('STATECD', 'UNITCD', 'COUNTYCD', 'PLOT'))")
+                 "', c('statecd', 'unitcd', 'countycd', 'plot'))")
 	          }
           }
         }
@@ -881,12 +877,14 @@ DBgetXY <- function (states = NULL,
     }
 
     ## Check plot variables
-    ########################################################	
-    if (!all(pvars2keep %in% pltflds)) {
-      pmiss <- pvars2keep[!pvars2keep %in% pltflds]
-	  
-      if (any(pmiss %in% XYvarlst)) {
-        xymiss <- pmiss[pmiss %in% XYvarlst]
+    ########################################################
+    pvars2keepchk <- unlist(sapply(pvars2keep, findnm, xyflds, returnNULL = TRUE))
+    if (length(pvars2keepchk) < length(pvars2keep)) {
+      pmiss <- pvars2keep[!pvars2keep %in% names(pvars2keepchk)]
+
+      pmisschk <- unlist(sapply(pmiss, findnm, XYvarlst, returnNULL = TRUE))
+      if (!is.null(pmisschk)) {
+        xymiss <- pmisschk
         if (length(xymiss) > 0) {
           stop("missing essential variables: ", toString(xymiss))
         } else {
@@ -1164,7 +1162,7 @@ DBgetXY <- function (states = NULL,
 		                         Type = Type) 
 	  }
   }
-  
+ 
   ##################################################################################
   ##################################################################################
   ## Generate queries
@@ -1208,7 +1206,7 @@ DBgetXY <- function (states = NULL,
     message(xycoords.qry)
     stop()
   }
-  
+
   if (nrow(xyx) > length(unique(xyx[[xy.uniqueid]]))) {
     xyx <- unique(xyx)
   }
@@ -1218,6 +1216,10 @@ DBgetXY <- function (states = NULL,
     setnames(xyx, "CN", "PLT_CN")
     xy.uniqueid <- "PLT_CN"
     xyjoinid <- "PLT_CN"
+  } else if ("cn" %in% names(xyx) && !"plt_cn" %in% names(xyx)) {
+    setnames(xyx, "cn", "plt_cn")
+    xy.uniqueid <- "plt_cn"
+    xyjoinid <- "plt_cn"
   }
 
   ## Remove KNOWN plots that are no longer in inventory
@@ -1226,11 +1228,17 @@ DBgetXY <- function (states = NULL,
   }
    
   if (all(c("STATECD", "UNITCD", "COUNTYCD", "PLOT") %in% names(xyx))) {
-    xyx[["PLOT_ID"]] <- paste0("ID", 
+    xyx[["PLOT_ID"]] <- paste0("PID", 
 		formatC(xyx$STATECD, width=2, digits=2, flag=0), 
           	formatC(xyx$UNITCD, width=2, digits=2, flag=0),
           	formatC(xyx$COUNTYCD, width=3, digits=3, flag=0),
           	formatC(xyx$PLOT, width=5, digits=5, flag=0)) 
+  } else if (all(c("statecd", "unitcd", "countycd", "plot") %in% names(xyx))) {
+    xyx[["plot_id"]] <- paste0("pid", 
+            formatC(xyx$statecd, width=2, digits=2, flag=0), 
+            formatC(xyx$unitcd, width=2, digits=2, flag=0),
+            formatC(xyx$countycd, width=3, digits=3, flag=0),
+            formatC(xyx$plot, width=5, digits=5, flag=0)) 
   }
 
   ## Change names of X/Y variables to *_PUBLIC
@@ -1307,7 +1315,7 @@ DBgetXY <- function (states = NULL,
   if (is.null(xyjoinid)) {
     xyjoinid <- xy.uniqueid
   }
- 
+
   ## GENERATE RETURN LIST
   ###########################################################
   if (returndata) {

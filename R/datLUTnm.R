@@ -200,13 +200,13 @@ datLUTnm <- function(xvar,
   if (isdb) {
     datnmlst <- DBI::dbListFields(dbconn, datnm)
 	
-	## Check dbwrite 
+	  ## Check dbwrite 
     dbwrite <- pcheck.logical(dbwrite, 
 	                          varnm = "dbwrite", 
 	                          title = "Write to database?", 
                               first = "NO", gui=gui)
 
-	## Check dbreturn 
+	  ## Check dbreturn 
     dbreturn <- pcheck.logical(dbreturn, 
 	                           varnm = "dbreturn", 
 	                           title = "Return data from database?", 
@@ -243,7 +243,7 @@ datLUTnm <- function(xvar,
       issf <- ifelse ("sf" %in% class(datx), TRUE, FALSE)
       if (issf) datx <- data.table(datx) 
       datnmlst <- names(datx) 
-	     datkey <- key(datx)
+	    datkey <- key(datx)
 	  }
   }
 
@@ -511,18 +511,10 @@ datLUTnm <- function(xvar,
       } else {
         stop("LUTvar not in LUTx")
       }
-
-      if (all(!is.null(datx), !is.null(uniquex), nrow(uniquex) > 0)) {
-        ## Subset LUT values to only those in datx
-        if (sum(LUTx[[LUTvar]] %in% uniquex, na.rm=TRUE) == 0) {
-          message(paste("no rows exist for", LUTvar))
-          return(NULL)
-        }
-      }
     }
   } 
 
-    ### Check NAclass
+  ### Check NAclass
   if (!is.character(NAclass) && length(NAclass) != 1) {
     stop("NAclass must be a character string of length 1")
   }
@@ -630,9 +622,9 @@ datLUTnm <- function(xvar,
       missvals <- xvals[which(!xvals %in% unique(LUTx[[LUTvar]]))]
 
       if (length(missvals) > 0) {
-        otherx <- checknm("Other", LUTnewvar.vals) 
+        otherx <- checknm("Other", LUTnewvar.vals)
         #otherx <- "Other"
-        message("adding unclassified values to class ", otherx)
+        #message("adding unclassified values to class ", otherx)
 
         LUTxrow <- data.table(matrix(data=NA, nrow=length(missvals), ncol=ncol(LUTx)))
         names(LUTxrow) <- names(LUTx)
@@ -645,15 +637,19 @@ datLUTnm <- function(xvar,
             LUTxrow[[v]] <- rep(otherx, nrow(LUTxrow))
           } else {
             LUTxrow[[v]] <- rep(9999, nrow(LUTxrow))
-          }        
+          }
         }
         LUTx <- rbind(LUTx, as.list(LUTxrow))
-	    }
+      }
+      if (!add0) {
+        LUTx <- LUTx[LUTx[[LUTvar]] %in% uniquex,]
+      }
+      
     } else if (!add0) {
 	    LUTx <- LUTx[LUTx[[LUTvar]] %in% uniquex, ]
 	  }
-  }  
-          
+  }
+
   ## Return list
   ########################################################
   if ((!isdb || dbreturn) && !is.null(datx)) {
