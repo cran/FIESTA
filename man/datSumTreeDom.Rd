@@ -39,6 +39,7 @@ datSumTreeDom(
   domclassify = NULL,
   tderive = NULL,
   pltidsWITHqry = NULL,
+  pltidsid = NULL,
   pcwhereqry = NULL,
   savedata = FALSE,
   tabIDs = tableIDs(),
@@ -159,6 +160,8 @@ QMD = 'SQRT(SUM(POWER(DIA,2) * 0.005454 * TPA_UNADJ) / (SUM(TPA_UNADJ)*0.005454)
 \item{pltidsWITHqry}{SQL query. A query identifying plots to sum (e.g., 
 'WITH pltids AS (SELECT cn AS PLT_CN FROM plot WHERE statecd=49 and INVYR=2018)')}
 
+\item{pltidsid}{Sting. Name of unique identifier in pltidsWITHqry.}
+
 \item{pcwhereqry}{String. Plot/Condition filter if plot and/or cond table is 
 included.}
 
@@ -247,19 +250,10 @@ used for mapping tree domain distributions.
 datSumTreeDom(tree = FIESTA::WYtree,
               plt = FIESTA::WYplt, 
               bycond = FALSE, 
-              tsumvar = "PLT_CN", 
+              tsumvar = "TPA_UNADJ", 
               tdomtot = TRUE, 
               tdomprefix = "CNT", 
               tfilter = "STATUSCD==1",
-              datSum_opts = list(tround = 0))
-              
-# Sum of Number of Live Trees by Species, Including Seedlings
-datSumTreeDom(tree = WYtree,
-              seed = WYseed, 
-              bycond = FALSE, 
-              tsumvar = "PLT_CN", 
-              tdomtot = TRUE, 
-              tdomprefix = "CNT", 
               datSum_opts = list(tround = 0))
 }
 }

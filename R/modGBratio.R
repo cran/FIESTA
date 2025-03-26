@@ -438,6 +438,7 @@ modGBratio <- function(GBpopdat,
   adjcase <- GBpopdat$adjcase
   pltidsid <- GBpopdat$pjoinid
   pltassgnid <- GBpopdat$pltassgnid
+  pltcondflds <- GBpopdat$pltcondflds
   
   if (popdatindb) {
     if (is.null(popconn) || !DBI::dbIsValid(popconn)) {
@@ -481,6 +482,7 @@ modGBratio <- function(GBpopdat,
                   popdatindb = popdatindb, 
                   popconn = popconn, pop_schema = pop_schema,
                   pltcondx = pltcondx,
+                  pltcondflds = pltcondflds,
                   totals = totals,
                   pop_fmt = pop_fmt, pop_dsn = pop_dsn, 
                   sumunits = sumunits, 
@@ -546,8 +548,6 @@ modGBratio <- function(GBpopdat,
   ###################################################################################
   ### Check row and column data
   ###################################################################################
-  withqry <- pltcondxWITHqry
-  #withqry <- dbqueriesWITH$pltidsWITH
   rowcolinfo <- 
     check.rowcol(esttype = esttype, 
                  popType = popType,
@@ -555,7 +555,7 @@ modGBratio <- function(GBpopdat,
                  popconn = popconn, SCHEMA. = SCHEMA.,
                  pltcondx = pltcondx,
                  pltcondflds = pltcondflds,
-                 withqry = withqry,
+                 withqry = pltcondxWITHqry,
                  estseed = estseed,
                  treex = treex, treeflds = treeflds,
                  seedx = seedx, seedflds = seedflds,
@@ -569,7 +569,7 @@ modGBratio <- function(GBpopdat,
                  rowlut = rowlut, collut = collut, 
                  rowgrp = rowgrp, rowgrpnm = rowgrpnm, 
                  rowgrpord = rowgrpord, title.rowgrp = NULL, 
-                 gui = gui)
+                 whereqry = pcwhereqry)
   uniquerow <- rowcolinfo$uniquerow
   uniquecol <- rowcolinfo$uniquecol
   domainlst <- rowcolinfo$domainlst
@@ -872,7 +872,10 @@ modGBratio <- function(GBpopdat,
 	  }
 
     rawdat <- tabs$rawdat
-    rawdat$domdat <- setDF(tdomdat) 
+    rawdat$domdatn <- setDF(tdomdat) 
+    rawdat$domdatd <- setDF(cdomdat) 
+    rawdat$domdatnqry <- treeqry
+    rawdat$domdatdqry <- cdomdatqry
     rawdat$estvarn <- estvarn.name
     rawdat$estvarn.filter <- estvarn.filter
     if (ratiotype == "PERACRE") {

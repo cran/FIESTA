@@ -359,6 +359,7 @@ modGBchng <- function(GBpopdat,
   adjcase <- GBpopdat$adjcase
   pltidsid <- GBpopdat$pjoinid
   pltassgnid <- GBpopdat$pltassgnid
+  pltcondflds <- GBpopdat$pltcondflds
   
   if (popdatindb) {
     if (is.null(popconn) || !DBI::dbIsValid(popconn)) {
@@ -407,6 +408,7 @@ modGBchng <- function(GBpopdat,
                   popdatindb = popdatindb, 
                   popconn = popconn, pop_schema = pop_schema,
                   pltcondx = pltcondx,
+                  pltcondflds = pltcondflds,
                   totals = totals,
                   pop_fmt = pop_fmt, pop_dsn = pop_dsn, 
                   sumunits = sumunits, 
@@ -446,7 +448,7 @@ modGBchng <- function(GBpopdat,
   SCHEMA. <- estdat$SCHEMA.
   landarea.filter <- estdat$landarea.filter
   pltcondflds <- estdat$pltcondflds
-  
+
   
   ###################################################################################
   ### Check row and column data
@@ -469,7 +471,7 @@ modGBchng <- function(GBpopdat,
                  rowlut = rowlut, collut = collut, 
                  rowgrp = rowgrp, rowgrpnm = rowgrpnm, 
                  rowgrpord = rowgrpord, title.rowgrp = NULL,
-                 gui = gui)
+                 whereqry = pcwhereqry)
   uniquerow <- rowcolinfo$uniquerow
   uniquecol <- rowcolinfo$uniquecol
   bydomainlst <- rowcolinfo$domainlst
@@ -496,7 +498,7 @@ modGBchng <- function(GBpopdat,
     setnames(uniquecol, unitvar)
     uniquecol[[unitvar]] <- factor(uniquecol[[unitvar]])
   }
-
+  
   ###################################################################################
   ### Get condition-level domain data
   ###################################################################################
@@ -570,6 +572,7 @@ modGBchng <- function(GBpopdat,
   if (rawdata) {
     outfn.rawdat <- alltitlelst$outfn.rawdat
   }
+  
 
   ###################################################################################
   ## GENERATE ESTIMATES

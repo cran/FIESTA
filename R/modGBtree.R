@@ -412,6 +412,7 @@ modGBtree <- function(GBpopdat,
   adjcase <- GBpopdat$adjcase
   pltidsid <- GBpopdat$pjoinid
   pltassgnid <- GBpopdat$pltassgnid
+  pltcondflds <- GBpopdat$pltcondflds
   
   #adjfactors <- GBpopdat$adjfactors
   #popVOL_compare <- checkpop(FIADBpop, FIESTApop = adjfactors, evaltype="01")
@@ -458,6 +459,7 @@ modGBtree <- function(GBpopdat,
                   popdatindb = popdatindb, 
                   popconn = popconn, pop_schema = pop_schema,
                   pltcondx = pltcondx,
+                  pltcondflds = pltcondflds,
                   totals = totals,
                   pop_fmt = pop_fmt, pop_dsn = pop_dsn, 
                   sumunits = sumunits, 
@@ -519,7 +521,7 @@ modGBtree <- function(GBpopdat,
   seedx <- estdatVOL$seedx
   seedflds <- estdatVOL$seedflds
   
-  
+
   ###################################################################################
   ### Check row and column data
   ###################################################################################
@@ -543,8 +545,9 @@ modGBtree <- function(GBpopdat,
                  title.rowvar = title.rowvar, title.colvar = title.colvar, 
                  rowlut = rowlut, collut = collut, 
                  rowgrp = rowgrp, rowgrpnm = rowgrpnm, 
-                 rowgrpord = rowgrpord, title.rowgrp = NULL, 
-                 gui = gui)
+                 rowgrpord = rowgrpord, title.rowgrp = NULL,
+                 whereqry = pcwhereqry)
+  
   uniquerow <- rowcolinfo$uniquerow
   uniquecol <- rowcolinfo$uniquecol
   domainlst <- rowcolinfo$domainlst

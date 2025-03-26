@@ -3,6 +3,7 @@ check.estdata <-
            popType, 
            popdatindb, popconn = NULL, pop_schema = pop_schema,
            pltcondx, totals,
+           pltcondflds,
            pop_fmt = NULL, pop_dsn = NULL, 
            sumunits = FALSE, 
            landarea = NULL, landarea_both = TRUE, 
@@ -92,11 +93,9 @@ check.estdata <-
     }
   }
   
-  ## Get table fields
-  ###########################################################################
-  if (popdatindb && is.character(pltcondx)) {
-    pltcondflds <- DBI::dbListFields(popconn, pltcondx)
-  } else {
+  # ## Get table fields - this will get any new fields added to pltcondx
+  # ###########################################################################
+  if (!popdatindb) {
     pltcondflds <- names(pltcondx)
   }
 

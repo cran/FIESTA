@@ -305,7 +305,7 @@ modGBarea <- function(GBpopdat,
   ## Check input parameters
   input.params <- names(as.list(match.call()))[-1]
   formallst <- c(names(formals(modGBarea)),
-		names(formals(modGBpop))) 
+                 names(formals(modGBpop))) 
   if (!all(input.params %in% formallst)) {
     miss <- input.params[!input.params %in% formallst]
     stop("invalid parameter: ", toString(miss))
@@ -319,20 +319,20 @@ modGBarea <- function(GBpopdat,
   
   ## Check parameter option lists
   optslst <- pcheck.opts(optionlst = list(
-                         title_opts = title_opts,
-                         table_opts = table_opts,
-                         savedata_opts = savedata_opts)) 
+    title_opts = title_opts,
+    table_opts = table_opts,
+    savedata_opts = savedata_opts)) 
   title_opts <- optslst$title_opts  
   table_opts <- optslst$table_opts  
   savedata_opts <- optslst$savedata_opts  
-    
+  
   for (i in 1:length(title_opts)) {
     assign(names(title_opts)[[i]], title_opts[[i]])
   }
   for (i in 1:length(table_opts)) {
     assign(names(table_opts)[[i]], table_opts[[i]])
   }
-
+  
   ##################################################################
   ## CHECK PARAMETER INPUTS
   ##################################################################
@@ -378,7 +378,8 @@ modGBarea <- function(GBpopdat,
   adjcase <- GBpopdat$adjcase
   pltidsid <- GBpopdat$pjoinid
   pltassgnid <- GBpopdat$pltassgnid
-
+  pltcondflds <- GBpopdat$pltcondflds
+  
   if (popdatindb) {
     if (is.null(popconn) || !DBI::dbIsValid(popconn)) {
       if (!is.null(pop_dsn)) {
@@ -399,15 +400,15 @@ modGBarea <- function(GBpopdat,
   ## Check area units
   ########################################
   unitchk <- pcheck.areaunits(unitarea=unitarea, areavar=areavar, 
-			areaunits=areaunits, metric=metric)
+                              areaunits=areaunits, metric=metric)
   unitarea <- unitchk$unitarea
   areavar <- unitchk$areavar
   areaunits <- unitchk$outunits
-
+  
   if (is.null(key(unitarea))) {
-     setkeyv(unitarea, unitvar)
+    setkeyv(unitarea, unitvar)
   }
-
+  
   ###################################################################################
   ## Check parameter inputs and plot/condition filters
   ###################################################################################
@@ -417,6 +418,7 @@ modGBarea <- function(GBpopdat,
                   popdatindb = popdatindb, 
                   popconn = popconn, pop_schema = pop_schema,
                   pltcondx = pltcondx,
+                  pltcondflds = pltcondflds,
                   totals = totals,
                   pop_fmt = pop_fmt, pop_dsn = pop_dsn, 
                   sumunits = sumunits, 
@@ -454,8 +456,8 @@ modGBarea <- function(GBpopdat,
   pcwhereqry <- estdat$where.qry
   SCHEMA. <- estdat$SCHEMA.
   pltcondflds <- estdat$pltcondflds
-
-
+  
+  
   ###################################################################################
   ### Check row and column data
   ###################################################################################
@@ -477,7 +479,7 @@ modGBarea <- function(GBpopdat,
                  rowlut = rowlut, collut = collut, 
                  rowgrp = rowgrp, rowgrpnm = rowgrpnm, 
                  rowgrpord = rowgrpord, title.rowgrp = NULL, 
-                 gui = gui)
+                 whereqry = pcwhereqry)
   uniquerow <- rowcolinfo$uniquerow
   uniquecol <- rowcolinfo$uniquecol
   bydomainlst <- rowcolinfo$domainlst

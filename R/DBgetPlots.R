@@ -712,18 +712,35 @@ DBgetPlots <- function (states = NULL,
 
   ## GETS DATA TABLES (OTHER THAN PLOT/CONDITION) IF NULL
   ###########################################################
-  getType <- ifelse (is.null(evalid), TRUE, FALSE)
-  Typelst <- c("ALL", "CURR", "VOL", "P2VEG", "DWM", "INV", "CHNG", 
-	             "GROW", "MORT", "REMV", "GRM")
-  if (gui) {
-    Type <- select.list(Typelst, title="eval type", 
-		preselect="VOL", multiple=TRUE)
-    if (length(Type)==0) Type <- "VOL"
-  } 
-  Typemiss <- Type[!Type %in% Typelst]
-  if (length(Typemiss) > 0) {
-    stop("Type must be in following list: \n", toString(Typelst))
+  #Typelst <- c("ALL", "CURR", "VOL", "P2VEG", "DWM", "INV", "CHNG", 
+  #             "GROW", "MORT", "REMV", "GRM")
+  #endTypelst <- c("00", "01", "01", "10", "07", "09", "06", "03", "04", "05", "03")
+  #endTypelst <- c("00", "01", "01", "10", "07", "09", "03", "03", "03", "03", "03")
+  
+  if (!is.null(evalid)) {
+    endType <- sort(unique(sapply(evalid, function(x) substr(x, nchar(x)-1, nchar(x)))))
+    Type <- ifelse(endType == "00", "ALL", 
+                   ifelse(endType == "01", "VOL", 
+                          ifelse(endType == "10", "P2VEG",
+                                 ifelse(endType == "07", "DWM",
+                                        ifelse(endType == "09", "INV",
+                                               ifelse(endType %in% c("04","05"), "GRM",
+                                              "CHNG"))))))
+
+  } else {
+    Typelst <- c("ALL", "CURR", "VOL", "P2VEG", "DWM", "INV", "CHNG", 
+                 "GROW", "MORT", "REMV", "GRM")
+    if (gui) {
+      Type <- select.list(Typelst, title="eval type", 
+		  preselect="VOL", multiple=TRUE)
+      if (length(Type)==0) Type <- "VOL"
+    } 
+    Typemiss <- Type[!Type %in% Typelst]
+    if (length(Typemiss) > 0) {
+      stop("Type must be in following list: \n", toString(Typelst))
+    }
   }
+  
   if (any(Type == "VOL") && !istree) {
     message("eval Type includes 'VOL', but istree = FALSE... no trees included")
   }
@@ -732,6 +749,7 @@ DBgetPlots <- function (states = NULL,
   if (any(Type == "CHNG")) ischng <- TRUE # SUBP_COND_CHNG_MTR
   if (any(Type == "DWM")) isdwm <- TRUE  # COND_DWM_CALC
   if (any(Type %in% c("GROW", "MORT", "REMV", "GRM"))) ischng=isgrm <- TRUE
+  
   
   if (isveg && invtype == "PERIODIC") {
     message("understory vegetation data only available for annual data\n")
@@ -827,6 +845,7 @@ DBgetPlots <- function (states = NULL,
   ## Get states, Evalid and/or invyrs info
   ##########################################################
   returnPOP <- ifelse (datsource == "datamart", TRUE, FALSE)
+
   if (!is.null(evalInfo)) {
     list.items <- c("states", "invtype")
     evalInfo <- pcheck.object(evalInfo, "evalInfo", list.items=list.items)
@@ -919,7 +938,9 @@ DBgetPlots <- function (states = NULL,
 
   if (is.null(evalInfo)) stop("no data to return")
   states <- evalInfo$states
+  stcdlst <- evalInfo$stcdlst
   evalidlist <- evalInfo$evalidlist
+  evalEndyrlist <- evalInfo$evalEndyrlist
   evalTypelist <- evalInfo$evalTypelist
   invtype <- evalInfo$invtype
   invyrtab <- evalInfo$invyrtab
@@ -932,7 +953,7 @@ DBgetPlots <- function (states = NULL,
   SURVEY <- evalInfo$SURVEY
   POP_PLOT_STRATUM_ASSGNe <- evalInfo$POP_PLOT_STRATUM_ASSGN
   PLOTe <- evalInfo$PLOT
-  
+
   if (savePOP) {
     if (!is.null(POP_PLOT_STRATUM_ASSGNe) && is.data.frame(POP_PLOT_STRATUM_ASSGNe)) {
       ppsaflds <- names(POP_PLOT_STRATUM_ASSGNe)
@@ -945,13 +966,15 @@ DBgetPlots <- function (states = NULL,
 #      }
     }
   }
+
   if (!is.null(PLOTe) && is.data.frame(PLOTe)) {
     pltflds <- names(PLOTe)
     statenm <- findnm("STATECD", pltflds)
     if (is.null(statenm)) {
       PLOTe <- NULL
     } else {
-      if (length(unique(PLOTe[[statenm]])) != length(states)) {
+      #if (length(unique(PLOTe[[statenm]])) != length(states)) {
+      if (!all(stcdlst %in% unique(PLOTe[[statenm]]))) {
         message("invalid PLOT from DBgetEvalid")
         PLOTe <- NULL
       }
@@ -2882,12 +2905,13 @@ DBgetPlots <- function (states = NULL,
             message("saving tree table...")
             index.unique.treex <- NULL
             if (!append_layer) {
-              index.unique.treex <- list(c("PLT_CN", "CONDID", "SUBP", "TREE"), "TREE_CN",
-				                              "PREV_TREE_CN")
+              index.unique.treex <- c("PLT_CN", "CONDID", "SUBP", "TREE")
+              index.treex <- "PREV_TRE_CN"
             }
             outlst$out_layer <- "tree"
             datExportData(treex, 
                           index.unique = index.unique.treex,
+                          index = index.treex,
                           savedata_opts = outlst) 
             #rm(treex)
             #gc()
@@ -4512,6 +4536,7 @@ DBgetPlots <- function (states = NULL,
         #rm(condx)
         # gc()
       }  
+
       if (savedata && savePOP && !is.null(ppsax)) {
         message("saving pop_plot_stratum_assgn table...")
 
@@ -4520,6 +4545,13 @@ DBgetPlots <- function (states = NULL,
           index.unique.ppsax <- "PLT_CN"
           if (all(c("STATECD","UNITCD","COUNTYCD","PLOT") %in% names(ppsax))) {
             index.ppsax <- c("STATECD","UNITCD", "COUNTYCD","PLOT")
+          }
+          if (all(c("EVALID", "ESTN_UNIT", "STRATUMCD") %in% names(ppsax))) {
+            if (!is.null(index.ppsax)) {
+              index.ppsax <- list(index.ppsax, c("EVALID", "ESTN_UNIT", "STRATUMCD"))
+            } else {
+              index.ppsax <- c("EVALID", "ESTN_UNIT", "STRATUMCD")
+            }
           }
         }
         outlst$out_layer <- "pop_plot_stratum_assgn"
@@ -4574,7 +4606,7 @@ DBgetPlots <- function (states = NULL,
                   index.unique = list("SPCD", "SPECIES_SYMBOL"),
                   savedata_opts = outlst) 
   }
- 
+
   if (savedata && saveSURVEY) {
     message("saving survey table...")
 
@@ -4583,7 +4615,7 @@ DBgetPlots <- function (states = NULL,
                   index.unique = "CN",
                   savedata_opts = outlst) 
   }
- 
+
   ## Write out plot/condition counts to comma-delimited file.
   if (savedata && !is.null(pltcnt)) {
     message("saving pltcnt table...")
@@ -4641,6 +4673,7 @@ DBgetPlots <- function (states = NULL,
  
     if (length(evalidlist) > 0) {
       returnlst$evalid <- evalInfo$evalidlist
+      returnlst$evalEndyr <- evalInfo$evalEndyrlist
     }
     returnlst$pltcnt <- pltcnt
     returnlst$invyrs <- invyrs

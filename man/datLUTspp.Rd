@@ -21,8 +21,7 @@ datLUTspp(
   dbreturn = TRUE,
   overwrite = TRUE,
   savedata = FALSE,
-  savedata_opts = NULL,
-  gui = FALSE
+  savedata_opts = NULL
 )
 }
 \arguments{
@@ -42,7 +41,7 @@ ref_codes, SPGRPCD Variable.}
 \item{states}{String. Name of state(s) the x table is from.}
 
 \item{spcdname}{String. Name for species output type ('COMMON', 'SCIENTIFIC', 
-'SYMBOL', 'COMMON_SCIENTIFIC').}
+'SYMBOL', 'COMMON_SCIENTIFIC', 'NONE').}
 
 \item{add0}{Logical. IF TRUE, keep all codes in look up table. If FALSE,
 only include codes that are in x.}
@@ -70,8 +69,6 @@ in x, overwrites class name.}
 \item{savedata_opts}{List. See help(savedata_options()) for a list
 of options. Only used when savedata = TRUE. If out_layer = NULL,
 default = 'datlut'.}
-
-\item{gui}{Logical. If gui, user is prompted for parameters.}
 }
 \value{
 \item{xLUT}{ The input data table with look-up table variable(s). }

@@ -139,22 +139,6 @@ head(GBpopdat$treex)
 # Adjustment factors added to seedling data
 head(GBpopdat$seedx)
 
-## ----results = TRUE, messages = FALSE-----------------------------------------
-qry <- "SELECT ESTN_UNIT, STRATUMCD, P1POINTCNT, P2POINTCNT,
-               ADJ_FACTOR_MACR, ADJ_FACTOR_SUBP, ADJ_FACTOR_MICR
-        FROM POP_STRATUM
-        WHERE EVALID = 561301
-        ORDER BY ESTN_UNIT, STRATUMCD"
-
-pop_stratum <- DBqryCSV(qry, 
-                        states="Wyoming",
-                        sqltables="POP_STRATUM")
-
-
-head(pop_stratum)
-
-head(GBpopdat$stratalut)
-
 ## ----message = FALSE----------------------------------------------------------
 GBpopdat.bh <- modGBpop(popTabs = popTables(plt = WYplt,
                                             cond = WYcond,
